@@ -1,0 +1,294 @@
+stories:
+  - story: 公司資訊
+    steps:
+      - checkpoint: link-to-公司資訊/eb0604b2-333e-456d-a907-145efaabfc18
+      - action: utter_Su93NDz6p
+      - checkpoint: 公司資訊__branches
+    metadata:
+      group: company story
+  - story: 公司資訊__accept
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問錄取通知
+        user: 多久會收到錄取通知
+        entities:
+          - company_accept: 錄取通知
+      - action: utter_RHjScoBE7s
+    metadata:
+      group: company story
+  - story: 公司資訊__benefits
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問福利
+        user: 有什麼福利嗎
+        entities:
+          - company_benefits: 福利
+      - action: utter_0QNdHjsN4
+    metadata:
+      group: company story
+  - story: 公司資訊__bonus
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問年終
+        user: 年終
+        entities:
+          - company_bonus: 年終
+      - action: utter_kvsU_3Co7
+    metadata:
+      group: company story
+  - story: 公司資訊__businessTrip
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問出差
+        user: 需要出差嗎
+        entities:
+          - company_bussinessTrip: 出差
+      - action: utter_2kXmoIKtC
+    metadata:
+      group: company story
+  - story: 公司資訊__children
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問育兒補助
+        user: 育兒補助
+        entities:
+          - company_children_subsidy: 育兒補助
+      - action: utter_xBlgx1M2e
+    metadata:
+      group: company story
+  - story: 公司資訊__commuter
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問交通補助
+        user: 通勤補助
+        entities:
+          - company_commuter_subsidy: 通勤補助
+      - action: utter_lOMoX-74U
+    metadata:
+      group: company story
+  - story: 公司資訊__exempt
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問責任制
+        user: 是責任制嗎
+        entities:
+          - company_exempt: 責任制嗎
+      - action: utter_jd8_RuWLl
+    metadata:
+      group: company story
+  - story: 公司資訊__flexible
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問彈性上班
+        user: 可以提早下班嗎
+        entities:
+          - company_flexible: 提早下班
+      - action: utter_RbhDa5Y1G
+    metadata:
+      group: company story
+  - story: 公司資訊__headcount
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問規模
+        user: 公司有多大
+        entities:
+          - company_headcount: 多大
+      - action: utter_YoiKzYGYS
+    metadata:
+      group: company story
+  - story: 公司資訊__insurance
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問勞健保
+        user: 有沒有勞健保
+        entities:
+          - company_insurance: 勞健保
+      - action: utter_GwRBjjf3K
+    metadata:
+      group: company story
+  - story: 公司資訊__interview
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問面試
+        user: 怎麼面試
+        entities:
+          - company_interview: 怎麼面試
+      - action: action_set_res
+    metadata:
+      group: company story
+  - story: 公司資訊__introduction
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問簡介
+        user: 公司是幹麻的
+        entities:
+          - company_introduction: 是幹麻的
+      - action: utter_eXaXPr42-
+    metadata:
+      group: company story
+  - story: 公司資訊__leave
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問請假
+        user: 請假會扣錢嗎
+        entities:
+          - company_leave: 請假會扣錢嗎
+      - action: utter_n5CVOvc1L
+    metadata:
+      group: company story
+  - story: 公司資訊__license
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問證照補助
+        user: 有證照補助嗎
+        entities:
+          - company_license_subsidy: 有證照補助嗎
+      - action: utter_YI9k2obPr
+    metadata:
+      group: company story
+  - story: 公司資訊__location
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問地址
+        user: 公司在哪
+        entities:
+          - company_location: 在哪
+      - action: utter_IVazv8VJf
+    metadata:
+      group: company story
+  - story: 公司資訊__overtime
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問加班
+        user: 會常加班嗎
+        entities:
+          - company_overtime: 加班
+      - action: utter_uvMtQxW7d
+    metadata:
+      group: company story
+  - story: 公司資訊__parking
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問停車位
+        user: 有地方停車嗎
+        entities:
+          - company_parking: 停車
+      - action: utter_jTkAHe-4r
+    metadata:
+      group: company story
+  - story: 公司資訊__promotion
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問升遷
+        user: 多久可以加薪
+        entities:
+          - company_promotion: 加薪
+      - action: utter_pl8iESbyE
+    metadata:
+      group: company story
+  - story: 公司資訊__rent
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問租屋補助
+        user: 租房津貼
+        entities:
+          - company_rent_subsidy: 租房津貼
+      - action: utter_gRlrAvEbq
+    metadata:
+      group: company story
+  - story: 公司資訊__restaurant
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問吃飯
+        user: 午餐有什麼可以吃
+        entities:
+          - company_restaurant: 午餐
+      - action: utter_pTb9Muj10
+    metadata:
+      group: company story
+  - story: 公司資訊__shifts
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問輪班
+        user: 需要輪班嗎
+        entities:
+          - company_shifts: 輪班
+      - action: utter_GeUyORFfx
+    metadata:
+      group: company story
+  - story: 公司資訊__shuttleBus
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問交通車
+        user: 有交通車嗎
+        entities:
+          - company_shuttleBus: 交通車嗎
+      - action: utter_wvyTRsovR
+    metadata:
+      group: company story
+  - story: 公司資訊__subsidy
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問補助
+        user: 公司有什麼補助嗎
+        entities:
+          - company_subsidy: 有什麼補助嗎
+      - action: utter_B6wpTPO74
+    metadata:
+      group: company story
+  - story: 公司資訊__traffic
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問交通
+        user: 怎麼去公司
+        entities:
+          - company_traffic: 怎麼去公司
+      - action: utter_SXOXOaihb
+    metadata:
+      group: company story
+  - story: 公司資訊__vacation
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問年假
+        user: 一進去就有年假嗎
+        entities:
+          - company_vacation: 年假
+      - action: utter_OocP_6PXt
+    metadata:
+      group: company story
+  - story: 公司資訊__WFH
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問居家上班
+        user: 可以居家上班嗎
+        entities:
+          - company_WFH: 居家上班
+      - action: utter_97Qfw2zg3
+    metadata:
+      group: company story
+  - story: 公司資訊__worktime
+    steps:
+      - checkpoint: 公司資訊__branches
+      - intent: 問上班時間
+        user: 上下班時間
+        entities:
+          - company_workTime: 上下班時間
+      - action: utter_nWeu2xqe6
+    metadata:
+      group: company story
+  - story: 查公司資訊
+    steps:
+      - intent: 查公司資訊
+        entities: []
+      - checkpoint: link-to-公司資訊/eb0604b2-333e-456d-a907-145efaabfc18
+    metadata:
+      group: company story
+rules:
+  - rule: 問公司資訊
+    condition: []
+    steps:
+      - intent: 問公司資訊
+        entities: []
+      - action: action_set_res
+    metadata:
+      group: company story

@@ -1,0 +1,144 @@
+stories:
+  - story: 填寫基本資料
+    steps:
+      - intent: 填寫基本資料
+        entities: []
+      - action: utter_yRSxpy_qu
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 寫基本資料
+    steps:
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+      - action: resume_form
+      - active_loop: resume_form
+      - checkpoint: 寫基本資料__branches
+    metadata:
+      group: form story
+  - story: 寫基本資料__form position
+    steps:
+      - checkpoint: 寫基本資料__branches
+      - slot_was_set:
+          - requested_slot: form_position
+      - checkpoint: 寫基本資料__form_position__branches
+    metadata:
+      group: form story
+  - story: 寫基本資料__form position__check position
+    steps:
+      - checkpoint: 寫基本資料__form_position__branches
+      - intent: 表單查職缺
+        entities: []
+      - action: utter_PfWJsO0vs
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 寫基本資料__form position__not in position db
+    steps:
+      - checkpoint: 寫基本資料__form_position__branches
+      - intent: 未開職缺
+        entities: []
+      - action: action_form_position_reset
+      - action: utter_9h4IPjz0K
+      - action: utter_PfWJsO0vs
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 寫基本資料__normal
+    steps:
+      - checkpoint: 寫基本資料__branches
+      - active_loop: null
+      - action: utter_lvu6KSNn8
+      - checkpoint: link-to-資料確認/87786559-8cd3-4edf-84e3-f12a5b8d9a1f
+    metadata:
+      group: form story
+  - story: 寫基本資料__stop
+    steps:
+      - checkpoint: 寫基本資料__branches
+      - intent: 停止
+        user: 停
+        entities:
+          - stop: 停
+      - action: utter_AU8VoQgDj
+      - checkpoint: 寫基本資料__stop__branches
+    metadata:
+      group: form story
+  - story: 寫基本資料__stop__no
+    steps:
+      - checkpoint: 寫基本資料__stop__branches
+      - intent: 回答不
+        user: 不
+        entities: []
+      - action: utter_UGfhaMnEu
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 寫基本資料__stop__yes
+    steps:
+      - checkpoint: 寫基本資料__stop__branches
+      - intent: 回答好
+        user: 好
+        entities: []
+      - action: action_deactivate_form
+      - active_loop: null
+      - action: action_all_slot_reset
+      - action: utter_nMbCDcMWV
+      - checkpoint: link-to-主選單/18db9f74-3d35-42e0-8520-3ae2d79265c3
+    metadata:
+      group: form story
+  - story: 資料確認
+    steps:
+      - checkpoint: link-to-資料確認/87786559-8cd3-4edf-84e3-f12a5b8d9a1f
+      - action: utter_Dq7Y7lwk8
+      - checkpoint: 資料確認__branches
+    metadata:
+      group: form story
+  - story: 資料確認__no
+    steps:
+      - checkpoint: 資料確認__branches
+      - or:
+          - intent: 回答不
+            user: 不
+            entities: []
+          - intent: 修改表單
+            entities: []
+      - action: utter_-aUg8L1T3
+      - checkpoint: 資料確認__no__branches
+    metadata:
+      group: form story
+  - story: 資料確認__no__all
+    steps:
+      - checkpoint: 資料確認__no__branches
+      - intent: 修改全部表單
+        user: 所有資料重寫
+        entities:
+          - all: 所有資料
+      - action: action_all_slot_reset
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 資料確認__no__single
+    steps:
+      - checkpoint: 資料確認__no__branches
+      - or:
+          - intent: 修改表單
+            entities: []
+          - intent: 修改表單
+            user: 職位有問題
+            entities:
+              - position: 職位有問題
+      - action: action_single_slot_reset
+      - checkpoint: link-to-寫基本資料/da56786c-d46b-472c-a3ee-0fdc8c1775e5
+    metadata:
+      group: form story
+  - story: 資料確認__yes
+    steps:
+      - checkpoint: 資料確認__branches
+      - intent: 回答好
+        user: 是
+        entities: []
+      - action: utter_OvtWYOGNw
+      - action: action_save_test
+      - checkpoint: link-to-主選單/18db9f74-3d35-42e0-8520-3ae2d79265c3
+    metadata:
+      group: form story
+rules: []

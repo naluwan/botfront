@@ -1,0 +1,1686 @@
+version: "2.0"
+nlu:
+- intent: menu
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [menu](get_menu)
+    metadata:
+      canonical: true
+  - text: |
+      [主選單](get_menu)
+    metadata:
+      canonical: true
+  - text: |
+      返回[主選單](get_menu)
+- intent: nlu_fallback
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      ..
+  - text: |
+      ...
+  - text: |
+      123
+  - text: |
+      234234
+  - text: |
+      3
+  - text: |
+      456
+  - text: |
+      aa
+  - text: |
+      asd
+  - text: |
+      asdfsaef
+    metadata:
+      canonical: true
+  - text: |
+      gg
+  - text: |
+      sdf
+  - text: |
+      slkgjsoijfiowf
+  - text: |
+      ss
+  - text: |
+      vfr
+  - text: |
+      你ˇ說襖去
+  - text: |
+      你有什問題
+  - text: |
+      你覺得我做的好嗎
+  - text: |
+      好玩嘛
+  - text: |
+      存檔
+  - text: |
+      我是誰
+  - text: |
+      智障嗎
+  - text: |
+      有問題嗎
+  - text: |
+      測試
+- intent: out_of_scope
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      中秋
+  - text: |
+      今天運勢
+    metadata:
+      canonical: true
+  - text: |
+      天氣
+  - text: |
+      考勤
+  - text: |
+      討厭
+- intent: who_are_you
+  metadata:
+    language: zh
+  examples: |
+    - 你是什麼
+    - 你是機器人嗎
+    - 你是男人還是女人
+    - 你是男生還是女生
+    - 你是真人嗎
+    - 你是誰
+- intent: 修改全部表單
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [全部資料](all)都有問題
+    metadata:
+      canonical: true
+  - text: |
+      我想重寫[整份資料](all)
+    metadata:
+      canonical: true
+  - text: |
+      我要重填[所有表格](all)
+    metadata:
+      canonical: true
+  - text: |
+      [所有資料](all)重寫
+    metadata:
+      canonical: true
+  - text: |
+      [整份資料](all)
+- intent: 修改表單
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [email](email)
+    metadata:
+      canonical: true
+  - text: |
+      [email](email)少寫一個字
+  - text: |
+      [email](email)想換另一個
+  - text: |
+      [出生年月日](birthday)寫錯
+    metadata:
+      canonical: true
+  - text: |
+      [名字](name)寫錯
+    metadata:
+      canonical: true
+  - text: |
+      [姓名](name)
+    metadata:
+      canonical: true
+  - text: |
+      [學校](education)
+    metadata:
+      canonical: true
+  - text: |
+      寫錯[電話號碼](phone)
+    metadata:
+      canonical: true
+  - text: |
+      想要補充[技能](skill)
+  - text: |
+      我想[修改名子](name)
+    metadata:
+      canonical: true
+  - text: |
+      我想修改[姓名](name)
+  - text: |
+      我想修改[生日](birthday)
+  - text: |
+      我想多寫[相關技能](skill)
+    metadata:
+      canonical: true
+  - text: |
+      [我想換職位]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}
+    metadata:
+      canonical: true
+  - text: |
+      我[應徵職位想換]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}
+    metadata:
+      canonical: true
+  - text: |
+      我的[email](email)填錯了
+  - text: |
+      我的[姓名](name)寫錯了
+  - text: |
+      我的[學校](education)寫錯了
+  - text: |
+      我的[應徵職位]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}想換
+    metadata:
+      canonical: true
+  - text: |
+      我的[手機](phone)有問題
+    metadata:
+      canonical: true
+  - text: |
+      我的[生日](birthday)錯了
+  - text: |
+      我要修改[最高學歷](education)
+    metadata:
+      canonical: true
+  - text: |
+      我要修改[生日](birthday)
+  - text: |
+      我要[改名子](name)
+    metadata:
+      canonical: true
+  - text: |
+      [手機號碼](phone)
+    metadata:
+      canonical: true
+  - text: |
+      [手機號碼](phone)留錯了
+  - text: |
+      [技能](skill)
+    metadata:
+      canonical: true
+  - text: |
+      [技能](skill)寫錯了
+  - text: |
+      [校名](education)不對
+    metadata:
+      canonical: true
+  - text: |
+      [生日](birthday)
+    metadata:
+      canonical: true
+  - text: |
+      [生日日期](birthday)有錯誤
+    metadata:
+      canonical: true
+  - text: |
+      [職位]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}
+    metadata:
+      canonical: true
+  - text: |
+      [職位]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}想修改
+  - text: |
+      [職位有問題]{"entity": "position", "role": "\u4fee\u6539\u8868\u55ae"}
+    metadata:
+      canonical: true
+- intent: 停止
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [停](stop)
+    metadata:
+      canonical: true
+  - text: |
+      [停止](stop)
+    metadata:
+      canonical: true
+  - text: |
+      [取消](stop)
+    metadata:
+      canonical: true
+  - text: |
+      我[不想](stop)寫
+    metadata:
+      canonical: true
+  - text: |
+      [跳出](stop)
+    metadata:
+      canonical: true
+  - text: |
+      [重來](stop)
+    metadata:
+      canonical: true
+  - text: |
+      [離開](stop)
+    metadata:
+      canonical: true
+- intent: 再見
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      bye
+  - text: |
+      see u
+  - text: |
+      see you
+  - text: |
+      下次見
+  - text: |
+      再見
+    metadata:
+      canonical: true
+  - text: |
+      拜拜
+  - text: |
+      掰掰
+- intent: 問交通
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [交通](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [交通狀況](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [交通資訊](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      公司周遭[交通狀況](company_traffic)如何
+  - text: |
+      公司附近[交通好嗎](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      公司[附近有公車站嗎](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [外縣市怎麼上班](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [如何去公司](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [怎麼去](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      怎麼去[上班](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      [怎麼去公司](company_traffic)
+    metadata:
+      canonical: true
+  - text: |
+      附近[有捷運站嗎](company_traffic)
+    metadata:
+      canonical: true
+- intent: 問交通補助
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [交通補助](company_commuter_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      [交通費有補貼嗎](company_commuter_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      公司[有交通補助嗎](company_commuter_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      坐車上班有[補助通勤費](company_commuter_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有[交通津貼](company_commuter_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有[通勤補助](company_commuter_subsidy)嗎
+  - text: |
+      [通勤有補助](company_commuter_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [通勤補助](company_commuter_subsidy)
+    metadata:
+      canonical: true
+- intent: 問交通車
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [交通車](company_shuttleBus)
+    metadata:
+      canonical: true
+  - text: |
+      公司[有交通車嗎](company_shuttleBus)
+    metadata:
+      canonical: true
+  - text: |
+      我住外縣市，[有交通車可以坐嗎](company_shuttleBus)
+    metadata:
+      canonical: true
+  - text: |
+      我住很遠，[有接駁車可以坐嗎](company_shuttleBus)
+    metadata:
+      canonical: true
+  - text: |
+      有[交通車](company_shuttleBus)可以坐嗎
+  - text: |
+      有[交通車嗎](company_shuttleBus)
+    metadata:
+      canonical: true
+- intent: 問停車位
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [停車位](company_parking)
+    metadata:
+      canonical: true
+  - text: |
+      公司[有停車位嗎](company_parking)
+    metadata:
+      canonical: true
+  - text: |
+      公司有提供[停車位](company_parking)嗎
+  - text: |
+      公司[附近有停車場](company_parking)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [有停車場嗎](company_parking)
+    metadata:
+      canonical: true
+  - text: |
+      有地方[停車](company_parking)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [有車位可以租嗎](company_parking)
+    metadata:
+      canonical: true
+  - text: |
+      [車子可以停哪裡](company_parking)
+    metadata:
+      canonical: true
+- intent: 問公司資訊
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [上下班時間](WORKTIME)
+  - text: |
+      [上班日](WORKTIME)是什麼時候
+    metadata:
+      canonical: true
+  - text: |
+      [上班時間](WORKTIME)
+  - text: |
+      [上班時間是幾點](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      上班要[打卡](WORKTIME)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [休息時間多長](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      [公司主要是做什麼的](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      [公司主要業務](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      公司[介紹](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      公司[位置](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      公司[住址](ADDR)在哪
+    metadata:
+      canonical: true
+  - text: |
+      公司[再那](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      公司[在哪](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      公司在哪一個[地段](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      [公司在哪裡](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      公司在[靠近哪裡](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      [公司地址](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      公司多久會[通知](ACCEPT)我
+  - text: |
+      [公司是做什麼的](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      [公司是幹嘛的](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      公司[是幹麻的](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      公司有什麼[福利](BENEFITS)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [公司有哪些主要客戶](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      [公司產品](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      公司的[地點](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      [公司的福利](BENEFITS)
+    metadata:
+      canonical: true
+  - text: |
+      公司的[簡介](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      [公司福利](BENEFITS)
+  - text: |
+      [公司簡介](INTRODUCTION)
+    metadata:
+      canonical: true
+  - text: |
+      [公司電話](TEL)
+  - text: |
+      [公司電話](TEL)是多少
+    metadata:
+      canonical: true
+  - text: |
+      [午休](WORKTIME)多久
+    metadata:
+      canonical: true
+  - text: |
+      [地圖](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      多久會收到[通知](ACCEPT)
+  - text: |
+      多久會收到[錄取通知](ACCEPT)
+  - text: |
+      多久會[通知](ACCEPT)我
+  - text: |
+      [工作時間](WORKTIME)是幾點到幾點
+    metadata:
+      canonical: true
+  - text: |
+      幾點[上班](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      怎麼[參加面試](INTERVIEW)
+    metadata:
+      canonical: true
+  - text: |
+      怎麼確認有沒有[錄取](ACCEPT)
+  - text: |
+      [怎麼面試](INTERVIEW)
+    metadata:
+      canonical: true
+  - text: |
+      我想知道公司[地址](ADDR)
+    metadata:
+      canonical: true
+  - text: |
+      我想知道[公司福利](BENEFITS)
+    metadata:
+      canonical: true
+  - text: |
+      我想知道幾點[下班](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      我想知道[面試資訊](INTERVIEW)
+    metadata:
+      canonical: true
+  - text: |
+      我要了解[面試](INTERVIEW)
+    metadata:
+      canonical: true
+  - text: |
+      有什麼[員工福利](BENEFITS)嗎
+  - text: |
+      有什麼[福利](BENEFITS)嗎
+  - text: |
+      有[哪些福利](BENEFITS)
+    metadata:
+      canonical: true
+  - text: |
+      有[服裝規定](INTERVIEW)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有沒有什麼[員工福利](BENEFITS)
+    metadata:
+      canonical: true
+  - text: |
+      有需要[筆試](INTERVIEW)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [筆試內容](INTERVIEW)有什麼
+    metadata:
+      canonical: true
+  - text: |
+      [考試內容](INTERVIEW)是什麼
+    metadata:
+      canonical: true
+  - text: |
+      [聯絡電話](TEL)
+    metadata:
+      canonical: true
+  - text: |
+      要帶[證照](INTERVIEW)嗎
+  - text: |
+      請問這一周的[上下班時間](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      請問這一周的[上班時間](WORKTIME)
+    metadata:
+      canonical: true
+  - text: |
+      [錄取通知](ACCEPT)
+  - text: |
+      附近有什麼[地標](ADDR)嗎
+  - text: |
+      [電話幾號](TEL)
+    metadata:
+      canonical: true
+  - text: |
+      [電話號碼多少](TEL)
+    metadata:
+      canonical: true
+  - text: |
+      需要準備[證照](INTERVIEW)嗎
+    metadata:
+      canonical: true
+  - text: |
+      需要[穿正裝嗎](INTERVIEW)
+    metadata:
+      canonical: true
+  - text: |
+      [面試](INTERVIEW)
+  - text: |
+      面試多久會有[結果](ACCEPT)?
+  - text: |
+      [面試完多久會通知我](ACCEPT)
+  - text: |
+      [面試時間](INTERVIEW)多久
+    metadata:
+      canonical: true
+  - text: |
+      面試會有[考試](INTERVIEW)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [面試流程](INTERVIEW)是怎樣
+    metadata:
+      canonical: true
+- intent: 問出差
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司會要出[公差](company_bussinessTrip)嗎
+    metadata:
+      canonical: true
+  - text: |
+      公司有[外勤](company_bussinessTrip)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [出差](company_bussinessTrip)
+    metadata:
+      canonical: true
+  - text: |
+      會要去[見廠商](company_bussinessTrip)嗎
+    metadata:
+      canonical: true
+  - text: |
+      需要[出差](company_bussinessTrip)嗎
+  - text: |
+      需要去[見顧客](company_bussinessTrip)嗎
+    metadata:
+      canonical: true
+- intent: 問功能
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      你[可以做什麼](ask_func)
+    metadata:
+      canonical: true
+  - text: |
+      你[可以幹嘛](ask_func)
+    metadata:
+      canonical: true
+  - text: |
+      你[會什麼](ask_func)
+    metadata:
+      canonical: true
+  - text: |
+      你[會幹麻](ask_func)
+    metadata:
+      canonical: true
+  - text: |
+      你[有什麼功能](ask_func)
+    metadata:
+      canonical: true
+  - text: |
+      你[有什麼用](ask_func)
+  - text: |
+      你要幹麻
+    metadata:
+      canonical: true
+  - text: |
+      請問你[有什麼用](ask_func)
+    metadata:
+      canonical: true
+- intent: 問加班
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司會有[加班費](company_overtime)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [加班](company_overtime)
+    metadata:
+      canonical: true
+  - text: |
+      [加班有加班費](company_overtime)嗎
+    metadata:
+      canonical: true
+  - text: |
+      工作會常[加班](company_overtime)嗎
+  - text: |
+      會常[加班](company_overtime)嗎
+  - text: |
+      需要常[加班](company_overtime)嗎
+  - text: |
+      需要常常[加班](company_overtime)嗎
+- intent: 問勞健保
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[會幫我保勞保嗎](company_insurance)
+    metadata:
+      canonical: true
+  - text: |
+      公司[會幫我保勞健保嗎](company_insurance)
+    metadata:
+      canonical: true
+  - text: |
+      公司[有勞健保嗎](company_insurance)
+    metadata:
+      canonical: true
+  - text: |
+      [勞健保](company_insurance)
+    metadata:
+      canonical: true
+  - text: |
+      [會有勞健保](company_insurance)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [有勞保嗎](company_insurance)
+    metadata:
+      canonical: true
+  - text: |
+      有沒有[勞健保](company_insurance)
+- intent: 問升遷
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[多久調薪](company_promotion)一次
+    metadata:
+      canonical: true
+  - text: |
+      [升遷制度](company_promotion)
+    metadata:
+      canonical: true
+  - text: |
+      [升遷制度](company_promotion)怎麼樣
+  - text: |
+      多久可以[加薪](company_promotion)
+    metadata:
+      canonical: true
+  - text: |
+      [多久會升遷](company_promotion)
+    metadata:
+      canonical: true
+  - text: |
+      如何[加薪](company_promotion)
+  - text: |
+      怎麼樣可以[升遷](company_promotion)
+    metadata:
+      canonical: true
+  - text: |
+      [會加薪嗎](company_promotion)
+    metadata:
+      canonical: true
+  - text: |
+      有[升遷機會](company_promotion)嗎
+    metadata:
+      canonical: true
+- intent: 問吃飯
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      中午[吃什麼](company_restaurant)
+    metadata:
+      canonical: true
+  - text: |
+      中午[吃什麼](company_restaurant)？
+  - text: |
+      公司有[員工餐廳](company_restaurant)嗎
+  - text: |
+      [午餐](company_restaurant)吃什麼
+    metadata:
+      canonical: true
+  - text: |
+      [午餐](company_restaurant)有什麼可以吃
+  - text: |
+      [員工餐廳](company_restaurant)
+    metadata:
+      canonical: true
+  - text: |
+      要去哪裡[吃飯](company_restaurant)
+    metadata:
+      canonical: true
+  - text: |
+      附近[有什麼好吃的](company_restaurant)嗎
+    metadata:
+      canonical: true
+- intent: 問居家上班
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司可以讓我[在家上班](company_WFH)嗎
+    metadata:
+      canonical: true
+  - text: |
+      可以[居加上班](company_WFH)嗎
+    metadata:
+      canonical: true
+  - text: |
+      可以[居家上班](company_WFH)嗎
+  - text: |
+      可以[遠端工作](company_WFH)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [居家上班](company_WFH)
+    metadata:
+      canonical: true
+  - text: |
+      我可以[居家上班](company_WFH)嗎？
+  - text: |
+      接受[遠端上班](company_WFH)嗎
+    metadata:
+      canonical: true
+- intent: 問年假
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      一進去就有[年假](company_vacation)嗎
+  - text: |
+      入職就有[特休](company_vacation)嗎
+    metadata:
+      canonical: true
+  - text: |
+      公司有[特別休假日](company_vacation)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [年假](company_vacation)
+    metadata:
+      canonical: true
+  - text: |
+      [有薪假](company_vacation)的規定
+    metadata:
+      canonical: true
+- intent: 問年終
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      什麼時候[發年終](company_bonus)
+    metadata:
+      canonical: true
+  - text: |
+      公司[會發年終嗎](company_bonus)
+    metadata:
+      canonical: true
+  - text: |
+      [公司有年終獎金嗎](company_bonus)
+    metadata:
+      canonical: true
+  - text: |
+      [年終](company_bonus)
+    metadata:
+      canonical: true
+  - text: |
+      [年終獎金](company_bonus)發多少
+    metadata:
+      canonical: true
+  - text: |
+      [獎金](company_bonus)發幾個月
+    metadata:
+      canonical: true
+- intent: 問彈性上班
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      上班時間有[彈性](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      公司可以[彈性上下班](company_flexible)嗎
+  - text: |
+      公司可以讓我[早點下班](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      公司可以讓我[晚一點上班](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      可以[提早下班](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      可以[早一點下班](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      可以[調整上班時間](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [彈性上下班](company_flexible)
+    metadata:
+      canonical: true
+  - text: |
+      我想[晚點上班](company_flexible)可以嗎
+    metadata:
+      canonical: true
+  - text: |
+      接受[彈性上班](company_flexible)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [調整下班時間](company_flexible)是可以的嗎
+    metadata:
+      canonical: true
+- intent: 問時間
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [今天幾號](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      今天[星期幾](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      [幾月幾號](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      [幾點了](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      現在是[幾月](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      [現在是幾點](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      現在是[禮拜幾](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      [現在時間](ask_time)
+    metadata:
+      canonical: true
+  - text: |
+      請問[現在幾點](ask_time)
+    metadata:
+      canonical: true
+- intent: 問生理假
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      有[生理假](company_menstruation_leave)嗎
+    metadata:
+      canonical: true
+  - text: |
+      每個月有幾次[生理假](company_menstruation_leave)
+- intent: 問租屋補助
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      我在[外面租房子有津貼嗎](company_rent_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      我在[外面租房子有補助嗎](company_rent_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      有冷氣嗎
+    metadata:
+      canonical: true
+  - text: |
+      有[租屋津貼](company_rent_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [租屋補助](company_rent_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      [租房津貼](company_rent_subsidy)
+    metadata:
+      canonical: true
+- intent: 問育兒補助
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      有[育兒津貼](company_children_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有[育兒補助](company_children_subsidy)嗎
+  - text: |
+      [育兒補助](company_children_subsidy)
+    metadata:
+      canonical: true
+- intent: 問補助
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[有什麼補助嗎](company_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      我住很遠[有補助嗎](company_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      我住很遠，[有什麼補貼](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      我會多國語言，有[什麼補助](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      我有小孩，公司有[什麼津貼](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有什麼[津貼](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      有什麼[補助](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      每天坐車上班，[有什麼補助](company_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [相關證照有什麼用](company_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      [證照可以幹麻](company_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      [證照對公司有什麼用處](company_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      [證照有什麼用處](company_subsidy)嗎
+    metadata:
+      canonical: true
+- intent: 問規模
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[人數](company_headcount)有多少
+    metadata:
+      canonical: true
+  - text: |
+      公司有[多大](company_headcount)
+    metadata:
+      canonical: true
+  - text: |
+      公司有[多少人](company_headcount)
+    metadata:
+      canonical: true
+  - text: |
+      [公司規模](company_headcount)
+    metadata:
+      canonical: true
+  - text: |
+      公司[規模](company_headcount)多大
+    metadata:
+      canonical: true
+  - text: |
+      公司[規模](company_headcount)有多大
+- intent: 問請假
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      怎麼[請假](company_leave)
+  - text: |
+      [月經](company_menstruation_leave)來可以請假嗎
+    metadata:
+      canonical: true
+  - text: |
+      該怎麼[請假](company_leave)呢
+  - text: |
+      [請假](company_leave)
+    metadata:
+      canonical: true
+  - text: |
+      [請假制度](company_leave)如何
+    metadata:
+      canonical: true
+  - text: |
+      [請假會不會扣錢](company_leave)
+    metadata:
+      canonical: true
+  - text: |
+      [請假會扣薪水嗎](company_leave)
+    metadata:
+      canonical: true
+  - text: |
+      [請假會扣錢嗎](company_leave)
+    metadata:
+      canonical: true
+- intent: 問證照補助
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[對證照有補助](company_license_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [有證照補助嗎](company_license_subsidy)
+    metadata:
+      canonical: true
+  - text: |
+      考取[相關證照會有津貼](company_license_subsidy)嗎
+    metadata:
+      canonical: true
+  - text: |
+      [證照補助](company_license_subsidy)
+    metadata:
+      canonical: true
+- intent: 問責任制
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司[是責任制嗎](company_exempt)
+    metadata:
+      canonical: true
+  - text: |
+      [工作是責任制嗎](company_exempt)
+    metadata:
+      canonical: true
+  - text: |
+      是[責任制嗎](company_exempt)
+    metadata:
+      canonical: true
+  - text: |
+      [責任制](company_exempt)
+    metadata:
+      canonical: true
+- intent: 問輪班
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      公司有[輪班](company_shifts)制嗎
+  - text: |
+      [會輪班嗎](company_shifts)
+    metadata:
+      canonical: true
+  - text: |
+      [輪班](company_shifts)
+    metadata:
+      canonical: true
+  - text: |
+      需要[輪班](company_shifts)嗎
+- intent: 回答不
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      不
+    metadata:
+      canonical: true
+  - text: |
+      不對
+  - text: |
+      不想
+  - text: |
+      不是
+  - text: |
+      不正確
+  - text: |
+      不要
+  - text: |
+      我不想
+  - text: |
+      我不要
+  - text: |
+      沒有
+- intent: 回答好
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      ok
+  - text: |
+      yes
+  - text: |
+      好
+    metadata:
+      canonical: true
+  - text: |
+      好的
+  - text: |
+      對
+  - text: |
+      想
+  - text: |
+      我確定
+  - text: |
+      是
+  - text: |
+      正確
+  - text: |
+      要
+- intent: 填寫基本資料
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [填寫資料](fill_resume)
+    metadata:
+      canonical: true
+  - text: |
+      填[寫面試資料](fill_resume)
+    metadata:
+      canonical: true
+  - text: |
+      [我想參加面試](fill_resume)
+    metadata:
+      canonical: true
+  - text: |
+      我想[填寫基本資料](fill_resume)
+    metadata:
+      canonical: true
+  - text: |
+      [我要面試](fill_resume)
+    metadata:
+      canonical: true
+- intent: 打招呼
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      hello
+  - text: |
+      hi
+  - text: |
+      你好
+    metadata:
+      canonical: true
+  - text: |
+      你好嗎
+  - text: |
+      午安
+  - text: |
+      吃飽沒
+  - text: |
+      哈囉
+  - text: |
+      嗨
+  - text: |
+      早安
+  - text: |
+      晚安
+- intent: 找工作
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      可以[應徵]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}嗎
+    metadata:
+      canonical: true
+  - text: |
+      我想要[應徵]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+  - text: |
+      我想要[找工作]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+  - text: |
+      [找]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}[工作]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+  - text: |
+      [有什麼工作嗎]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+  - text: |
+      有[什麼職缺]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}嗎
+    metadata:
+      canonical: true
+  - text: |
+      有在[應徵]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}人嗎
+  - text: |
+      有[缺人]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}嗎
+    metadata:
+      canonical: true
+  - text: |
+      [薪水]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+  - text: |
+      [薪資有多少]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+  - text: |
+      請問有[缺人]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}嗎
+  - text: |
+      需要[工作]{"entity": "find_job", "role": "\u627e\u5de5\u4f5c"}
+    metadata:
+      canonical: true
+- intent: 未開職缺
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [CEO](CEO)
+    metadata:
+      canonical: true
+  - text: |
+      [CFO](CFO)
+    metadata:
+      canonical: true
+  - text: |
+      [CKO](CKO)
+    metadata:
+      canonical: true
+  - text: |
+      [CMO](CMO)
+    metadata:
+      canonical: true
+  - text: |
+      [COO](COO)
+    metadata:
+      canonical: true
+  - text: |
+      [CTO](CTO)
+    metadata:
+      canonical: true
+  - text: |
+      [GM](GM)
+    metadata:
+      canonical: true
+  - text: |
+      [VP](VP)
+    metadata:
+      canonical: true
+  - text: |
+      [副總](VP)
+    metadata:
+      canonical: true
+  - text: |
+      [副總經理](VP)
+    metadata:
+      canonical: true
+  - text: |
+      [副總裁](CMO)
+    metadata:
+      canonical: true
+  - text: |
+      [執行長](CEO)
+    metadata:
+      canonical: true
+  - text: |
+      [小弟](others)
+    metadata:
+      canonical: true
+  - text: |
+      布丁狗
+    metadata:
+      canonical: true
+  - text: |
+      [技術長](CTO)
+    metadata:
+      canonical: true
+  - text: |
+      [流氓](others)
+    metadata:
+      canonical: true
+  - text: |
+      [營運長](COO)
+    metadata:
+      canonical: true
+  - text: |
+      [知識長](CKO)
+    metadata:
+      canonical: true
+  - text: |
+      [總經理](GM)
+    metadata:
+      canonical: true
+  - text: |
+      [總裁](Chairman)
+    metadata:
+      canonical: true
+  - text: |
+      [老大](President)
+    metadata:
+      canonical: true
+  - text: |
+      [老闆](President)
+    metadata:
+      canonical: true
+  - text: |
+      [董事長](President)
+    metadata:
+      canonical: true
+  - text: |
+      [財務長](CFO)
+    metadata:
+      canonical: true
+- intent: 職缺
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      [【CMO單位】專案經理](PM)
+    metadata:
+      canonical: true
+  - text: |
+      [【CMO單位】業務助理](ST)
+    metadata:
+      canonical: true
+  - text: |
+      [【國際處-HR雲端銷售】業務副理](VSM)
+    metadata:
+      canonical: true
+  - text: |
+      [【國際處-HR雲端銷售】通路開發專員(北區)](TM)
+    metadata:
+      canonical: true
+  - text: |
+      [【研發處】研發工程師](RD)
+    metadata:
+      canonical: true
+  - text: |
+      [【研發處】系統分析師](SA)
+    metadata:
+      canonical: true
+  - text: |
+      [【研發處】資訊客服專員](CSE)
+    metadata:
+      canonical: true
+  - text: |
+      [【總管理處】行政主管](AS)
+    metadata:
+      canonical: true
+  - text: |
+      [【總管理處】行政專員](AP)
+    metadata:
+      canonical: true
+  - text: |
+      [【總管理處】行銷專員](ME)
+    metadata:
+      canonical: true
+  - text: |
+      [【銷售處】助理業務](MA)
+    metadata:
+      canonical: true
+  - text: |
+      [【銷售處】業務](sales)
+    metadata:
+      canonical: true
+  - text: |
+      [主管](AS)
+    metadata:
+      canonical: true
+  - text: |
+      [分析師](SA)
+    metadata:
+      canonical: true
+  - text: |
+      [副理](VSM)
+    metadata:
+      canonical: true
+  - text: |
+      [助理業務](MA)
+    metadata:
+      canonical: true
+  - text: |
+      [助理業務](ST)薪水多嗎
+    metadata:
+      canonical: true
+  - text: |
+      [客服](CSE)
+    metadata:
+      canonical: true
+  - text: |
+      [客服專員](CSE)
+    metadata:
+      canonical: true
+  - text: |
+      [客服專員](CSE)在幹麻的
+  - text: |
+      [專案經理](PM)
+    metadata:
+      canonical: true
+  - text: |
+      [專案經理](PM)會很忙嗎
+  - text: |
+      [工程師](RD)
+    metadata:
+      canonical: true
+  - text: |
+      [工程師](RD)很忙嗎
+  - text: |
+      我想了解[分析師](SA)的工作內容
+  - text: |
+      我想查[工程師](RD)的薪資
+  - text: |
+      我想知道[業務副理](VSM)的薪水區間
+    metadata:
+      canonical: true
+  - text: |
+      我想知道[通路開發](TM)是在做什麼
+    metadata:
+      canonical: true
+  - text: |
+      [業務](sales)
+    metadata:
+      canonical: true
+  - text: |
+      [業務副理](VSM)
+  - text: |
+      [業務助理](ST)
+    metadata:
+      canonical: true
+  - text: |
+      [業務](sales)的薪水多嗎
+  - text: |
+      [業務](sales)要怎麼跑
+  - text: |
+      [研發](RD)
+    metadata:
+      canonical: true
+  - text: |
+      [系統分析師](SA)
+    metadata:
+      canonical: true
+  - text: |
+      [行政主管](AS)
+    metadata:
+      canonical: true
+  - text: |
+      [行政專員](AP)
+    metadata:
+      canonical: true
+  - text: |
+      [行政總裁](CEO)
+    metadata:
+      canonical: true
+  - text: |
+      [行銷專員](ME)
+    metadata:
+      canonical: true
+  - text: |
+      [行銷專員](ME)要做什麼
+  - text: |
+      [資訊](CSE)
+    metadata:
+      canonical: true
+  - text: |
+      [資訊長](CIO)
+    metadata:
+      canonical: true
+  - text: |
+      [通路](TM)
+    metadata:
+      canonical: true
+  - text: |
+      [通路開發](TM)
+  - text: |
+      [開發專員](TM)
+    metadata:
+      canonical: true
+- intent: 表單查職缺
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      有[什麼職位]{"entity": "find_job", "role": "\u8868\u55ae\u67e5\u8077\u7f3a"}
+    metadata:
+      canonical: true
+  - text: |
+      有什麼[職缺]{"entity": "find_job", "role": "\u8868\u55ae\u67e5\u8077\u7f3a"}
+    metadata:
+      canonical: true
+  - text: |
+      有[哪些職缺]{"entity": "find_job", "role": "\u8868\u55ae\u67e5\u8077\u7f3a"}
+    metadata:
+      canonical: true
+- intent: 道謝
+  metadata:
+    language: zh
+  examples:
+  - text: |
+      3q
+  - text: |
+      thank u
+  - text: |
+      thank you
+  - text: |
+      thanks
+  - text: |
+      感謝
+  - text: |
+      謝
+  - text: |
+      謝囉
+  - text: |
+      謝謝
+    metadata:
+      canonical: true
