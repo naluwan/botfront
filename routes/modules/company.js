@@ -37,7 +37,7 @@ router.get('/:keys/edit', (req, res) => {
     if(err) console.log(err)
 
     const request = new sql.Request()
-    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONt_TEST_COMPANY_INFO'`, (err, result) => {
+    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_COMPANY_INFO'`, (err, result) => {
       if(err){
         console.log(err)
         res.send(err)
@@ -50,6 +50,16 @@ router.get('/:keys/edit', (req, res) => {
       }
     })
 
+    const companyInfo = [{ NAME: "公司名稱" }, { TEL: "公司電話" }, { ADDR: "公司地址" }, { INTRODUCTION: "公司簡介" }, { BENEFITS: "公司福利" },
+  { WORKTIME: "上班時間" }, { INTERVIEW: "面試資訊" }, { ACCEPT: "錄取通知" }]
+
+  let keyZh = companyInfo.map(obj => {
+    if(Object.keys(obj)[0] === keys){
+      return Object.values(obj)
+    }
+  })
+  keyZh = keyZh.filter(info => info != undefined)
+  // console.log(keyZh[0][0])
 
     request.query(`select ${keys} from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
       if(err){
@@ -59,10 +69,9 @@ router.get('/:keys/edit', (req, res) => {
       // console.log(keys)
       value = Object.values(result.recordset[0])[0]
       sql.close()
-      res.render('edit_page_company', {result: value, keys})
+      res.render('edit_page_company', {result: value, keyZh, keys})
     })
   })
-
 })
 
 router.post('/', (req, res) => {
