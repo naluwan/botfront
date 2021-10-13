@@ -4,6 +4,42 @@ const router = express.Router()
 const db = require('../../config/db')
 const sql = require('mssql')
 
+router.put('/:keys', (req, res) => {
+    const {keys} = req.params
+    const value = Object.values(req.body)[0] //get value for edit
+    // console.log(keys)
+    // console.log(req.body)
+    sql.connect(db, (err) => {
+      if(err) console.log(err)
+  
+      const request = new sql.Request()
+  
+      // get mssql column name to check page url
+      request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_GREET'`, (err, result) => {
+        if(err){
+          console.log(err)
+          res.send(err)
+        }
+        // console.log(result.recordset)
+        const isColumn = result.recordset.find(item => item.column_name === keys)
+        if(!isColumn){
+          sql.close()
+          return res.send('Column error!!')
+        }
+      })
+  
+      request.input(`${keys}`, sql.NVarChar(500), value)
+      .query(`update BOTFRONT_TEST_GREET set ${keys}=@${keys}`, (err, result) => {
+        if(err){
+          console.log(err)
+          res.send(err)
+        }
+        sql.close()
+        res.redirect('/greet/edit')
+      })
+    })
+})
+
 router.get('/edit', (req, res) => {
     sql.connect(db, (err) => {
         if(err) console.log(err)

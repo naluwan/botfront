@@ -104,13 +104,14 @@ router.post('/', (req, res) => {
 router.put('/:keys', (req, res) => {
   const {keys} = req.params
   const value = Object.values(req.body)[0]
-
+  console.log(keys)
+console.log(req.body)
   sql.connect(db, (err) => {
     if(err) console.log(err)
 
     const request = new sql.Request()
 
-    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONt_TEST_COMPANY_INFO'`, (err, result) => {
+    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_COMPANY_INFO'`, (err, result) => {
       if(err){
         console.log(err)
         res.send(err)
