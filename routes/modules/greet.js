@@ -52,12 +52,12 @@ router.get('/edit', (req, res) => {
           }
     
           // console.log(result.recordsets[0][0].NAME)
-    
-          const keyname = Object.keys(result.recordsets[0][0])
+          // 抓取mssql column name當作keys的值
+          const keyname = Object.keys(result.recordset[0])
           const [ greet_id, page_greet, event_greet, greet, thanks, goodbye, chitchatting ] = keyname
-        //   console.log(result.recordsets[0][0])
+          // console.log(result.recordset[0])
           sql.close()
-          res.render('edit_greet', {result: result.recordsets[0][0],
+          res.render('edit_greet', {result: result.recordset[0],
             keys:{ page_greet, event_greet, greet, thanks, goodbye, chitchatting }})
         })
       })
@@ -74,12 +74,14 @@ router.get('/:keys/edit', (req, res) => {
       if(err) console.log(err)
   
       const request = new sql.Request()
+      // 抓取現有mssql column name
       request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_GREET'`, (err, result) => {
         if(err){
           console.log(err)
           res.send(err)
         }
         // console.log(result.recordset)
+        // 比對傳進來的keys值是否是column的其中之一，預防找不到資料或亂傳資料
         const isColumn = result.recordset.find(item => item.column_name === keys)
         if(!isColumn){
           sql.close()
@@ -90,6 +92,7 @@ router.get('/:keys/edit', (req, res) => {
       const companyInfo = [{ PAGE_GREET: "頁面通知" }, { EVENT_GREET: "事件問候" }, { GREET: "一般問候" }, { THANKS: "表達謝意" }, 
       { GOODBYE: "互相道別" }, { CHITCHATTING: "聊天閒聊" }]
   
+      // 將keys值轉成中文傳回頁面使用
     let keyZh = companyInfo.map(obj => {
       if(Object.keys(obj)[0] === keys){
         return Object.values(obj)
@@ -150,8 +153,9 @@ router.get('/add', (req, res) => {
           // }else{
           //   console.log('test')
           // }
+          // console.log(result.recordset[0])
           sql.close()
-          res.render('add_greet', {result: result.recordsets[0][0]})
+          res.render('add_greet', {result: result.recordset[0]})
         })
       })
       sql.on('error', () => {

@@ -17,11 +17,11 @@ router.get('/edit', (req, res) => {
 
       // console.log(result.recordsets[0][0].NAME)
 
-      const keyname = Object.keys(result.recordsets[0][0])
+      const keyname = Object.keys(result.recordset[0])
       const [id ,name, tel, address, introduction, benefits, worktime, interview, accept] = keyname
       // console.log(name)
       sql.close()
-      res.render('edit_company', {result: result.recordsets[0][0],
+      res.render('edit_company', {result: result.recordset[0],
         keys:{name, tel, address, introduction, benefits, worktime, interview, accept}})
     })
   })
@@ -153,7 +153,7 @@ router.get('/add', (req, res) => {
       //   console.log('test')
       // }
       sql.close()
-      res.render('add_company', {result: result.recordsets[0][0]})
+      res.render('add_company', {result: result.recordset[0]})
     })
   })
   sql.on('error', () => {
