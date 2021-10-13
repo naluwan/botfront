@@ -17,8 +17,9 @@ router.put('/:keys', (req, res) => {
       // get mssql column name to check page url
       request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_GREET'`, (err, result) => {
         if(err){
+          sql.close()
           console.log(err)
-          res.send(err)
+          return res.send(err)
         }
         // console.log(result.recordset)
         const isColumn = result.recordset.find(item => item.column_name === keys)

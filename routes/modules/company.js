@@ -11,8 +11,9 @@ router.get('/edit', (req, res) => {
     const request = new sql.Request()
     request.query(`select * from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
 
       // console.log(result.recordsets[0][0].NAME)
@@ -39,8 +40,9 @@ router.get('/:keys/edit', (req, res) => {
     const request = new sql.Request()
     request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_COMPANY_INFO'`, (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
       // console.log(result.recordset)
       const isColumn = result.recordset.find(item => item.column_name === keys)
@@ -63,8 +65,9 @@ router.get('/:keys/edit', (req, res) => {
 
     request.query(`select ${keys} from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
       // console.log(keys)
       value = Object.values(result.recordset[0])[0]
@@ -92,8 +95,9 @@ router.post('/', (req, res) => {
     .input('accept', sql.NVarChar(500), accept)
     .query('insert into BOTFRONT_TEST_COMPANY_INFO (NAME, TEL, ADDR, INTRODUCTION, BENEFITS, WORKTIME, INTERVIEW, ACCEPT) values (@name, @tel, @address, @introduction, @benefits, @worktime, @interview, @accept)', (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
       sql.close()
       res.redirect('/')
@@ -127,8 +131,9 @@ console.log(req.body)
     request.input(`${keys}`, sql.NVarChar(500), value)
     .query(`update BOTFRONT_TEST_COMPANY_INFO set ${keys}=@${keys}`, (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
       sql.close()
       res.redirect('/company/edit')
@@ -144,8 +149,9 @@ router.get('/add', (req, res) => {
     const request = new sql.Request()
     request.query(`select * from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
       if(err){
+        sql.close()
         console.log(err)
-        res.send(err)
+        return res.send(err)
       }
       // if(result.recordsets[0][0]){
       // console.log(result.recordsets[0][0])
