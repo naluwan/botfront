@@ -9,7 +9,7 @@ router.get('/edit', (req, res) => {
     if(err) console.log(err)
 
     const request = new sql.Request()
-    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
+    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
       if(err){
         sql.close()
         console.log(err)
@@ -63,7 +63,7 @@ router.get('/:keys/edit', (req, res) => {
   keyZh = keyZh.filter(info => info != undefined)
   // console.log(keyZh[0][0])
 
-    request.query(`select ${keys} from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
+    request.query(`select ${keys} from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
       if(err){
         sql.close()
         console.log(err)
@@ -141,7 +141,7 @@ console.log(req.body)
     })
 
     request.input(`${keys}`, sql.NVarChar(500), value)
-    .query(`update BOTFRONT_TEST_COMPANY_INFO set ${keys}=@${keys}`, (err, result) => {
+    .query(`update BOTFRONT_TEST_COMPANY_INFO set ${keys}=@${keys} where CPYID=${res.locals.cpyNo}`, (err, result) => {
       if(err){
         sql.close()
         console.log(err)
@@ -157,9 +157,9 @@ console.log(req.body)
 router.get('/add', (req, res) => {
   sql.connect(db, (err) => {
     if(err) console.log(err)
-
+    console.log(res.locals)
     const request = new sql.Request()
-    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO`, (err, result) => {
+    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
       if(err){
         sql.close()
         console.log(err)
@@ -170,7 +170,7 @@ router.get('/add', (req, res) => {
       // }else{
       //   console.log('test')
       // }
-      console.log(result.recordset[0])
+      // console.log(result.recordset[0])
       sql.close()
       res.render('add_company', {hasResult: result.recordset[0]})
     })

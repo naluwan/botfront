@@ -30,11 +30,12 @@ app.use(methodOverride('_method'))
 // } )
 
 app.use(flash())
+app.use((req, res, next) => {
+  res.locals.cpyNo = 2
+  next()
+})
 app.use(flashMessage)
-// app.use((req, res, next) => {
-//   console.log(res.locals)
-//   next()
-// })
+
 
 app.use(routes)
 

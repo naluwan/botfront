@@ -30,7 +30,7 @@ router.put('/:keys', (req, res) => {
       })
   
       request.input(`${keys}`, sql.NVarChar(500), value)
-      .query(`update BOTFRONT_TEST_GREET set ${keys}=@${keys}`, (err, result) => {
+      .query(`update BOTFRONT_TEST_GREET set ${keys}=@${keys} where CPYID=${res.locals.cpyNo}`, (err, result) => {
         if(err){
           console.log(err)
           res.send(err)
@@ -46,7 +46,7 @@ router.get('/edit', (req, res) => {
         if(err) console.log(err)
     
         const request = new sql.Request()
-        request.query(`select * from BOTFRONT_TEST_GREET`, (err, result) => {
+        request.query(`select * from BOTFRONT_TEST_GREET where CPYID=${res.locals.cpyNo}`, (err, result) => {
           if(err){
             console.log(err)
             res.send(err)
@@ -119,16 +119,16 @@ router.post('/', (req, res) => {
     const { page_greet, event_greet, greet, thanks, goodbye, chitchatting } = req.body
 
     const errors = []
-  if(!page_greet || !event_greet || !greet || !thanks || !goodbye || !chitchatting){
-    errors.push({message: '所有欄位都是必填的!!'})
-  }
+    if(!page_greet || !event_greet || !greet || !thanks || !goodbye || !chitchatting){
+      errors.push({message: '所有欄位都是必填的!!'})
+    }
 
-  if(errors.length){
-    return res.render('add_greet', {
-      errors,
-      result:  { page_greet, event_greet, greet, thanks, goodbye, chitchatting }
-    })
-  }
+    if(errors.length){
+      return res.render('add_greet', {
+        errors,
+        result:  { page_greet, event_greet, greet, thanks, goodbye, chitchatting }
+      })
+    }
 
     sql.connect(db, (err) => {
         if(err) console.log(err)
@@ -156,7 +156,7 @@ router.get('/add', (req, res) => {
         if(err) console.log(err)
     
         const request = new sql.Request()
-        request.query(`select * from BOTFRONT_TEST_GREET`, (err, result) => {
+        request.query(`select * from BOTFRONT_TEST_GREET where CPYID=${res.locals.cpyNo}`, (err, result) => {
           if(err){
             console.log(err)
             res.send(err)

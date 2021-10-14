@@ -17,7 +17,7 @@
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="greet" class="col-2">一般問候:</label>
-        <textarea name="greet" id="greet" placeholder="請輸入一般問候的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if result}}{{hasResult.GREET}}{{/if}}{{result.greet}}</textarea>
+        <textarea name="greet" id="greet" placeholder="請輸入一般問候的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.GREET}}{{/if}}{{result.greet}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
