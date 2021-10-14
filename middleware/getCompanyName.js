@@ -13,6 +13,12 @@ exports.flashMessage = function (req, res, next) {
         console.log(err)
         return res.send(err)
         }
+        // console.log(result.recordset[0])
+        // 檢查資料庫是否有值
+        if(!result.recordset[0]) {
+            res.locals.companyName = ''
+            return next()
+        }
         result = result.recordset[0].NAME
         sql.close()
         // console.log(result)

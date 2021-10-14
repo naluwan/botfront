@@ -31,10 +31,10 @@ app.use(methodOverride('_method'))
 
 app.use(flash())
 app.use(flashMessage)
-app.use((req, res, next) => {
-  console.log(res.locals)
-  next()
-})
+// app.use((req, res, next) => {
+//   console.log(res.locals)
+//   next()
+// })
 
 app.use(routes)
 
