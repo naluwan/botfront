@@ -81,6 +81,18 @@ router.post('/', (req, res) => {
   // console.log(req)
   const {name, tel, address, introduction, benefits, worktime, interview, accept} = req.body
 
+  const errors = []
+  if(!name || !tel || !address || !introduction || !benefits || !worktime || !interview || !accept){
+    errors.push({message: '所有欄位都是必填的!!'})
+  }
+
+  if(errors.length){
+    return res.render('add_company', {
+      errors,
+      result: { name, tel, address, introduction, benefits, worktime, interview, accept}
+    })
+  }
+
   sql.connect(db, (err) => {
     if(err) console.log(err)
 
@@ -158,8 +170,9 @@ router.get('/add', (req, res) => {
       // }else{
       //   console.log('test')
       // }
+      console.log(result.recordset[0])
       sql.close()
-      res.render('add_company', {result: result.recordset[0]})
+      res.render('add_company', {hasResult: result.recordset[0]})
     })
   })
   sql.on('error', () => {

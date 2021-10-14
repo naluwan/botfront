@@ -118,6 +118,18 @@ router.get('/:keys/edit', (req, res) => {
 router.post('/', (req, res) => {
     const { page_greet, event_greet, greet, thanks, goodbye, chitchatting } = req.body
 
+    const errors = []
+  if(!page_greet || !event_greet || !greet || !thanks || !goodbye || !chitchatting){
+    errors.push({message: '所有欄位都是必填的!!'})
+  }
+
+  if(errors.length){
+    return res.render('add_greet', {
+      errors,
+      result:  { page_greet, event_greet, greet, thanks, goodbye, chitchatting }
+    })
+  }
+
     sql.connect(db, (err) => {
         if(err) console.log(err)
     
@@ -156,7 +168,7 @@ router.get('/add', (req, res) => {
           // }
           // console.log(result.recordset[0])
           sql.close()
-          res.render('add_greet', {result: result.recordset[0]})
+          res.render('add_greet', {hasResult: result.recordset[0]})
         })
       })
       sql.on('error', () => {

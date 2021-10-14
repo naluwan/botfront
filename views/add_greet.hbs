@@ -1,41 +1,41 @@
 <div class="container" >
   <h1>新增 通知問候</h1>
-  {{#if result}}
+  {{#if hasResult}}
   <h2 style="color: red;">已新增過資料，請使用編輯功能修改！</h2>
   {{/if}}
-
+    {{> message}}
     <form action="/greet" method="POST" class="col-12 d-flex flex-column justify-content-center align-items-around mt-5">
       <div class="form-group mb-4 col-12 d-flex">
         <label for="page_greet" class="col-2">頁面通知:</label>
-        <textarea name="page_greet" id="page_greet" placeholder="請輸入頁面通知的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.PAGE_GREET}}{{/if}}</textarea>
+        <textarea name="page_greet" id="page_greet" placeholder="請輸入頁面通知的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.PAGE_GREET}}{{/if}}{{result.page_greet}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="event_greet" class="col-2">事件問候:</label>
-        <textarea name="event_greet" id="event_greet" placeholder="請輸入事件問候的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.EVENT_GREET}}{{/if}}</textarea>
+        <textarea name="event_greet" id="event_greet" placeholder="請輸入事件問候的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.EVENT_GREET}}{{/if}}{{result.event_greet}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="greet" class="col-2">一般問候:</label>
-        <textarea name="greet" id="greet" placeholder="請輸入一般問候的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.GREET}}{{/if}}</textarea>
+        <textarea name="greet" id="greet" placeholder="請輸入一般問候的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if result}}{{hasResult.GREET}}{{/if}}{{result.greet}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="thanks" class="col-2">表達謝意:</label>
-        <textarea name="thanks" id="thanks" placeholder="請輸入表達謝意的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.THANKS}}{{/if}}</textarea>
+        <textarea name="thanks" id="thanks" placeholder="請輸入表達謝意的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.THANKS}}{{/if}}{{result.thanks}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="goodbye" class="col-2">互相道別:</label>
-        <textarea name="goodbye" id="goodbye" placeholder="請輸入互相道別的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.GOODBYE}}{{/if}}</textarea>
+        <textarea name="goodbye" id="goodbye" placeholder="請輸入互相道別的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.GOODBYE}}{{/if}}{{result.goodbye}}</textarea>
       </div>
 
       <div class="form-group mb-4 col-12 d-flex">
         <label for="chitchatting" class="col-2">聊天閒聊:</label>
-        <textarea name="chitchatting" id="chitchatting" placeholder="請輸入聊天閒聊的內容" class="form-control" rows="4" {{#if result}} disabled {{/if}}>{{#if result}}{{result.CHITCHATTING}}{{/if}}</textarea>
+        <textarea name="chitchatting" id="chitchatting" placeholder="請輸入聊天閒聊的內容" class="form-control" rows="4" {{#if hasResult}} disabled {{/if}}>{{#if hasResult}}{{hasResult.CHITCHATTING}}{{/if}}{{result.chitchatting}}</textarea>
       </div>
       <div class="mb-5 d-flex justify-content-center">
-        <button class="btn btn-primary col-2 mx-3 {{#if result}} disabled {{/if}}" type="submit">儲存</button>
+        <button class="btn btn-primary col-2 mx-3 {{#if hasResult}} disabled {{/if}}" type="submit">儲存</button>
         <a href="/" class="btn btn-dark active col-2" role="button">返回</a>
       </div>
     </form>

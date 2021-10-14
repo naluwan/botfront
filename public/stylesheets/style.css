@@ -11648,6 +11648,11 @@ header.masthead .post-heading .meta a {
     height: 80vh;
 }
 
+.alert-danger {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
 /* .rw-conversation-container .rw-message {
     flex-wrap: nowrap !important;
 } */
