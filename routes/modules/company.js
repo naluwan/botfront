@@ -15,7 +15,6 @@ router.get('/edit', (req, res) => {
         console.log(err)
         return res.send(err)
       }
-
       // console.log(result.recordsets[0][0].NAME)
 
       const keyname = Object.keys(result.recordset[0])

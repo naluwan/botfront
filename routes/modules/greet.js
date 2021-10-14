@@ -30,7 +30,7 @@ router.put('/:keys', (req, res) => {
       })
   
       request.input(`${keys}`, sql.NVarChar(500), value)
-      .query(`update BOTFRONT_TEST_GREET set ${keys}=@${keys} where CPYID=${res.locals.cpyNo}`, (err, result) => {
+      .query(`update BOTFRONT_TEST_GREET set ${keys}=@${keys} where GREET_NO=${res.locals.cpyNo}`, (err, result) => {
         if(err){
           console.log(err)
           res.send(err)
@@ -44,9 +44,9 @@ router.put('/:keys', (req, res) => {
 router.get('/edit', (req, res) => {
     sql.connect(db, (err) => {
         if(err) console.log(err)
-    
+      // console.log(res.locals)
         const request = new sql.Request()
-        request.query(`select * from BOTFRONT_TEST_GREET where CPYID=${res.locals.cpyNo}`, (err, result) => {
+        request.query(`select * from BOTFRONT_TEST_GREET where GREET_NO=${res.locals.cpyNo}`, (err, result) => {
           if(err){
             console.log(err)
             res.send(err)
@@ -102,7 +102,7 @@ router.get('/:keys/edit', (req, res) => {
     keyZh = keyZh.filter(info => info != undefined)
     // console.log(keyZh[0][0])
   
-      request.query(`select ${keys} from BOTFRONT_TEST_GREET`, (err, result) => {
+      request.query(`select ${keys} from BOTFRONT_TEST_GREET where GREET_NO=${res.locals.cpyNo}`, (err, result) => {
         if(err){
           console.log(err)
           res.send(err)
@@ -156,7 +156,7 @@ router.get('/add', (req, res) => {
         if(err) console.log(err)
     
         const request = new sql.Request()
-        request.query(`select * from BOTFRONT_TEST_GREET where CPYID=${res.locals.cpyNo}`, (err, result) => {
+        request.query(`select * from BOTFRONT_TEST_GREET where GREET_NO=${res.locals.cpyNo}`, (err, result) => {
           if(err){
             console.log(err)
             res.send(err)
