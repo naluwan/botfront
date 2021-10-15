@@ -11653,6 +11653,13 @@ header.masthead .post-heading .meta a {
     font-weight: bold;
 }
 
+.scroll-view{
+    width: auto;
+    height: 50vw;
+    white-space: nowrap;
+    overflow-y: auto;
+  }
+
 /* .rw-conversation-container .rw-message {
     flex-wrap: nowrap !important;
 } */

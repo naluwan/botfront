@@ -1,0 +1,45 @@
+<h1 class="m-5">職缺資訊</h1>
+<div class="row d-flex justify-content-center all">
+   <div class="col-8 wrapper">
+    <div class="scroll-view">
+      <ul class="list-group">
+        <div class="row d-flex justify-content-center" id="data-panel">
+          {{#each positionResult}}
+          <div class="col-12">
+            <li class="list-group-item" id="record-item" style="border: none;">
+              <div class="row">
+                <div class="col-12 d-flex justify-content-between" style="border: 1px solid black;">
+                  <div class="col-2 d-flex align-items-center justify-content-center" 
+                    style="font-weight: bold; color:#111">
+                    {{this.position_name}}
+                  </div>
+                  <div class="col-6">
+                    <p style="font-size: 13px; white-space:pre-line;">{{ this.position_des }}</p>
+                  </div>
+                  <div class="col-4 d-flex flex-row justify-content-center align-items-center">
+                    <a href="/position/{{ this._id}}/edit" class="btn btn-primary col-6" style="font-size: 1rem; height:fit-content;">
+                        編輯
+                    </a>
+                    <button class="col-6 btn btn-danger mx-3 my-auto" style="font-size:medium; height:fit-content"
+                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this._id }}"
+                        data-name="{{ this.name }}" data-amount="{{ this.amount }}">
+                        刪除
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </div>
+          {{/each}}
+        </div>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-10">
+    <div class="row justify-content-center">
+      <a href="/position/new" class="btn btn-outline-primary col-4 my-5" id="create-btn"
+        style="font-size: 2rem;">新增職缺</a>
+    </div>
+  </div>
+</div>

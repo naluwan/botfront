@@ -163,7 +163,7 @@ router.put('/:keys', (req, res) => {
 router.get('/add', (req, res) => {
   sql.connect(db, (err) => {
     if(err) console.log(err)
-    console.log(res.locals)
+    // console.log(res.locals)
     const request = new sql.Request()
     request.query(`select * from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
       if(err){
