@@ -51,15 +51,22 @@ router.get('/edit', (req, res) => {
             console.log(err)
             res.send(err)
           }
-    
-          // console.log(result.recordsets[0][0].NAME)
-          // 抓取mssql column name當作keys的值
-          const keyname = Object.keys(result.recordset[0])
-          const [ greet_id, page_greet, event_greet, greet, thanks, goodbye, chitchatting ] = keyname
-          // console.log(result.recordset[0])
-          sql.close()
-          res.render('edit_greet', {result: result.recordset[0],
-            keys:{ page_greet, event_greet, greet, thanks, goodbye, chitchatting }})
+          const infoResult = result.recordset[0]
+      // console.log(infoResult)
+          const errors = []
+          if(infoResult){
+            // console.log(result.recordsets[0][0].NAME)
+            // 抓取mssql column name當作keys的值
+            const keyname = Object.keys(infoResult)
+            const [ greet_id, page_greet, event_greet, greet, thanks, goodbye, chitchatting ] = keyname
+            // console.log(result.recordset[0])
+            sql.close()
+            res.render('edit_greet', {result: infoResult,
+              keys:{ page_greet, event_greet, greet, thanks, goodbye, chitchatting }})
+          } else {
+            errors.push({message: '尚未新增資料!!'})
+            res.render('edit_greet', {errors})
+          }
         })
       })
       sql.on('error', () => {

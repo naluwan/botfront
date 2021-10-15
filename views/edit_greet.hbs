@@ -1,11 +1,12 @@
 <div class="container" >
   <h1>通知問候</h1>
   <div class="my-4">
+      {{> message}}
     <div class="form-group mb-4 col-12 d-flex">
         <label for="page_greet" class="col-2">頁面通知:</label>
         <textarea name="page_greet" id="page_greet" placeholder="請輸入頁面通知的內容" class="form-control" rows="4" disabled>{{result.PAGE_GREET}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.page_greet}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.page_greet}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 
@@ -13,7 +14,7 @@
         <label for="event_greet" class="col-2">事件問候:</label>
         <textarea name="event_greet" id="event_greet" placeholder="請輸入事件問候的內容" class="form-control" rows="4" disabled>{{result.EVENT_GREET}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.event_greet}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.event_greet}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 
@@ -21,7 +22,7 @@
         <label for="greet" class="col-2">一般問候:</label>
         <textarea name="greet" id="greet" placeholder="請輸入一般問候的內容" class="form-control" rows="4"  disabled>{{result.GREET}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.greet}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.greet}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 
@@ -29,7 +30,7 @@
         <label for="thanks" class="col-2">表達謝意:</label>
         <textarea name="thanks" id="thanks" placeholder="請輸入表達謝意的內容" class="form-control" rows="4"  disabled>{{result.THANKS}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.thanks}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.thanks}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 
@@ -37,7 +38,7 @@
         <label for="goodbye" class="col-2">互相道別:</label>
         <textarea name="goodbye" id="goodbye" placeholder="請輸入互相道別的內容" class="form-control" rows="4"  disabled>{{result.GOODBYE}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.goodbye}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.goodbye}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 
@@ -45,7 +46,7 @@
         <label for="chitchatting" class="col-2">聊天閒聊:</label>
         <textarea name="chitchatting" id="chitchatting" placeholder="請輸入聊天閒聊的內容" class="form-control" rows="4"  disabled>{{result.CHITCHATTING}}</textarea>
         <div class="col-2">
-            <a href="/greet/{{keys.chitchatting}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+            <a href="/greet/{{keys.chitchatting}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
         </div>
     </div>
 

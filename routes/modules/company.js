@@ -16,13 +16,20 @@ router.get('/edit', (req, res) => {
         return res.send(err)
       }
       // console.log(result.recordsets[0][0].NAME)
-
-      const keyname = Object.keys(result.recordset[0])
-      const [id ,name, tel, address, introduction, benefits, worktime, interview, accept] = keyname
-      // console.log(name)
-      sql.close()
-      res.render('edit_company', {result: result.recordset[0],
-        keys:{name, tel, address, introduction, benefits, worktime, interview, accept}})
+      const infoResult = result.recordset[0]
+      // console.log(infoResult)
+      const errors = []
+      if(infoResult){
+        const keyname = Object.keys(infoResult)
+        const [id ,name, tel, address, introduction, benefits, worktime, interview, accept] = keyname
+        // console.log(name)
+        sql.close()
+        res.render('edit_company', {result: infoResult,
+          keys:{name, tel, address, introduction, benefits, worktime, interview, accept}})
+      } else {
+        errors.push({message: '尚未新增資料!!'})
+        res.render('edit_company', {errors})
+      }
     })
   })
   sql.on('error', () => {

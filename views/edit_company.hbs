@@ -1,11 +1,12 @@
 <div class="container">
   <h1>公司資訊</h1>
   <div class="my-4">
+    {{> message}}
     <div class="form-group mb-4 col-12 d-flex">
       <label for="name" class="col-2">公司名稱:</label>
       <input type="text" name="name" id="name" placeholder="enter company name" class="form-control" value="{{result.NAME}}" disabled>
       <div class="col-2">
-        <a href="/company/{{keys.name}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.name}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -13,7 +14,7 @@
       <label for="tel" class="col-2">公司電話:</label>
       <input type="text" name="tel" id="tel" placeholder="enter company tel" class="form-control" value="{{result.TEL}}" disabled>
       <div class="col-2">
-        <a href="/company/{{keys.tel}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.tel}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -21,7 +22,7 @@
       <label for="address" class="col-2">公司地址:</label>
       <input type="text" name="address" id="address" placeholder="enter company address" class="form-control" value="{{result.ADDR}}" disabled>
       <div class="col-2">
-        <a href="/company/{{keys.address}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.address}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -29,7 +30,7 @@
       <label for="introduction" class="col-2">公司簡介:</label>
       <textarea type="text" name="introduction" id="introduction" placeholder="enter company introduction" class="form-control" rows="4" disabled>{{result.INTRODUCTION}}</textarea>
       <div class="col-2">
-        <a href="/company/{{keys.introduction}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.introduction}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -37,7 +38,7 @@
       <label for="benefits" class="col-2">公司福利:</label>
       <textarea name="benefits" id="benefit" placeholder="enter company benefits" class="form-control" rows="4" disabled>{{result.BENEFITS}}</textarea>
       <div class="col-2">
-        <a href="/company/{{keys.benefits}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.benefits}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -45,7 +46,7 @@
       <label for="worktime" class="col-2">上班時間:</label>
       <textarea name="worktime" id="worktime" placeholder="enter company worktime" class="form-control" rows="4" disabled>{{result.WORKTIME}}</textarea>
       <div class="col-2">
-        <a href="/company/{{keys.worktime}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.worktime}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -53,7 +54,7 @@
       <label for="interview" class="col-2">面試資訊:</label>
       <textarea name="interview" id="interview" placeholder="enter company interview" class="form-control" rows="4" disabled>{{result.INTERVIEW}}</textarea>
       <div class="col-2">
-        <a href="/company/{{keys.interview}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.interview}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
 
@@ -61,7 +62,7 @@
       <label for="accept" class="col-2">錄取通知:</label>
       <textarea name="accept" id="accept" placeholder="enter company accept" class="form-control" rows="4" disabled>{{result.ACCEPT}}</textarea>
       <div class="col-2">
-        <a href="/company/{{keys.accept}}/edit" class="btn btn-primary active mx-3" role="button">編輯</a>
+        <a href="/company/{{keys.accept}}/edit" class="btn btn-primary active mx-3 {{#if errors}}disabled{{/if}}" role="button" {{#if errors}} aria-disabled="true" {{/if}}>編輯</a>
       </div>
     </div>
     
