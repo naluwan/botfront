@@ -119,8 +119,8 @@ router.post('/', (req, res) => {
 router.put('/:keys', (req, res) => {
   const {keys} = req.params
   const value = Object.values(req.body)[0]
-  console.log(keys)
-console.log(req.body)
+// console.log(keys)
+// console.log(req.body)
   sql.connect(db, (err) => {
     if(err) console.log(err)
 
