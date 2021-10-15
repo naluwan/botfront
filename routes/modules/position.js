@@ -4,6 +4,27 @@ const router = express.Router()
 const db = require('../../config/db')
 const sql = require('mssql')
 
+router.get('/:position_id/edit', (req, res) => {
+    const {position_id} = req.params
+    const cpyNo = res.locals.cpyNo
+
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+
+        const request = new sql.Request()
+        request.query(`select * from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
+            result = result.recordset[0]
+            // console.log(result)
+            res.render('edit_position', {result})
+        })
+    })
+})
+
 router.post('/', (req, res) => {
     const {name, des} = req.body
     const cpyNo = res.locals.cpyNo
@@ -45,7 +66,7 @@ router.get('/', (req, res) => {
         if(err) console.log(err)
 
         const request = new sql.Request()
-        request.query(`select position_name, position_des from BOTFRONT_TEST_POSITION where CPYID=${res.locals.cpyNo}`, (err, result) => {
+        request.query(`select * from BOTFRONT_TEST_POSITION where CPYID=${res.locals.cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
@@ -53,7 +74,7 @@ router.get('/', (req, res) => {
             }
             
             const positionResult = result.recordset
-            // console.log(positionResult[0])
+            // console.log(positionResult)
             res.render('position', {positionResult})
         })
     })
