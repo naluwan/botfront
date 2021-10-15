@@ -10,16 +10,27 @@ router.get('/:position_id/edit', (req, res) => {
 
     sql.connect(db, (err) => {
         if(err) console.log(err)
-
+        
         const request = new sql.Request()
+        const errors = []
+
         request.query(`select * from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
                 return res.send(err)
             }
+
             result = result.recordset[0]
             // console.log(result)
+
+            if(!result){
+                errors.push({message:'沒有此職缺資料!'})
+                sql.close()
+                console.log(err)
+                return res.render('edit_position', {errors})
+            }
+           
             res.render('edit_position', {result})
         })
     })
