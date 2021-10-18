@@ -4,6 +4,39 @@ const router = express.Router()
 const db = require('../../config/db')
 const sql = require('mssql')
 
+router.put('/:position_id', (req, res) => {
+    const { position_id } = req.params
+    const { name, des } = req.body
+    const cpyNo = res.locals.cpyNo
+
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+
+        const request = new sql.Request()
+        const errors = []
+
+        request.query(`select * from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                errors.push({message: '查無此職缺資訊!'})
+                return res.render('/:position_id/edit', errors)
+            }
+        })
+
+        request.input('name', sql.NVarChar(40), name)
+        .input('des', sql.NVarChar(1000), des)
+        .query(`update BOTFRONT_TEST_POSITION set POSITION_NAME = @name, POSITION_DES = @des where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                res.send(err)
+            }
+            sql.close()
+            res.redirect('/position')
+        })
+    })
+})
+
 router.get('/:position_id/edit', (req, res) => {
     const {position_id} = req.params
     const cpyNo = res.locals.cpyNo
@@ -25,7 +58,7 @@ router.get('/:position_id/edit', (req, res) => {
             // console.log(result)
 
             if(!result){
-                errors.push({message:'沒有此職缺資料!'})
+                errors.push({message:'查無此職缺資料!'})
                 sql.close()
                 console.log(err)
                 return res.render('edit_position', {errors})
@@ -90,9 +123,5 @@ router.get('/', (req, res) => {
         })
     })
 })
-
-
-
-
 
 module.exports = router
