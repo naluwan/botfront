@@ -19,7 +19,7 @@ router.put('/:position_id', (req, res) => {
             if(err){
                 sql.close()
                 errors.push({message: '查無此職缺資訊!'})
-                return res.render('/:position_id/edit', errors)
+                return res.render('position', {errors})
             }
         })
 
@@ -29,10 +29,10 @@ router.put('/:position_id', (req, res) => {
             if(err){
                 sql.close()
                 console.log(err)
-                res.send(err)
+                return res.send(err)
             }
             sql.close()
-            res.redirect('/position')
+           return res.redirect('/position')
         })
     })
 })
@@ -64,7 +64,44 @@ router.get('/:position_id/edit', (req, res) => {
                 return res.render('edit_position', {errors})
             }
            
-            res.render('edit_position', {result})
+           return res.render('edit_position', {result})
+        })
+    })
+})
+
+router.delete('/:position_id', (req, res) => {
+    const {position_id} = req.params
+    const cpyNo = res.locals.cpyNo
+
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+
+        const request = new sql.Request()
+        const errors = []
+
+        request.query(`select * from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
+            result = result.recordset[0]
+            // console.log(result)
+            if(!result){
+                sql.close()
+                errors.push({message: '查無此職缺資訊!'})
+                return res.render('position', {errors})
+            }else{
+                request.query(`delete from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    sql.close()
+                    return res.redirect('/position')
+                })
+            }
         })
     })
 })
@@ -96,7 +133,7 @@ router.post('/', (req, res) => {
                 return res.send(err)
               }
               sql.close()
-              res.redirect('/position')
+              return res.redirect('/position')
             })
         })
     })
@@ -119,7 +156,7 @@ router.get('/', (req, res) => {
             
             const positionResult = result.recordset
             // console.log(positionResult)
-            res.render('position', {positionResult})
+            return res.render('position', {positionResult})
         })
     })
 })
