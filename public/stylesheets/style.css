@@ -11658,7 +11658,24 @@ header.masthead .post-heading .meta a {
     height: 45vw;
     white-space: nowrap;
     overflow-y: auto;
+    overflow-x: hidden;
+    padding-left: 6px;
   }
+
+/* .scroll-view::-webkit-scrollbar {
+    display: none;
+} */
+
+.scroll-view::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-view::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+
 
 /* .rw-conversation-container .rw-message {
     flex-wrap: nowrap !important;
