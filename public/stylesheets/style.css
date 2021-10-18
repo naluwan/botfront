@@ -11655,7 +11655,7 @@ header.masthead .post-heading .meta a {
 
 .scroll-view{
     width: auto;
-    height: 45vw;
+    max-height: 45vw;
     white-space: nowrap;
     overflow-y: auto;
     overflow-x: hidden;

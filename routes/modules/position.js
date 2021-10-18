@@ -156,6 +156,7 @@ router.get('/', (req, res) => {
             
             const positionResult = result.recordset
             // console.log(positionResult)
+            
             return res.render('position', {positionResult})
         })
     })
