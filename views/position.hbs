@@ -21,8 +21,8 @@
                         編輯
                     </a>
                     <button class="col-6 btn btn-danger mx-3 my-auto" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this._id }}"
-                        data-name="{{ this.name }}" data-amount="{{ this.amount }}">
+                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.POSITION_ID }}"
+                        data-name="{{ this.POSITION_NAME }}">
                         刪除
                     </button>
                   </div>
@@ -39,7 +39,31 @@
   <div class="col-10">
     <div class="row justify-content-center">
       <a href="/position/new" class="btn btn-outline-primary col-4 my-5" id="create-btn"
-        style="font-size: 2rem;">新增職缺</a>
+        style="font-size: 1.5rem;">新增職缺</a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除職缺</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/position/{{ this.POSITION_ID }}" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">確定</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
