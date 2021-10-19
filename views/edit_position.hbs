@@ -10,7 +10,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text">職位名稱</span>
             </div>
-            <input type="text" class="form-control" name="name" placeholder="請輸入職位名稱" aria-label="inputName"
+            <input type="text" class="form-control" name="POSITION_NAME" placeholder="請輸入職位名稱" aria-label="inputName"
               aria-describedby="name" value="{{ result.POSITION_NAME }}" required>
           </div>
 
@@ -18,8 +18,8 @@
             <div class="input-group-prepend">
               <span class="input-group-text">職位資訊</span>
             </div>
-            <textarea type="text" class="form-control" name="des" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
-              aria-describedby="des" rows="15" required>{{ result.POSITION_DES }}</textarea>
+            <textarea type="text" class="form-control" name="POSITION_DES" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
+              aria-describedby="des" rows="10" required>{{ result.POSITION_DES }}</textarea>
           </div>
 
         </div>
