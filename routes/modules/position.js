@@ -87,10 +87,21 @@ router.delete('/:position_id', (req, res) => {
             }
             result = result.recordset[0]
             // console.log(result)
-            if(!result){
-                sql.close()
-                errors.push({message: '查無此職缺資訊!'})
-                return res.render('position', {errors})
+            if(!result) errors.push({message: '查無此職缺資訊!'})
+                
+            if(errors.length){
+                request.query(`select * from BOTFRONT_TEST_POSITION where CPYID=${res.locals.cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    
+                    const positionResult = result.recordset
+                    // console.log(positionResult)
+                    sql.close()
+                    return res.render('position', {positionResult, errors})
+                })
             }else{
                 request.query(`delete from BOTFRONT_TEST_POSITION where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
