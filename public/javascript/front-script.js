@@ -8,6 +8,6 @@ dataPanel.addEventListener('click', event => {
         const deleteForm = document.querySelector('#delete-form')
 
         deletePosition.innerText = '「' + target.dataset.name + '」'
-        deleteForm.action = `/position/${target.dataset.id}?_method=DELETE`
+        deleteForm.action = `/${target.dataset.category}/${target.dataset.id}?_method=DELETE`
     }
 })
