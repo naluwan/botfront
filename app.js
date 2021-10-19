@@ -7,6 +7,8 @@ const app = express()
 const PORT = 3030
 const routes = require('./routes')
 const methodOverride = require('method-override')
+const hbshelpers = require('handlebars-helpers')
+const multihelpers = hbshelpers()
 const flash = require('connect-flash')
 const {flashMessage} = require('./middleware/getCompanyName')
 
