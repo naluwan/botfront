@@ -6,7 +6,7 @@ exports.flashMessage = function (req, res, next) {
     if(err)return res.send(err)
     
     const request = new sql.Request()
-    request.query(`select NAME from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
+    request.query(`select CPY_NAME from BOTFRONT_COMPANY where CPY_NO=${res.locals.cpyNo}`, (err, result) => {
         if(err){
         sql.close()
         console.log(err)
