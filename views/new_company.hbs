@@ -10,10 +10,10 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="category">資訊類別</label>
             </div>
-            <select class="custom-select" id="category" name="category" >
+            <select class="custom-select" id="category" name="category" required>
               <option value="" selected hidden>請選擇</option>
               {{#each category}}
-              <option value="{{this.INFO_NO}}" {{#is record.category 'housewares' }} selected {{/is}}>{{this.INFO_NAME}}</option>
+              <option value="{{this.INFO_NO}}">{{this.INFO_NAME}}</option>
               {{/each}}
             </select>
           </div>
@@ -23,7 +23,7 @@
               <span class="input-group-text">資訊內容</span>
             </div>
             <textarea type="text" class="form-control" name="des" placeholder="請輸入資訊內容..." aria-label="inputDes"
-              aria-describedby="des" value="{{ positionResult.des }}" rows="15" ></textarea>
+              aria-describedby="des" rows="10" required>{{des}}</textarea>
           </div>
 
         </div>
