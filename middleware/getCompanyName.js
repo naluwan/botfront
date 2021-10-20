@@ -18,7 +18,7 @@ exports.flashMessage = function (req, res, next) {
             res.locals.companyName = ''
             return next()
         }
-        result = result.recordset[0].NAME
+        result = result.recordset[0].CPY_NAME
         sql.close()
         // console.log(result)
         res.locals.companyName = result
