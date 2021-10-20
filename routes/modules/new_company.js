@@ -54,7 +54,7 @@ router.get('/:info_no/edit', (req, res) => {
 
 router.put('/:info_no', (req, res) => {
     const {info_no} = req.params
-    const {INFO_NO, INFO_DES} = req.body
+    const {INFO_DES} = req.body
     const cpyNo = res.locals.cpyNo
 
     sql.connect(db, (err) => {
@@ -111,7 +111,7 @@ router.put('/:info_no', (req, res) => {
 router.post('/', (req, res) => {
     const cpyNo = res.locals.cpyNo
     const {category, des} = req.body
-    const categorySelected = category
+    // const categorySelected = category
     // console.log(req.body)
     sql.connect(db, (err) => {
         if(err) console.log(err)
@@ -139,21 +139,22 @@ router.post('/', (req, res) => {
                 sql.close()
                 return res.render('new_company', {errors, des, category})
             })
-        }
-        request.input('cpyNo', sql.Int, cpyNo)
-        .input('info_no', sql.Int, category)
-        .input('des', sql.NVarChar(2000), des)
-        .query(`insert into BOTFRONT_TEST_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
-        values (@cpyNo, @info_no, @des)`, (err, result) => {
-            if(err){
-                sql.close()
-                console.log(err)
-                return res.send(err)
-            }
+        }else{
+            request.input('cpyNo', sql.Int, cpyNo)
+            .input('info_no', sql.Int, category)
+            .input('des', sql.NVarChar(2000), des)
+            .query(`insert into BOTFRONT_TEST_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
+            values (@cpyNo, @info_no, @des)`, (err, result) => {
+                if(err){
+                    sql.close()
+                    console.log(err)
+                    return res.send(err)
+                }
 
-            sql.close()
-            return res.redirect('/company')
-        })
+                sql.close()
+                return res.redirect('/company')
+            })
+        }
     })
 })                              
 
@@ -163,6 +164,7 @@ router.get('/new', (req, res) => {
         if(err) console.log(err)
 
         const request = new sql.Request()
+        const warning = []
         // 抓取未新增過的公司資料
         request.query(`select INFO_NO, INFO_NAME 
         from BOTFRONT_ALL_COMPANY_INFO a 
@@ -176,8 +178,14 @@ router.get('/new', (req, res) => {
             }
 
             const category = result.recordset
-            sql.close()
-            return res.render('new_company', {category})
+            if(category.length == 0) warning.push({message: '目前沒有可新增的公司資訊!'})
+            if(warning.length){
+                sql.close()
+                return res.render('new_company', {category, warning})
+            }else{
+                sql.close()
+                return res.render('new_company', {category})
+            }
         })
     })
 })

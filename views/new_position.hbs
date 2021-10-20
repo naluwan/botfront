@@ -8,10 +8,14 @@
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <span class="input-group-text">職位名稱</span>
+              <label class="input-group-text" for="category">職位名稱</label>
             </div>
-            <input type="text" class="form-control" name="name" placeholder="請輸入職位名稱" aria-label="inputName"
-              aria-describedby="name" value="{{ positionResult.name }}" required>
+            <select class="custom-select" id="category" name="category" required>
+              <option value="" selected hidden>請選擇</option>
+              {{#each category}}
+              <option value="{{this.POSITION_ID}}">{{this.POSITION_NAME}}</option>
+              {{/each}}
+            </select>
           </div>
 
           <div class="input-group mb-3">
@@ -19,7 +23,7 @@
               <span class="input-group-text">職位資訊</span>
             </div>
             <textarea type="text" class="form-control" name="des" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
-              aria-describedby="des" rows="10" required>{{ positionResult.des }}</textarea>
+              aria-describedby="des" rows="10" required>{{ des }}</textarea>
           </div>
 
         </div>

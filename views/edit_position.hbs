@@ -3,15 +3,17 @@
     <div class="card card-body">
       <h1 class="text-center mt-3">編輯職位</h1>
       {{> message}}
-      <form action="/position/{{result.POSITION_ID}}?_method=PUT" method="POST">
+      <form action="/position/{{result.POSITION_NO}}?_method=PUT" method="POST">
         <div class="modal-body">
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <span class="input-group-text">職位名稱</span>
+              <label class="input-group-text" for="category">職位名稱</label>
             </div>
-            <input type="text" class="form-control" name="POSITION_NAME" placeholder="請輸入職位名稱" aria-label="inputName"
-              aria-describedby="name" value="{{ result.POSITION_NAME }}" required>
+            <select class="custom-select" id="category" name="category" required>
+              <option value="" hidden>請選擇</option>
+              <option value="{{result.POSITION_NO}}" selected disabled>{{result.POSITION_NAME}}</option>
+            </select>
           </div>
 
           <div class="input-group mb-3">

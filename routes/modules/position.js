@@ -4,42 +4,54 @@ const router = express.Router()
 const db = require('../../config/db')
 const sql = require('mssql')
 
-router.put('/:position_id', (req, res) => {
-    const { position_id } = req.params
-    const { POSITION_NAME, POSITION_DES } = req.body
+router.put('/:position_no', (req, res) => {
+    const {position_no} = req.params
+    const {POSITION_DES} = req.body
     const cpyNo = res.locals.cpyNo
 
     sql.connect(db, (err) => {
         if(err) console.log(err)
-
+        
         const request = new sql.Request()
         const errors = []
-
-        request.query(`select * 
-        from BOTFRONT_TEST_POSITION 
-        where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+        request.query(`select *
+        from BOTFRONT_POSITION_INFO a
+        where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
+                return res.send(err)
             }
-            
-            result = result.recordset[0]
-            if(!result) errors.push({message: '職缺錯誤，請重新操作!'})
+
+            const checkPosition = result.recordset[0]
+            if(!checkPosition) errors.push({message: '查無此職缺資訊，請重新編輯!'})
             if(errors.length){
-                return res.render('edit_position', {errors, result: {POSITION_NAME, POSITION_DES}})
-            }else{
-                request.input('name', sql.NVarChar(40), name)
-                .input('des', sql.NVarChar(1000), des)
-                .query(`update BOTFRONT_TEST_POSITION 
-                set POSITION_NAME = @name, POSITION_DES = @des 
-                where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+                request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
+                from BOTFRONT_POSITION_INFO a
+                left join BOTFRONT_ALL_POSITION b
+                on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
+                where CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
                         sql.close()
                         console.log(err)
                         return res.send(err)
                     }
+
+                    const positionResult = result.recordset
                     sql.close()
-                    return res.redirect('/position')
+                    return res.render('position', {positionResult, errors})
+                })
+            }else{
+                request.input('des', sql.NVarChar(2000), POSITION_DES)
+                .query(`update BOTFRONT_POSITION_INFO
+                set POSITION_DES = @des
+                where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    res.redirect('/position')
                 })
             }
         })
@@ -56,9 +68,11 @@ router.get('/:position_id/edit', (req, res) => {
         const request = new sql.Request()
         const errors = []
 
-        request.query(`select * 
-        from BOTFRONT_TEST_POSITION 
-        where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+        request.query(`select POSITION_NO, b.POSITION_NAME, POSITION_DES
+        from BOTFRONT_POSITION_INFO a
+        left join BOTFRONT_ALL_POSITION b
+        on a.POSITION_NO = b.POSITION_ID 
+        where POSITION_NO = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
@@ -70,9 +84,11 @@ router.get('/:position_id/edit', (req, res) => {
 
             if(!result) errors.push({message:'查無此職缺資料!'})
             if(errors.length){
-                request.query(`select * 
-                from BOTFRONT_TEST_POSITION 
-                where CPYID=${res.locals.cpyNo}`, (err, result) => {
+                request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
+                from BOTFRONT_POSITION_INFO a
+                left join BOTFRONT_ALL_POSITION b
+                on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
+                where CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
                         sql.close()
                         console.log(err)
@@ -91,8 +107,8 @@ router.get('/:position_id/edit', (req, res) => {
     })
 })
 
-router.delete('/:position_id', (req, res) => {
-    const {position_id} = req.params
+router.delete('/:position_no', (req, res) => {
+    const {position_no} = req.params
     const cpyNo = res.locals.cpyNo
 
     sql.connect(db, (err) => {
@@ -102,8 +118,8 @@ router.delete('/:position_id', (req, res) => {
         const errors = []
 
         request.query(`select * 
-        from BOTFRONT_TEST_POSITION 
-        where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+        from BOTFRONT_POSITION_INFO 
+        where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
@@ -114,9 +130,11 @@ router.delete('/:position_id', (req, res) => {
             if(!result) errors.push({message: '查無此職缺資訊!'})
                 
             if(errors.length){
-                request.query(`select * 
-                from BOTFRONT_TEST_POSITION 
-                where CPYID=${res.locals.cpyNo}`, (err, result) => {
+                request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
+                from BOTFRONT_POSITION_INFO a
+                left join BOTFRONT_ALL_POSITION b
+                on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
+                where CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
                         sql.close()
                         console.log(err)
@@ -130,8 +148,8 @@ router.delete('/:position_id', (req, res) => {
                 })
             }else{
                 request.query(`delete 
-                from BOTFRONT_TEST_POSITION 
-                where POSITION_ID = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+                from BOTFRONT_POSITION_INFO 
+                where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
                         sql.close()
                         console.log(err)
@@ -146,50 +164,107 @@ router.delete('/:position_id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    const {name, des} = req.body
     const cpyNo = res.locals.cpyNo
-    const errors = []
+    const industryNo = res.locals.industryNo
+    const {category, des} = req.body
+    // const categorySelected = category
+    // console.log(req.body)
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+        
+        const request = new sql.Request()
+        const errors = []
 
-    if(!name || !des){
-        errors.push({message: '所有欄位都是必填的!!'})
-    }
+        if(!category || category == '' || !des){
+            errors.push({message: '所有欄位都是必填的!'})
+        }
 
-    if(errors.length){
-        return res.render('new_position', { errors, positionResult: {name, des}})
-    }
+        if(errors.length){
+            request.query(`select POSITION_ID, POSITION_NAME 
+            from BOTFRONT_ALL_POSITION a 
+            where not exists (select * 
+                from BOTFRONT_POSITION_INFO b 
+                where  a.POSITION_ID = b.POSITION_NO 
+                and b.CPYID = ${cpyNo}) 
+                and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
+                if(err){
+                    sql.close()
+                    console.log(err)
+                    return res.send(err)
+                }
+                
+                const category = result.recordset
+                sql.close()
+                return res.render('new_position', {errors, des, category})
+            })
+        }else{
+            request.input('cpyNo', sql.Int, cpyNo)
+            .input('industry_no', sql.Int, industryNo)
+            .input('position_no', sql.Int, category)
+            .input('des', sql.NVarChar(2000), des)
+            .query(`insert into BOTFRONT_POSITION_INFO (CPYID, INDUSTRY_NO, POSITION_NO, POSITION_DES) 
+            values (@cpyNo, @industry_no, @position_no, @des)`, (err, result) => {
+                if(err){
+                    sql.close()
+                    console.log(err)
+                    return res.send(err)
+                }
 
+                sql.close()
+                return res.redirect('/position')
+            })
+        }
+    })
+})
+
+router.get('/new', (req, res) => {
+    const cpyNo = res.locals.cpyNo
+    const industryNo = res.locals.industryNo
     sql.connect(db, (err) => {
         if(err) console.log(err)
 
         const request = new sql.Request()
-        request.input('name', sql.NVarChar(40), name)
-        .input('des', sql.NVarChar(1000), des)
-        .input('cpyNo', sql.Int, cpyNo)
-        .query(`insert into BOTFRONT_TEST_POSITION (POSITION_NAME, POSITION_DES, CPYID) 
-        values (@name, @des, @cpyNo)`, (err, result) => {
+        const warning = []
+        // 抓取未新增過的職缺資料
+        request.query(`select POSITION_ID, POSITION_NAME 
+        from BOTFRONT_ALL_POSITION a 
+        where not exists (select * 
+            from BOTFRONT_POSITION_INFO b 
+            where  a.POSITION_ID = b.POSITION_NO 
+            and b.CPYID = ${cpyNo}) 
+            and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
                 return res.send(err)
-              }
-              sql.close()
-              return res.redirect('/position')
-            })
+            }
+
+            const category = result.recordset
+            if(category.length == 0) warning.push({message:'目前沒有可新增的職缺!'})
+            if(warning.length){
+                sql.close()
+                console.log('test1')
+                return res.render('new_position', {category, warning})
+            }else{
+                sql.close()
+                return res.render('new_position', {category})
+            }
         })
     })
-
-router.get('/new', (req, res) => {
-    res.render('new_position')
 })
 
 router.get('/', (req, res) => {
+    const cpyNo = res.locals.cpyNo
+    const industryNo = res.locals.industryNo
     sql.connect(db, (err) => {
         if(err) console.log(err)
 
         const request = new sql.Request()
-        request.query(`select * 
-        from BOTFRONT_TEST_POSITION 
-        where CPYID=${res.locals.cpyNo}`, (err, result) => {
+        request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
+        from BOTFRONT_POSITION_INFO a
+        left join BOTFRONT_ALL_POSITION b
+        on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
+        where CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
                 console.log(err)
