@@ -19,7 +19,11 @@ const db = {
 const pool = new sql.ConnectionPool(db)
 
 pool.connect(err => {
-  if(err) return console.log(err)
+  if(err){
+    console.log('sql error!')
+    console.log(err)
+    return
+  } 
   console.log('sql connected!')
 })
 
