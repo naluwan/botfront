@@ -11,12 +11,14 @@
             <li class="list-group-item" id="record-item" style="border: none;">
               <div class="row">
                 <div class="col-12 d-flex justify-content-between" style="border: 1px solid black;">
-                  <div class="col-2 d-flex align-items-center justify-content-center" 
-                    style="font-weight: bold; color:#111">
-                    {{this.INFO_NAME}}
-                  </div>
-                  <div class="col-6">
-                    <p style="font-size: 13px; white-space:pre-line;">{{ this.INFO_DES }}</p>
+                  <div class="row d-flex flex-column m-3">
+                    <div class="col-12 d-flex align-items-center" 
+                      style="font-weight: bold; color:#111">
+                      {{this.INFO_NAME}}
+                    </div>
+                    <div class="col-12">
+                      <p style="font-size: 13px; white-space:pre-line;">{{ this.INFO_DES }}</p>
+                    </div>
                   </div>
                   <div class="col-4 d-flex flex-row justify-content-center align-items-center">
                     <a href="/company/{{ this.INFO_NO}}/edit" class="btn btn-primary col-6" style="font-size: 1rem; height:fit-content;">
