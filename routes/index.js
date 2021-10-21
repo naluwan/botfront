@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 // const train = require('./modules/train')
-const greet = require('./modules/new_greet')
+const greet = require('./modules/greet')
 const home = require('./modules/home')
 const position = require('./modules/position')
 const company = require('./modules/company')
