@@ -15,7 +15,7 @@ router.get('/:info_no/edit', (req, res) => {
         const errors = []
         
         request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
-        from BOTFRONT_TEST_COMPANY_INFO a 
+        from BOTFRONT_COMPANY_INFO a 
         left join BOTFRONT_ALL_COMPANY_INFO b 
         on a.INFO_NO = b.INFO_NO 
         where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
@@ -29,7 +29,7 @@ router.get('/:info_no/edit', (req, res) => {
             if(!info) errors.push({message: '查無此資訊內容!'})
             if(errors.length){
                 request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
-                from BOTFRONT_TEST_COMPANY_INFO a 
+                from BOTFRONT_COMPANY_INFO a 
                 left join BOTFRONT_ALL_COMPANY_INFO b 
                 on a.INFO_NO = b.INFO_NO 
                 where CPYID = ${cpyNo}`, (err, result) => {
@@ -63,7 +63,7 @@ router.put('/:info_no', (req, res) => {
         const request = new sql.Request()
         const errors = []
         request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
-        from BOTFRONT_TEST_COMPANY_INFO a
+        from BOTFRONT_COMPANY_INFO a
         left join BOTFRONT_ALL_COMPANY_INFO b
         on a.INFO_NO = b.INFO_NO
         where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
@@ -77,7 +77,7 @@ router.put('/:info_no', (req, res) => {
             if(!checkInfo) errors.push({message: '查無此公司資訊，請重新編輯!'})
             if(errors.length){
                 request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
-                from BOTFRONT_TEST_COMPANY_INFO a 
+                from BOTFRONT_COMPANY_INFO a 
                 left join BOTFRONT_ALL_COMPANY_INFO b 
                 on a.INFO_NO = b.INFO_NO 
                 where CPYID = ${cpyNo}`, (err, result) => {
@@ -93,7 +93,7 @@ router.put('/:info_no', (req, res) => {
                 })
             }else{
                 request.input('des', sql.NVarChar(2000), INFO_DES)
-                .query(`update BOTFRONT_TEST_COMPANY_INFO
+                .query(`update BOTFRONT_COMPANY_INFO
                 set INFO_DES = @des
                 where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
@@ -127,7 +127,7 @@ router.post('/', (req, res) => {
             request.query(`select INFO_NO, INFO_NAME 
             from BOTFRONT_ALL_COMPANY_INFO a 
             where not exists (select * 
-                from BOTFRONT_TEST_COMPANY_INFO b 
+                from BOTFRONT_COMPANY_INFO b 
                 where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
                 if(err){
                     sql.close()
@@ -143,7 +143,7 @@ router.post('/', (req, res) => {
             request.input('cpyNo', sql.Int, cpyNo)
             .input('info_no', sql.Int, category)
             .input('des', sql.NVarChar(2000), des)
-            .query(`insert into BOTFRONT_TEST_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
+            .query(`insert into BOTFRONT_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
             values (@cpyNo, @info_no, @des)`, (err, result) => {
                 if(err){
                     sql.close()
@@ -169,7 +169,7 @@ router.get('/new', (req, res) => {
         request.query(`select INFO_NO, INFO_NAME 
         from BOTFRONT_ALL_COMPANY_INFO a 
         where not exists (select * 
-            from BOTFRONT_TEST_COMPANY_INFO b 
+            from BOTFRONT_COMPANY_INFO b 
             where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
             if(err){
                 sql.close()
@@ -201,7 +201,7 @@ router.delete('/:info_no', (req, res) => {
         const errors = []
         // 檢查info_no是否有在table中
         request.query(`select * 
-        from BOTFRONT_TEST_COMPANY_INFO 
+        from BOTFRONT_COMPANY_INFO 
         where INFO_NO = ${info_no} AND CPYID = ${cpyNo}`, (err, result) => {
             if(err){
                 sql.close()
@@ -214,7 +214,7 @@ router.delete('/:info_no', (req, res) => {
             if(!companyInfo) errors.push({message: '查無此資訊，請重新操作!'})
             if(errors.length) {
                 request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
-                from BOTFRONT_TEST_COMPANY_INFO a 
+                from BOTFRONT_COMPANY_INFO a 
                 left join BOTFRONT_ALL_COMPANY_INFO b 
                 on a.INFO_NO = b.INFO_NO 
                 where CPYID = ${cpyNo}`, (err, result) => {
@@ -230,7 +230,7 @@ router.delete('/:info_no', (req, res) => {
                 })
             }else{
                 request.query(`delete 
-                from BOTFRONT_TEST_COMPANY_INFO 
+                from BOTFRONT_COMPANY_INFO 
                 where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
                     if(err){
                         sql.close()
@@ -252,7 +252,7 @@ router.get('/', (req, res) => {
 
         const request = new sql.Request()
         request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
-        from BOTFRONT_TEST_COMPANY_INFO a 
+        from BOTFRONT_COMPANY_INFO a 
         left join BOTFRONT_ALL_COMPANY_INFO b 
         on a.INFO_NO = b.INFO_NO 
         where CPYID = ${cpyNo}`, (err, result) => {
