@@ -100,14 +100,28 @@ router.get('/', (req, res) => {
   from BOTFRONT_GREET_INFO a
   left join BOTFRONT_ALL_GREET b
   on a.GREET_NO = b.GREET_ID
-  where a.CPYID = ${cpyNo}`, (err, result) => {
+  where a.CPYID = ${cpyNo} order by a.GREET_NO`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
 
     const greetInfo = result.recordset
-    res.render('greet', {greetInfo})
+    if(greetInfo.length == 0){
+      for(i = 2 ; i <= 6; i++){
+        request.input(`des${i}`, sql.NVarChar, '')
+        .query(`insert into BOTFRONT_GREET_INFO (CPYID, GREET_NO, GREET_DES)
+        values (${cpyNo}, ${i}, @des${i})`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+        })
+      }
+      return res.redirect('/greet')
+    } else {
+      res.render('greet', {greetInfo})
+    }
   })
 })
 
