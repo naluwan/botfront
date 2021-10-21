@@ -1,9 +1,14 @@
 exports.flashMessage = function (req, res, next) {
 	const sql = require('mssql')
 	const pool = require('../config/connectPool')
+	const cpyNo = res.locals.cpyNo
 
 	const request = new sql.Request(pool)
-	request.query(`select CPY_NAME from BOTFRONT_COMPANY where CPY_NO=${res.locals.cpyNo}`, (err, result) => {
+	request.query(`select a.INFO_DES 
+	from BOTFRONT_COMPANY_INFO a
+	left join BOTFRONT_ALL_COMPANY_INFO b
+	on a.INFO_NO = b.INFO_NO
+	where a.CPYID = ${cpyNo} and b.INFO_NAME = '公司名稱'` , (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -14,7 +19,7 @@ exports.flashMessage = function (req, res, next) {
 		res.locals.companyName = ''
 		return next()
 		}
-		result = result.recordset[0].CPY_NAME
+		result = result.recordset[0].INFO_DES
 		// console.log(result)
 		res.locals.companyName = result
 		next();
