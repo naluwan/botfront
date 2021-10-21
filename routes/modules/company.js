@@ -4,186 +4,269 @@ const router = express.Router()
 const db = require('../../config/db')
 const sql = require('mssql')
 
-router.get('/edit', (req, res) => {
-  sql.connect(db, (err) => {
-    if(err) console.log(err)
+router.get('/:info_no/edit', (req, res) => {
+    const {info_no} = req.params
+    const cpyNo = res.locals.cpyNo
 
-    const request = new sql.Request()
-    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      // console.log(result.recordsets[0][0].NAME)
-      const infoResult = result.recordset[0]
-      // console.log(infoResult)
-      const errors = []
-      if(infoResult){
-        const keyname = Object.keys(infoResult)
-        const [id ,name, tel, address, introduction, benefits, worktime, interview, accept] = keyname
-        // console.log(name)
-        sql.close()
-        res.render('edit_company', {result: infoResult,
-          keys:{name, tel, address, introduction, benefits, worktime, interview, accept}})
-      } else {
-        errors.push({message: '尚未新增資料!!'})
-        res.render('edit_company', {errors})
-      }
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+
+        const request = new sql.Request()
+        const errors = []
+        
+        request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
+        from BOTFRONT_TEST_COMPANY_INFO a 
+        left join BOTFRONT_ALL_COMPANY_INFO b 
+        on a.INFO_NO = b.INFO_NO 
+        where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
+
+            const info = result.recordset[0]
+            if(!info) errors.push({message: '查無此資訊內容!'})
+            if(errors.length){
+                request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+                from BOTFRONT_TEST_COMPANY_INFO a 
+                left join BOTFRONT_ALL_COMPANY_INFO b 
+                on a.INFO_NO = b.INFO_NO 
+                where CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+        
+                    const companyInfo = result.recordset
+                    sql.close()
+                    return res.render('company', {companyInfo, errors})
+                })
+            }else{
+                sql.close()
+                // console.log(info)
+                res.render('edit_company', {info})
+            }
+        })
     })
-  })
-  sql.on('error', () => {
-    console.log(err)
-  })
 })
 
-router.get('/:keys/edit', (req, res) => {
-  const {keys} = req.params
+router.put('/:info_no', (req, res) => {
+    const {info_no} = req.params
+    const {INFO_DES} = req.body
+    const cpyNo = res.locals.cpyNo
 
-  sql.connect(db, (err) => {
-    if(err) console.log(err)
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+        
+        const request = new sql.Request()
+        const errors = []
+        request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
+        from BOTFRONT_TEST_COMPANY_INFO a
+        left join BOTFRONT_ALL_COMPANY_INFO b
+        on a.INFO_NO = b.INFO_NO
+        where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
 
-    const request = new sql.Request()
-    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_COMPANY_INFO'`, (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      // console.log(result.recordset)
-      const isColumn = result.recordset.find(item => item.column_name === keys)
-      if(!isColumn){
-        sql.close()
-        return res.send('Column error!!')
-      }
+            const checkInfo = result.recordset[0]
+            if(!checkInfo) errors.push({message: '查無此公司資訊，請重新編輯!'})
+            if(errors.length){
+                request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+                from BOTFRONT_TEST_COMPANY_INFO a 
+                left join BOTFRONT_ALL_COMPANY_INFO b 
+                on a.INFO_NO = b.INFO_NO 
+                where CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+
+                    const companyInfo = result.recordset
+                    sql.close()
+                    return res.render('company', {companyInfo, errors})
+                })
+            }else{
+                request.input('des', sql.NVarChar(2000), INFO_DES)
+                .query(`update BOTFRONT_TEST_COMPANY_INFO
+                set INFO_DES = @des
+                where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    res.redirect('/company')
+                })
+            }
+        })
     })
-
-    const companyInfo = [{ NAME: "公司名稱" }, { TEL: "公司電話" }, { ADDR: "公司地址" }, { INTRODUCTION: "公司簡介" }, { BENEFITS: "公司福利" },
-  { WORKTIME: "上班時間" }, { INTERVIEW: "面試資訊" }, { ACCEPT: "錄取通知" }]
-
-  let keyZh = companyInfo.map(obj => {
-    if(Object.keys(obj)[0] === keys){
-      return Object.values(obj)
-    }
-  })
-  keyZh = keyZh.filter(info => info != undefined)
-  // console.log(keyZh[0][0])
-
-    request.query(`select ${keys} from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      // console.log(keys)
-      value = Object.values(result.recordset[0])[0]
-      sql.close()
-      res.render('edit_page_company', {result: value, keyZh, keys})
-    })
-  })
 })
 
 router.post('/', (req, res) => {
-  // console.log(req)
-  const {name, tel, address, introduction, benefits, worktime, interview, accept} = req.body
+    const cpyNo = res.locals.cpyNo
+    const {category, des} = req.body
+    // const categorySelected = category
+    // console.log(req.body)
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
+        
+        const request = new sql.Request()
+        const errors = []
 
-  const errors = []
-  if(!name || !tel || !address || !introduction || !benefits || !worktime || !interview || !accept){
-    errors.push({message: '所有欄位都是必填的!!'})
-  }
+        if(!category || category == '' || !des){
+            errors.push({message: '所有欄位都是必填的!'})
+        }
 
-  if(errors.length){
-    return res.render('add_company', {
-      errors,
-      result: { name, tel, address, introduction, benefits, worktime, interview, accept}
+        if(errors.length){
+            request.query(`select INFO_NO, INFO_NAME 
+            from BOTFRONT_ALL_COMPANY_INFO a 
+            where not exists (select * 
+                from BOTFRONT_TEST_COMPANY_INFO b 
+                where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
+                if(err){
+                    sql.close()
+                    console.log(err)
+                    return res.send(err)
+                }
+    
+                const category = result.recordset
+                sql.close()
+                return res.render('new_company', {errors, des, category})
+            })
+        }else{
+            request.input('cpyNo', sql.Int, cpyNo)
+            .input('info_no', sql.Int, category)
+            .input('des', sql.NVarChar(2000), des)
+            .query(`insert into BOTFRONT_TEST_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
+            values (@cpyNo, @info_no, @des)`, (err, result) => {
+                if(err){
+                    sql.close()
+                    console.log(err)
+                    return res.send(err)
+                }
+
+                sql.close()
+                return res.redirect('/company')
+            })
+        }
     })
-  }
+})                              
 
-  sql.connect(db, (err) => {
-    if(err) console.log(err)
+router.get('/new', (req, res) => {
+    const cpyNo = res.locals.cpyNo
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
 
-    const request = new sql.Request()
-    request.input('name', sql.NVarChar(20), name)
-    .input('tel', sql.NVarChar(20), tel)
-    .input('address', sql.NVarChar(50), address)
-    .input('introduction', sql.NVarChar(500), introduction)
-    .input('benefits', sql.NVarChar(500), benefits)
-    .input('worktime', sql.NVarChar(500), worktime)
-    .input('interview', sql.NVarChar(500), interview)
-    .input('accept', sql.NVarChar(500), accept)
-    .query('insert into BOTFRONT_TEST_COMPANY_INFO (NAME, TEL, ADDR, INTRODUCTION, BENEFITS, WORKTIME, INTERVIEW, ACCEPT) values (@name, @tel, @address, @introduction, @benefits, @worktime, @interview, @accept)', (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      sql.close()
-      res.redirect('/')
+        const request = new sql.Request()
+        const warning = []
+        // 抓取未新增過的公司資料
+        request.query(`select INFO_NO, INFO_NAME 
+        from BOTFRONT_ALL_COMPANY_INFO a 
+        where not exists (select * 
+            from BOTFRONT_TEST_COMPANY_INFO b 
+            where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
+
+            const category = result.recordset
+            if(category.length == 0) warning.push({message: '目前沒有可新增的公司資訊!'})
+            if(warning.length){
+                sql.close()
+                return res.render('new_company', {category, warning})
+            }else{
+                sql.close()
+                return res.render('new_company', {category})
+            }
+        })
     })
-  })
 })
 
-router.put('/:keys', (req, res) => {
-  const {keys} = req.params
-  const value = Object.values(req.body)[0]
-// console.log(keys)
-// console.log(req.body)
-  sql.connect(db, (err) => {
-    if(err) console.log(err)
+router.delete('/:info_no', (req, res) => {
+    const {info_no} = req.params
+    const {cpyNo} = res.locals
+    
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
 
-    const request = new sql.Request()
+        const request = new sql.Request()
+        const errors = []
+        // 檢查info_no是否有在table中
+        request.query(`select * 
+        from BOTFRONT_TEST_COMPANY_INFO 
+        where INFO_NO = ${info_no} AND CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
 
-    request.query(`select column_name from INFORMATION_SCHEMA.COLUMNS where table_name='BOTFRONT_TEST_COMPANY_INFO'`, (err, result) => {
-      if(err){
-        console.log(err)
-        res.send(err)
-      }
-      // console.log(result.recordset)
-      const isColumn = result.recordset.find(item => item.column_name === keys)
-      if(!isColumn){
-        sql.close()
-        return res.send('Column error!!')
-      }
+            const companyInfo = result.recordset[0]
+
+            if(!companyInfo) errors.push({message: '查無此資訊，請重新操作!'})
+            if(errors.length) {
+                request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+                from BOTFRONT_TEST_COMPANY_INFO a 
+                left join BOTFRONT_ALL_COMPANY_INFO b 
+                on a.INFO_NO = b.INFO_NO 
+                where CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+        
+                    const companyInfo = result.recordset
+                    sql.close()
+                    return res.render('company', {companyInfo, errors})
+                })
+            }else{
+                request.query(`delete 
+                from BOTFRONT_TEST_COMPANY_INFO 
+                where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+                    if(err){
+                        sql.close()
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    sql.close()
+                    res.redirect('/company')
+                })
+            }
+        })
     })
-
-    request.input(`${keys}`, sql.NVarChar(500), value)
-    .query(`update BOTFRONT_TEST_COMPANY_INFO set ${keys}=@${keys} where CPYID=${res.locals.cpyNo}`, (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      sql.close()
-      res.redirect('/company/edit')
-    })
-  })
 })
 
+router.get('/', (req, res) => {
+    const cpyNo = res.locals.cpyNo
+    sql.connect(db, (err) => {
+        if(err) console.log(err)
 
-router.get('/add', (req, res) => {
-  sql.connect(db, (err) => {
-    if(err) console.log(err)
-    // console.log(res.locals)
-    const request = new sql.Request()
-    request.query(`select * from BOTFRONT_TEST_COMPANY_INFO where CPYID=${res.locals.cpyNo}`, (err, result) => {
-      if(err){
-        sql.close()
-        console.log(err)
-        return res.send(err)
-      }
-      // if(result.recordsets[0][0]){
-      // console.log(result.recordsets[0][0])
-      // }else{
-      //   console.log('test')
-      // }
-      // console.log(result.recordset[0])
-      sql.close()
-      res.render('add_company', {hasResult: result.recordset[0]})
+        const request = new sql.Request()
+        request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+        from BOTFRONT_TEST_COMPANY_INFO a 
+        left join BOTFRONT_ALL_COMPANY_INFO b 
+        on a.INFO_NO = b.INFO_NO 
+        where CPYID = ${cpyNo}`, (err, result) => {
+            if(err){
+                sql.close()
+                console.log(err)
+                return res.send(err)
+            }
+
+            const companyInfo = result.recordset
+            sql.close()
+            return res.render('company', {companyInfo})
+        })
     })
-  })
-  sql.on('error', () => {
-    console.log(err)
-  })
 })
 
 module.exports = router
