@@ -1,6 +1,6 @@
 exports.flashMessage = function (req, res, next) {
 	const sql = require('mssql')
-	const pool = require('../../config/connectPool')
+	const pool = require('../config/connectPool')
 
 	const request = new sql.Request(pool)
 	request.query(`select CPY_NAME from BOTFRONT_COMPANY where CPY_NO=${res.locals.cpyNo}`, (err, result) => {
