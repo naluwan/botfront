@@ -11675,6 +11675,19 @@ header.masthead .post-heading .meta a {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
+.main-footer{
+	padding: 10px; 
+	background-color: black;
+}
+
+.footer-text{
+	font-weight: normal; 
+	font-size: 14px; 
+	line-height: 22px; 
+	margin-bottom: 0; 
+	text-align: center; 
+	color:#fff
+}
 
 
 /* .rw-conversation-container .rw-message {
