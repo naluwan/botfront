@@ -205,6 +205,7 @@ router.get('/', (req, res) => {
 	const cpyNo = res.locals.cpyNo
 
 	const request = new sql.Request(pool)
+	const warning = []
 	request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
 	from BOTFRONT_COMPANY_INFO a 
 	left join BOTFRONT_ALL_COMPANY_INFO b 
@@ -216,7 +217,10 @@ router.get('/', (req, res) => {
 		}
 
 		const companyInfo = result.recordset
-		return res.render('company', {companyInfo})
+		if(companyInfo.length == 0) {
+			warning.push({message:'還未新增資料，請先拉到下方點選按鈕新增資料!!'})
+		}
+		return res.render('company', {companyInfo, warning})
 	})
 })
 
