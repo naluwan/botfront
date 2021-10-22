@@ -148,7 +148,7 @@ input:invalid {
 }
 
 .alert-danger,
-.alert-waning {
+.alert-warning {
   font-size: 1rem;
   font-weight: bold;
 }
