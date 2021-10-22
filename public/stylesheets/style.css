@@ -1,7 +1,21 @@
 /* reset css */
-body {
+body,
+html {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+body{
+  background: #f1f1f1;
+}
+
+.list-group-item{
+  background:none;
+}
+
+.list-group li > div {
+  background: #fff;
 }
 
 * {
@@ -75,7 +89,7 @@ input:invalid {
 ::-webkit-scrollbar {
   /* make scrollbar transparent */
   width: 0px;
-  background: transparent;
+  /* background: transparent; */
 }
 
 /* rasa-chatbot css */
@@ -150,19 +164,22 @@ input:invalid {
 .label-title {
   font-size: 20px;
   font-weight: bold; 
-  color: black
+  color: #111;
+  padding: 1rem;
+
 }
 
 .new-title,
 .new-des {
   font-size: 18px;
   font-weight: normal; 
-  color: black
+  color: #111;
 }
 
 .des-text{
   font-size: 15px; 
   white-space:pre-line;
+  padding: 1rem
 }
 /* .scroll-view::-webkit-scrollbar {
   display: none;
@@ -178,8 +195,11 @@ input:invalid {
 }
 
 .main-footer{
-padding: 10px; 
-background-color: black;
+  width: 100%;
+  padding: 10px; 
+  background-color: #111;
+  position: fixed;
+  bottom: 0;
 }
 
 .footer-text{
@@ -188,7 +208,34 @@ font-size: 14px;
 line-height: 22px; 
 margin-bottom: 0; 
 text-align: center; 
-color:#fff
+color:#fff;
+}
+
+.container {
+  padding-bottom: 40px;
+}
+
+.item-wrapper{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto, auto;
+  width:100%;
+}
+
+.item-title,
+.item-des{
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
+.item-buttons {
+  grid-column-start: 4;
+  grid-column-end: 5;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  display: flex;
+  align-items: center;
+  justify-content: start;
 }
 
 /* .rw-conversation-container .rw-message {
