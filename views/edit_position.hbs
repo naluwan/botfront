@@ -8,9 +8,9 @@
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="category">職位名稱</label>
+              <label class="input-group-text new-title" for="category">職位名稱</label>
             </div>
-            <select class="custom-select" id="category" name="category" required>
+            <select class="custom-select new-title" id="category" name="category" required>
               <option value="" hidden>請選擇</option>
               <option value="{{result.POSITION_NO}}" selected disabled>{{result.POSITION_NAME}}</option>
             </select>
@@ -18,9 +18,9 @@
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <span class="input-group-text">職位資訊</span>
+              <span class="input-group-text new-title">職位資訊</span>
             </div>
-            <textarea type="text" class="form-control" name="POSITION_DES" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
+            <textarea type="text" class="form-control new-des" name="POSITION_DES" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
               aria-describedby="des" rows="10" required>{{ result.POSITION_DES }}</textarea>
           </div>
 

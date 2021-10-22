@@ -35,8 +35,8 @@ app.use(methodOverride('_method'))
 
 app.use(flash())
 app.use((req, res, next) => {
-  res.locals.cpyNo = 3
-  res.locals.industryNo = 3
+  res.locals.cpyNo = 1
+  res.locals.industryNo = 1
   next()
 })
 app.use(flashMessage)

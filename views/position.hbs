@@ -1,4 +1,4 @@
-<div class="row d-flex justify-content-center all m-5">
+<div class="row d-flex flex-column align-items-center all">
   <h1 class="m-5">職缺資訊</h1>
    <div class="col-9 wrapper">
     {{> message}}
@@ -10,13 +10,12 @@
             <li class="list-group-item" id="record-item" style="border: none;">
               <div class="row">
                 <div class="col-12 d-flex justify-content-between" style="border: 1px solid black;">
-                  <div class="row d-flex flex-column m-3">
-                    <div class="col-12 d-flex align-items-center" 
-                      style="font-weight: bold; color:#111">
+                  <div class="row d-flex m-3">
+                    <div class="col-12 d-flex align-items-center label-title">
                       {{this.POSITION_NAME}}
                     </div>
-                    <div class="col-12">
-                      <p style="font-size: 13px; white-space:pre-line;">{{ this.POSITION_DES }}</p>
+                    <div class="col-12 mt-3">
+                      <p class="des-text">{{ this.POSITION_DES }}</p>
                     </div>
                   </div>
                   <div class="col-4 d-flex flex-row justify-content-center align-items-center">
@@ -42,7 +41,7 @@
  <div class="col-10 my-5 d-flex">
     <div class="col-6">
       <div class="row justify-content-center">
-        <a href="/position/new" class="btn btn-outline-primary col-8" id="create-btn"
+        <a href="/position/new" class="btn btn-outline-warning col-8" id="create-btn"
           style="font-size: 1.5rem;">新增職缺</a>
       </div>
     </div>
