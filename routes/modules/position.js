@@ -218,6 +218,7 @@ router.get('/', (req, res) => {
 	const industryNo = res.locals.industryNo
 
 	const request = new sql.Request(pool)
+	const warning = []
 	request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
@@ -230,7 +231,8 @@ router.get('/', (req, res) => {
 
 		const positionResult = result.recordset
 		// console.log(positionResult)
-		return res.render('position', {positionResult})
+		if(positionResult.length == 0) warning.push({message: '還未新增職缺，請拉到下方點選按鈕新增職缺!!'})
+		return res.render('position', {positionResult, warning})
 	})
 })
 

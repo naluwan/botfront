@@ -217,9 +217,7 @@ router.get('/', (req, res) => {
 		}
 
 		const companyInfo = result.recordset
-		if(companyInfo.length == 0) {
-			warning.push({message:'還未新增資料，請先拉到下方點選按鈕新增資料!!'})
-		}
+		if(companyInfo.length == 0)	warning.push({message:'還未新增資料，請先拉到下方點選按鈕新增資料!!'})
 		return res.render('company', {companyInfo, warning})
 	})
 })
