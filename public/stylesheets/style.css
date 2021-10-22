@@ -147,7 +147,8 @@ input:invalid {
   height: 80vh;
 }
 
-.alert-danger {
+.alert-danger,
+.alert-waning {
   font-size: 1rem;
   font-weight: bold;
 }
