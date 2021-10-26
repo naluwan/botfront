@@ -5,7 +5,9 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
 router.put('/:default_no', (req, res) => {
-  const cpyNo = res.locals.cpyNo
+  const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
   const {default_no} = req.params
   const {DEFAULT_DES} = req.body
 
@@ -54,7 +56,9 @@ router.put('/:default_no', (req, res) => {
 })
 
 router.get('/:default_no/edit', (req, res) => {
-  const cpyNo = res.locals.cpyNo
+  const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
   const {default_no} = req.params
 
   const errors = []
@@ -93,7 +97,9 @@ router.get('/:default_no/edit', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-  const cpyNo = res.locals.cpyNo
+  const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
   const request = new sql.Request(pool)
   request.query(`select a.DEFAULT_NO, b.DEFAULT_NAME, a.DEFAULT_DES

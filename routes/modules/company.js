@@ -6,7 +6,8 @@ const pool = require('../../config/connectPool')
 
 router.get('/:info_no/edit', (req, res) => {
 	const {info_no} = req.params
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
 
 	const request = new sql.Request(pool)
 	const errors = []
@@ -46,7 +47,9 @@ router.get('/:info_no/edit', (req, res) => {
 router.put('/:info_no', (req, res) => {
 	const {info_no} = req.params
 	const {INFO_DES} = req.body
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const errors = []
@@ -91,7 +94,9 @@ router.put('/:info_no', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 	const {category, des} = req.body
 	// const categorySelected = category
 	// console.log(req.body)
@@ -133,7 +138,9 @@ router.post('/', (req, res) => {
 })                              
 
 router.get('/new', (req, res) => {
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const warning = []
@@ -159,7 +166,9 @@ router.get('/new', (req, res) => {
 
 router.delete('/:info_no', (req, res) => {
 	const {info_no} = req.params
-	const {cpyNo} = res.locals
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 	const request = new sql.Request(pool)
 	const errors = []
 	// 檢查info_no是否有在table中
@@ -202,7 +211,9 @@ router.delete('/:info_no', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const warning = []

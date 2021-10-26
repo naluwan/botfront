@@ -14,7 +14,7 @@ router.use('/greet', authenticator, greet)
 router.use('/defaultRes', authenticator, defaultRes)
 // router.use('/train', train)
 router.use('/company', authenticator, company)
-router.use('/position', position)
+router.use('/position', authenticator, position)
 router.use('/users', users)
 router.use('/', authenticator, home)
 

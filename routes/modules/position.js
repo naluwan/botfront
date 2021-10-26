@@ -7,7 +7,9 @@ const pool = require('../../config/connectPool')
 router.put('/:position_no', (req, res) => {
 	const {position_no} = req.params
 	const {POSITION_DES} = req.body
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const errors = []
@@ -52,7 +54,9 @@ router.put('/:position_no', (req, res) => {
 
 router.get('/:position_id/edit', (req, res) => {
 	const {position_id} = req.params
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const errors = []
@@ -92,7 +96,9 @@ router.get('/:position_id/edit', (req, res) => {
 
 router.delete('/:position_no', (req, res) => {
 	const {position_no} = req.params
-	const cpyNo = res.locals.cpyNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
 
 	const request = new sql.Request(pool)
 	const errors = []
@@ -139,8 +145,10 @@ router.delete('/:position_no', (req, res) => {
 
 
 router.post('/', (req, res) => {
-	const cpyNo = res.locals.cpyNo
-	const industryNo = res.locals.industryNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
+	const industryNo = user.INDUSTRY_NO
 	const {category, des} = req.body
 	// const categorySelected = category
 	// console.log(req.body)
@@ -185,8 +193,10 @@ router.post('/', (req, res) => {
 })
 
 router.get('/new', (req, res) => {
-	const cpyNo = res.locals.cpyNo
-	const industryNo = res.locals.industryNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
+	const industryNo = user.INDUSTRY_NO
 
 	const request = new sql.Request(pool)
 	const warning = []
@@ -214,8 +224,10 @@ router.get('/new', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-	const cpyNo = res.locals.cpyNo
-	const industryNo = res.locals.industryNo
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
+	const industryNo = user.INDUSTRY_NO
 
 	const request = new sql.Request(pool)
 	const warning = []
