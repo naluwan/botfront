@@ -1,0 +1,45 @@
+<div class="row mt-5">
+  <div class="col-md-6 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mt-3">註冊帳號</h1>
+      {{> message}}
+      <form action="/users/register" method="post">
+        <div class="form-group">
+          <label for="name">公司代碼</label>
+          <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}">
+        </div>
+        <div class="form-group">
+          <label for="name">產業代碼</label>
+          <input type="text" id="industry_no" name="industry_no" class="form-control" placeholder="請輸入產業代碼" value="{{ industry_no }}">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱"
+            value="{{ email }}">
+        </div>
+        <div class="form-group">
+          <label for="isadmin">權限</label>
+          <select name="isadmin" id="isadmin" class="form-control">
+            <option value="" selected hidden>請選擇</option>
+            <option value="1" {{#is isadmin '1'}} selected {{/is}}>管理員</option>
+            <option value="0" {{#is isadmin '0'}} selected {{/is}}>一般使用者</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼"
+            value="{{ password }}">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+            placeholder="請再次輸入密碼" value="{{ confirmPassword }}">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">註冊</button>
+      </form>
+      <p class="lead mt-4">
+        已經有帳號了?<a href="/users/login" style="color: blue;">登入</a>
+      </p>
+    </div>
+  </div>
+</div>

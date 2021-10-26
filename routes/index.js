@@ -8,13 +8,14 @@ const position = require('./modules/position')
 const company = require('./modules/company')
 const defaultRes = require('./modules/defaultRes')
 const users = require('./modules/users')
+const {authenticator} = require('../middleware/auth')
 
-router.use('/greet', greet)
-router.use('/defaultRes', defaultRes)
+router.use('/greet', authenticator, greet)
+router.use('/defaultRes', authenticator, defaultRes)
 // router.use('/train', train)
-router.use('/company', company)
+router.use('/company', authenticator, company)
 router.use('/position', position)
 router.use('/users', users)
-router.use('/', home)
+router.use('/', authenticator, home)
 
 module.exports = router

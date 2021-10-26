@@ -29,11 +29,6 @@ app.use(session({
   saveUninitialized: true
 }))
 app.use(express.static('public'))
-app.use(session({
-  secret: 'TopSecret',
-  resave: true,
-  saveUninitialized: true
-}))
 app.use(express.urlencoded({extended: false}))
 app.use(methodOverride('_method'))
 // app.post('http://192.168.10.108:5005/model/train', (req,res) => {
@@ -45,6 +40,8 @@ app.use(flash())
 app.use((req, res, next) => {
   res.locals.cpyNo = 1
   res.locals.industryNo = 1
+  res.locals.warning_msg = req.flash('warning_msg')
+  res.locals.success_msg = req.flash('success_msg')
   res.locals.errorMsg = req.flash('error')
   next()
 })

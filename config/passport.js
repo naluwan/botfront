@@ -6,29 +6,32 @@ const sql = require('mssql')
 const pool = require('./connectPool')
 
 module.exports = app => {
+  
   app.use(passport.initialize())
   app.use(passport.session())
 
-  passport.use(new LocalStrategy({passReqToCallback: true}, (req, email, password, done) => {
+  passport.use(new LocalStrategy({usernameField: 'email', passReqToCallback: true}, (req, email, password, done) => {
     const request = new sql.Request(pool)
     request.query(`select CPY_NO, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN
     from BOTFRONT_USERS_INFO
-    where EMAIL = ${email}`, (err, result) => {
+    where EMAIL = '${email}'`, (err, result) => {
       if(err){
         console.log(err)
-        return
+        return result.send(err)
       }
 
       const user = result.recordset[0]
-
-      if(!user) return done(null, false, {message: `這個Email還未註冊!!`})
-
-      const isValid = bcrypt.compareSync(password, user.password)
-      if(isValid){
-        return done(null, user)
-      }else{
-        return done(null, false, {message: `帳號或密碼錯誤!!`})
+      // console.log(user)
+      if(!user) {
+        return done(null, false, {message: '這個Email還未註冊!!'})
       }
+      return bcrypt.compare(password, user.PASSWORD).then(isMatch => {
+        if(!isMatch) {
+          return done(null, false, {message: '帳號或密碼錯誤!!'})
+        }else{
+          return done(null, user)
+        }
+      }).catch(err => console.log(err))
     })
   }))
 
@@ -37,16 +40,17 @@ module.exports = app => {
   })
 
   passport.deserializeUser(function(email, done){
+    const request = new sql.Request(pool)
     request.query(`select * 
     from BOTFRONT_USERS_INFO
-    where EMAIL = ${email}`, (err, result) => {
+    where EMAIL = '${email}'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-
-      console.log(result)
-      done(null, result.recordset[0])
+      const user = result.recordset[0]
+      // console.log(user)
+      done(null, user)
     })
   })
 }
