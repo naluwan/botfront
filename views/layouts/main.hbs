@@ -24,6 +24,7 @@
 
 <body>
   <!-- 導入webchat視窗 -->
+  {{#if isAuthenticated}}
   <script>!(function () {
       let e = document.createElement("script"),
         t = document.head || document.getElementsByTagName("head")[0];
@@ -51,8 +52,11 @@
           );
         }),
         t.insertBefore(e, t.firstChild);
+        // 只要重整就刪除對話紀錄
+        window.sessionStorage.clear()
     })();
   </script>
+  {{/if}}
   <!-- Navigation-->
   <header>
     <nav class="navbar navbar-dark bg-primary" style="font-weight:bold;">
