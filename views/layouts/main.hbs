@@ -34,11 +34,11 @@
         (e.onload = () => {
           window.WebChat.default(
             {
-              customData: { "language": "zh", "userId": `{{cpyNo}}`, "industryId": `{{industryNo}}`},
+              customData: { "language": "zh", "userId": `{{user.CPY_ID}}`, "industryId": `{{user.INDUSTRY_NO}}`},
               socketUrl: "http://192.168.10.108:5005",
               profileAvatar: "/images/jennyhire.jpg",
               inputTextFieldHint: "請輸入內容....",
-              title: `[測試版]{{companyName}}小幫手`,
+              title: `[測試版]{{user.CPY_NAME}}小幫手`,
               subtitle: "",
               params: { "storage": "session" },
               showFullScreenButton: true,
@@ -57,10 +57,18 @@
   <header>
     <nav class="navbar navbar-dark bg-primary" style="font-weight:bold;">
       <a class="navbar-brand" href="/">
-        設定{{companyName}}小幫手
+        設定
+        {{#if isAuthenticated}}
+        {{user.CPY_NAME}}
+        {{/if}}
+       小幫手
       </a>
       {{!-- <h1 style="color: #fff;">ChatBot設定</h1> --}}
-      <a href="/users/logout" class="btn btn-secondary my-2 my-sm-0" role="button">Logout</a>
+      {{#if isAuthenticated}}
+      <a href="/users/logout" class="btn btn-outline-light">Logout</a>
+      {{else}}
+      <a href="/users/login" class="btn btn-outline-light">Login</a>
+      {{/if}}
     </nav>
   </header>
 

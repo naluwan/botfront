@@ -12,12 +12,12 @@ module.exports = app => {
 
   passport.use(new LocalStrategy({usernameField: 'email', passReqToCallback: true}, (req, email, password, done) => {
     const request = new sql.Request(pool)
-    request.query(`select CPY_NO, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN
+    request.query(`select CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN
     from BOTFRONT_USERS_INFO
     where EMAIL = '${email}'`, (err, result) => {
       if(err){
         console.log(err)
-        return result.send(err)
+        return res.send(err)
       }
 
       const user = result.recordset[0]

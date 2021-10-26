@@ -38,14 +38,17 @@ app.use(methodOverride('_method'))
 usePassport(app)
 app.use(flash())
 app.use((req, res, next) => {
-  res.locals.cpyNo = 1
-  res.locals.industryNo = 1
+  res.locals.isAuthenticated = req.isAuthenticated()
+  res.locals.user = req.user
+  const user = res.locals.user
+  if(res.locals.isAuthenticated){
+    res.locals.isAdmin = user.ISADMIN
+  }
   res.locals.warning_msg = req.flash('warning_msg')
   res.locals.success_msg = req.flash('success_msg')
   res.locals.errorMsg = req.flash('error')
   next()
 })
-app.use(flashMessage)
 
 app.use(routes)
 
