@@ -53,66 +53,66 @@ router.delete('/:subsidy_no', (req, res) => {
 	})
 })
 
-router.put('/:subsidy_no', (req, res) => {
-  const {subsidy_no} = req.params
-	const {SUBSIDY_DES} = req.body
+router.put('/:leave_no', (req, res) => {
+  const {leave_no} = req.params
+	const {LEAVE_DES} = req.body
 	const user = res.locals.user
 	const cpyNo = user.CPY_ID
 
 	const request = new sql.Request(pool)
 	const errors = []
 	request.query(`select *
-	from BOTFRONT_SUBSIDY_INFO a
-	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	from BOTFRONT_LEAVE_INFO a
+	where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
 		}
 
-		const checkSubsidy = result.recordset[0]
-		if(!checkSubsidy) errors.push({message: '查無補助津貼缺資訊，請重新編輯!'})
+		const checkLeave = result.recordset[0]
+		if(!checkLeave) errors.push({message: '查無假別資訊，請重新編輯!'})
 		if(errors.length){
-			request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
-      from BOTFRONT_SUBSIDY_INFO a
-      left join BOTFRONT_ALL_SUBSIDY b
-      on b.SUBSIDY_ID = a.SUBSIDY_NO
+			request.query(`select a.LEAVE_NO, b.LEAVE_NAME, a.LEAVE_DES
+      from BOTFRONT_LEAVE_INFO a
+      left join BOTFRONT_ALL_LEAVE b
+      on b.LEAVE_ID = a.LEAVE_NO
       where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
 				}
 
-				const subsidyInfo = result.recordset
-				return res.render('subsidy', {subsidyInfo, errors})
+				const leaveInfo = result.recordset
+				return res.render('leave', {leaveInfo, errors})
 			})
 		} else {
-			request.input('des', sql.NVarChar(2000), SUBSIDY_DES)
-			.query(`update BOTFRONT_SUBSIDY_INFO
-			set SUBSIDY_DES = @des
-			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			request.input('des', sql.NVarChar(2000), LEAVE_DES)
+			.query(`update BOTFRONT_LEAVE_INFO
+			set LEAVE_DES = @des
+			where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
 				}
-				res.redirect('/subsidy')
+				res.redirect('/leave')
 			})
 		}
 	})
 })
 
-router.get('/:subsidy_no/edit', (req, res) => {
-  const {subsidy_no} = req.params
+router.get('/:leave_no/edit', (req, res) => {
+  const {leave_no} = req.params
 	const user = res.locals.user
 	const cpyNo = user.CPY_ID
 
 	const request = new sql.Request(pool)
 	const errors = []
 
-	request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
-	from BOTFRONT_SUBSIDY_INFO a
-	left join BOTFRONT_ALL_SUBSIDY b
-	on a.SUBSIDY_NO = b.SUBSIDY_ID 
-	where a.SUBSIDY_NO = ${subsidy_no} and a.CPY_NO = ${cpyNo}`, (err, result) => {
+	request.query(`select a.LEAVE_NO, b.LEAVE_NAME, a.LEAVE_DES
+	from BOTFRONT_LEAVE_INFO a
+	left join BOTFRONT_ALL_LEAVE b
+	on a.LEAVE_NO = b.LEAVE_ID 
+	where a.LEAVE_NO = ${leave_no} and a.CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -120,23 +120,23 @@ router.get('/:subsidy_no/edit', (req, res) => {
 
 		result = result.recordset[0]
 		// console.log(result)
-		if(!result) errors.push({message:'查無此補助津貼資料!'})
+		if(!result) errors.push({message:'查無此假別資料!'})
 		if(errors.length){
-			request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
-      from BOTFRONT_SUBSIDY_INFO a
-      left join BOTFRONT_ALL_SUBSIDY b
-      on b.SUBSIDY_ID = a.SUBSIDY_NO
+			request.query(`select a.LEAVE_NO, b.LEAVE_NAME, a.LEAVE_DES
+      from BOTFRONT_LEAVE_INFO a
+      left join BOTFRONT_ALL_LEAVE b
+      on b.LEAVE_ID = a.LEAVE_NO
       where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
 				}
-				const subsidyInfo = result.recordset
+				const leaveInfo = result.recordset
 				// console.log(positionResult)
-				return res.render('subsidy', {subsidyInfo, errors})
+				return res.render('leave', {leaveInfo, errors})
 			})
 		} else {
-			return res.render('edit_subsidy', {result})
+			return res.render('edit_leave', {result})
 		}
 	})
 })
