@@ -4,50 +4,49 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-router.delete('/:subsidy_no', (req, res) => {
-	const {subsidy_no} = req.params
+router.delete('/:leave_no', (req, res) => {
+	const {leave_no} = req.params
 	const user = res.locals.user
 	const cpyNo = user.CPY_ID
-
 
 	const request = new sql.Request(pool)
 	const errors = []
 
 	request.query(`select * 
-	from BOTFRONT_SUBSIDY_INFO 
-	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	from BOTFRONT_LEAVE_INFO 
+	where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
 		}
 		result = result.recordset[0]
 		// console.log(result)
-		if(!result) errors.push({message: '查無此補助津貼資訊!'})
+		if(!result) errors.push({message: '查無此假別資訊!'})
 
 		if(errors.length){
-			request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
-      from BOTFRONT_SUBSIDY_INFO a
-      left join BOTFRONT_ALL_SUBSIDY b
-      on b.SUBSIDY_ID = a.SUBSIDY_NO
+			request.query(`select a.LEAVE_NO, b.LEAVE_NAME, a.LEAVE_DES
+      from BOTFRONT_LEAVE_INFO a
+      left join BOTFRONT_ALL_LEAVE b
+      on b.LEAVE_ID = a.LEAVE_NO
       where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
 				}
-				const subsidyInfo = result.recordset
+				const leaveInfo = result.recordset
 				// console.log(positionResult)
-				return res.render('subsidy', {subsidyInfo, errors})
+				return res.render('leave', {leaveInfo, errors})
 			})
 		} else {
 			request.query(`delete 
-			from BOTFRONT_SUBSIDY_INFO 
-			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			from BOTFRONT_LEAVE_INFO 
+			where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
 				}
 
-				return res.redirect('/subsidy')
+				return res.redirect('/leave')
 			})
 		}
 	})
