@@ -243,6 +243,11 @@ color:#fff;
   padding: 1rem;
 }
 
+.home {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 /* .rw-conversation-container .rw-message {
   flex-wrap: nowrap !important;
 } */
