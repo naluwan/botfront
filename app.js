@@ -5,7 +5,6 @@ const methodOverride = require('method-override')
 const hbshelpers = require('handlebars-helpers')
 const multihelpers = hbshelpers()
 const flash = require('connect-flash')
-const {flashMessage} = require('./middleware/getCompanyName')
 
 
 
