@@ -1,34 +1,34 @@
 <div class="row m-5">
   <div class="col-8 m-auto">
     <div class="card card-body">
-      <h1 class="text-center mt-3">新增職缺</h1>
+      <h1 class="text-center mt-3">新增補助資訊</h1>
       {{> message}}
-      <form action="/position" method="POST">
+      <form action="/subsidy" method="POST">
         <div class="modal-body">
 
           <div class="input-group mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text new-title" for="category">職缺名稱</label>
+              <label class="input-group-text new-title" for="category">補助類別</label>
             </div>
             <select class="custom-select new-title" id="category" name="category" required>
               <option value="" selected hidden>請選擇</option>
               {{#each category}}
-              <option value="{{this.POSITION_ID}}">{{this.POSITION_NAME}}</option>
+              <option value="{{this.SUBSIDY_NO}}">{{this.SUBSIDY_NAME}}</option>
               {{/each}}
             </select>
           </div>
 
           <div class="input-group">
             <div class="input-group-prepend">
-              <span class="input-group-text new-title">職缺資訊</span>
+              <span class="input-group-text new-title">補助內容</span>
             </div>
-            <textarea type="text" class="form-control new-des" name="des" placeholder="請輸入職位需求、工作內容、薪資" aria-label="inputDes"
-              aria-describedby="des" rows="10" required>{{ des }}</textarea>
+            <textarea type="text" class="form-control new-des" name="des" placeholder="請輸入補助內容..." aria-label="inputDes"
+              aria-describedby="des" rows="10" required>{{des}}</textarea>
           </div>
 
         </div>
         <div class="modal-footer">
-          <a href="/position" class="btn btn-outline-info">取消</a>
+          <a href="/subsidy" class="btn btn-outline-info">取消</a>
           <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">新增</button>
         </div>
       </form>
