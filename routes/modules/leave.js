@@ -154,11 +154,11 @@ router.post('/', (req, res) => {
 	}
 
 	if(errors.length){
-		request.query(`select SUBSIDY_ID, SUBSIDY_NAME 
-    from BOTFRONT_ALL_SUBSIDY a 
+		request.query(`select LEAVE_ID, LEAVE_NAME 
+    from BOTFRONT_ALL_LEAVE a 
     where not exists (select * 
-    from BOTFRONT_SUBSIDY_INFO b 
-    where  a.SUBSIDY_ID = b.SUBSIDY_NO 
+    from BOTFRONT_LEAVE_INFO b 
+    where  a.LEAVE_ID = b.LEAVE_NO 
     and b.CPY_NO = ${cpyNo})`, (err, result) => {
 			if(err){
 			console.log(err)
@@ -166,19 +166,19 @@ router.post('/', (req, res) => {
 			}
 
 			const category = result.recordset
-			return res.render('new_subsidy', {errors, des, category})
+			return res.render('new_leave', {errors, des, category})
 		})
 	}else{
 		request.input('cpyNo', sql.Int, cpyNo)
-		.input('subsidy_no', sql.Int, category)
+		.input('leave_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
-		.query(`insert into BOTFRONT_SUBSIDY_INFO (CPY_NO, SUBSIDY_NO, SUBSIDY_DES) 
-		values (@cpyNo, @SUBSIDY_no, @des)`, (err, result) => {
+		.query(`insert into BOTFRONT_LEAVE_INFO (CPY_NO, LEAVE_NO, LEAVE_DES) 
+		values (@cpyNo, @leave_no, @des)`, (err, result) => {
 			if(err){
 			console.log(err)
 			return
 			}
-			return res.redirect('/subsidy')
+			return res.redirect('/leave')
 		})
 	}
 })
@@ -189,7 +189,7 @@ router.get('/new', (req, res) => {
 
 	const request = new sql.Request(pool)
 	const warning = []
-	// 抓取未新增過的職缺資料
+	// 抓取未新增過的假別資料
 	request.query(`select LEAVE_ID, LEAVE_NAME 
 	from BOTFRONT_ALL_LEAVE a 
 	where not exists (select * 

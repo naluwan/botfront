@@ -173,7 +173,7 @@ router.post('/', (req, res) => {
 		.input('subsidy_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
 		.query(`insert into BOTFRONT_SUBSIDY_INFO (CPY_NO, SUBSIDY_NO, SUBSIDY_DES) 
-		values (@cpyNo, @SUBSIDY_no, @des)`, (err, result) => {
+		values (@cpyNo, @subsidy_no, @des)`, (err, result) => {
 			if(err){
 			console.log(err)
 			return
@@ -189,7 +189,7 @@ router.get('/new', (req, res) => {
 
 	const request = new sql.Request(pool)
 	const warning = []
-	// 抓取未新增過的職缺資料
+	// 抓取未新增過的補助資料
 	request.query(`select SUBSIDY_ID, SUBSIDY_NAME 
 	from BOTFRONT_ALL_SUBSIDY a 
 	where not exists (select * 
