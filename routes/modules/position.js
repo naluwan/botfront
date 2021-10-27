@@ -10,7 +10,6 @@ router.put('/:position_no', (req, res) => {
 	const user = res.locals.user
 	const cpyNo = user.CPY_ID
 
-
 	const request = new sql.Request(pool)
 	const errors = []
 	request.query(`select *

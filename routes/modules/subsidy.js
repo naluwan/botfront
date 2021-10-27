@@ -4,6 +4,93 @@ const router = express.Router()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+router.put('/:subsidy_no', (req, res) => {
+  const {subsidy_no} = req.params
+	const {SUBSIDY_DES} = req.body
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
+	const request = new sql.Request(pool)
+	const errors = []
+	request.query(`select *
+	from BOTFRONT_SUBSIDY_INFO a
+	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+		if(err){
+		console.log(err)
+		return
+		}
+
+		const checkSubsidy = result.recordset[0]
+		if(!checkSubsidy) errors.push({message: '查無補助津貼缺資訊，請重新編輯!'})
+		if(errors.length){
+			request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
+      from BOTFRONT_SUBSIDY_INFO a
+      left join BOTFRONT_ALL_SUBSIDY b
+      on b.SUBSIDY_ID = a.SUBSIDY_NO
+      where CPY_NO = ${cpyNo}`, (err, result) => {
+				if(err){
+				console.log(err)
+				return
+				}
+
+				const subsidyInfo = result.recordset
+				return res.render('subsidy', {subsidyInfo, errors})
+			})
+		} else {
+			request.input('des', sql.NVarChar(2000), SUBSIDY_DES)
+			.query(`update BOTFRONT_SUBSIDY_INFO
+			set SUBSIDY_DES = @des
+			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+				if(err){
+				console.log(err)
+				return
+				}
+				res.redirect('/subsidy')
+			})
+		}
+	})
+})
+
+router.get('/:subsidy_no/edit', (req, res) => {
+  const {subsidy_no} = req.params
+	const user = res.locals.user
+	const cpyNo = user.CPY_ID
+
+	const request = new sql.Request(pool)
+	const errors = []
+
+	request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
+	from BOTFRONT_SUBSIDY_INFO a
+	left join BOTFRONT_ALL_SUBSIDY b
+	on a.SUBSIDY_NO = b.SUBSIDY_ID 
+	where a.SUBSIDY_NO = ${subsidy_no} and a.CPY_NO = ${cpyNo}`, (err, result) => {
+		if(err){
+		console.log(err)
+		return
+		}
+
+		result = result.recordset[0]
+		// console.log(result)
+		if(!result) errors.push({message:'查無此補助津貼資料!'})
+		if(errors.length){
+			request.query(`select a.SUBSIDY_NO, b.SUBSIDY_NAME, a.SUBSIDY_DES
+      from BOTFRONT_SUBSIDY_INFO a
+      left join BOTFRONT_ALL_SUBSIDY b
+      on b.SUBSIDY_ID = a.SUBSIDY_NO
+      where CPY_NO = ${cpyNo}`, (err, result) => {
+				if(err){
+				console.log(err)
+				return
+				}
+				const subsidyInfo = result.recordset
+				// console.log(positionResult)
+				return res.render('subsidy', {subsidyInfo, errors})
+			})
+		} else {
+			return res.render('edit_subsidy', {result})
+		}
+	})
+})
 
 router.post('/', (req, res) => {
   const user = res.locals.user
@@ -66,7 +153,7 @@ router.get('/new', (req, res) => {
 		}
 
 		const category = result.recordset
-		if(category.length == 0) warning.push({message:'目前沒有可新增的職缺!'})
+		if(category.length == 0) warning.push({message:'目前沒有可新增的補助津貼!'})
 		if(warning.length){
 			return res.render('new_subsidy', {category, warning})
 		}else{
@@ -93,7 +180,7 @@ router.get('/', (req, res) => {
 
 		const subsidyInfo = result.recordset
 		// console.log(positionResult)
-		if(subsidyInfo.length == 0) warning.push({message: '還未新增補助資訊，請拉到下方點選按鈕新增職缺!!'})
+		if(subsidyInfo.length == 0) warning.push({message: '還未新增補助津貼資訊，請拉到下方點選按鈕新增補助津貼資訊!!'})
 		return res.render('subsidy', {subsidyInfo, warning})
 	})
 })
