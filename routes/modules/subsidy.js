@@ -154,7 +154,7 @@ router.post('/', (req, res) => {
 	}
 
 	if(errors.length){
-		request.query(`select SUBSIDY_ID, SUBSIDY_NAME 
+		request.query(`select a.SUBSIDY_ID, a.SUBSIDY_NAME 
     from BOTFRONT_ALL_SUBSIDY a 
     where not exists (select * 
     from BOTFRONT_SUBSIDY_INFO b 
@@ -190,7 +190,7 @@ router.get('/new', (req, res) => {
 	const request = new sql.Request(pool)
 	const warning = []
 	// 抓取未新增過的補助資料
-	request.query(`select SUBSIDY_ID, SUBSIDY_NAME 
+	request.query(`select a.SUBSIDY_ID, a.SUBSIDY_NAME 
 	from BOTFRONT_ALL_SUBSIDY a 
 	where not exists (select * 
 	from BOTFRONT_SUBSIDY_INFO b 

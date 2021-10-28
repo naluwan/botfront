@@ -153,7 +153,7 @@ router.post('/', (req, res) => {
 	}
 
 	if(errors.length){
-		request.query(`select LEAVE_ID, LEAVE_NAME 
+		request.query(`select a.LEAVE_ID, a.LEAVE_NAME 
     from BOTFRONT_ALL_LEAVE a 
     where not exists (select * 
     from BOTFRONT_LEAVE_INFO b 
@@ -189,7 +189,7 @@ router.get('/new', (req, res) => {
 	const request = new sql.Request(pool)
 	const warning = []
 	// 抓取未新增過的假別資料
-	request.query(`select LEAVE_ID, LEAVE_NAME 
+	request.query(`select a.LEAVE_ID, a.LEAVE_NAME 
 	from BOTFRONT_ALL_LEAVE a 
 	where not exists (select * 
 	from BOTFRONT_LEAVE_INFO b 

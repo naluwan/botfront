@@ -12,11 +12,11 @@ router.get('/:info_no/edit', (req, res) => {
 	const request = new sql.Request(pool)
 	const errors = []
 
-	request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
+	request.query(`select a.CPY_NO, a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 	from BOTFRONT_COMPANY_INFO a 
 	left join BOTFRONT_ALL_COMPANY_INFO b 
-	on a.INFO_NO = b.INFO_NO 
-	where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+	on a.INFO_NO = b.INFO_ID 
+	where a.INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -25,11 +25,11 @@ router.get('/:info_no/edit', (req, res) => {
 		const info = result.recordset[0]
 		if(!info) errors.push({message: '查無此資訊內容!'})
 		if(errors.length){
-			request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+			request.query(`select a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
-			on a.INFO_NO = b.INFO_NO 
-			where CPYID = ${cpyNo}`, (err, result) => {
+			on a.INFO_NO = b.INFO_ID 
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -53,11 +53,11 @@ router.put('/:info_no', (req, res) => {
 
 	const request = new sql.Request(pool)
 	const errors = []
-	request.query(`select CPYID, a.INFO_NO, INFO_NAME, INFO_DES 
+	request.query(`select a.CPY_NO, a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 	from BOTFRONT_COMPANY_INFO a
 	left join BOTFRONT_ALL_COMPANY_INFO b
-	on a.INFO_NO = b.INFO_NO
-	where a.INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+	on a.INFO_NO = b.INFO_ID
+	where a.INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -66,11 +66,11 @@ router.put('/:info_no', (req, res) => {
 		const checkInfo = result.recordset[0]
 		if(!checkInfo) errors.push({message: '查無此公司資訊，請重新編輯!'})
 		if(errors.length){
-			request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+			request.query(`select a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
-			on a.INFO_NO = b.INFO_NO 
-			where CPYID = ${cpyNo}`, (err, result) => {
+			on a.INFO_NO = b.INFO_ID 
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -82,7 +82,7 @@ router.put('/:info_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), INFO_DES)
 			.query(`update BOTFRONT_COMPANY_INFO
 			set INFO_DES = @des
-			where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+			where INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -109,11 +109,11 @@ router.post('/', (req, res) => {
 	}
 
 	if(errors.length){
-		request.query(`select INFO_NO, INFO_NAME 
+		request.query(`select a.INFO_ID, a.INFO_NAME 
 		from BOTFRONT_ALL_COMPANY_INFO a 
 		where not exists (select * 
 		from BOTFRONT_COMPANY_INFO b 
-		where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
+		where b.INFO_NO = a.INFO_ID and CPY_NO = ${cpyNo})`, (err, result) => {
 			if(err){
 				console.log(err)
 				return
@@ -126,7 +126,7 @@ router.post('/', (req, res) => {
 		request.input('cpyNo', sql.Int, cpyNo)
 		.input('info_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
-		.query(`insert into BOTFRONT_COMPANY_INFO (CPYID, INFO_NO, INFO_DES) 
+		.query(`insert into BOTFRONT_COMPANY_INFO (CPY_NO, INFO_NO, INFO_DES) 
 		values (@cpyNo, @info_no, @des)`, (err, result) => {
 			if(err){
 				console.log(err)
@@ -145,11 +145,11 @@ router.get('/new', (req, res) => {
 	const request = new sql.Request(pool)
 	const warning = []
 	// 抓取未新增過的公司資料
-	request.query(`select INFO_NO, INFO_NAME 
+	request.query(`select a.INFO_ID, a.INFO_NAME 
 	from BOTFRONT_ALL_COMPANY_INFO a 
 	where not exists (select * 
 	from BOTFRONT_COMPANY_INFO b 
-	where b.INFO_NO = a.INFO_NO and CPYID = ${cpyNo})`, (err, result) => {
+	where b.INFO_NO = a.INFO_ID and CPY_NO = ${cpyNo})`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -174,7 +174,7 @@ router.delete('/:info_no', (req, res) => {
 	// 檢查info_no是否有在table中
 	request.query(`select * 
 	from BOTFRONT_COMPANY_INFO 
-	where INFO_NO = ${info_no} AND CPYID = ${cpyNo}`, (err, result) => {
+	where INFO_NO = ${info_no} AND CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -183,11 +183,11 @@ router.delete('/:info_no', (req, res) => {
 		const companyInfo = result.recordset[0]
 		if(!companyInfo) errors.push({message: '查無此資訊，請重新操作!'})
 		if(errors.length) {
-			request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+			request.query(`select a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
-			on a.INFO_NO = b.INFO_NO 
-			where CPYID = ${cpyNo}`, (err, result) => {
+			on a.INFO_NO = b.INFO_ID 
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -199,7 +199,7 @@ router.delete('/:info_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_COMPANY_INFO 
-			where INFO_NO = ${info_no} and CPYID = ${cpyNo}`, (err, result) => {
+			where INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -217,11 +217,11 @@ router.get('/', (req, res) => {
 
 	const request = new sql.Request(pool)
 	const warning = []
-	request.query(`select a.INFO_NO, INFO_NAME, INFO_DES 
+	request.query(`select a.INFO_NO, b.INFO_NAME, a.INFO_DES 
 	from BOTFRONT_COMPANY_INFO a 
 	left join BOTFRONT_ALL_COMPANY_INFO b 
-	on a.INFO_NO = b.INFO_NO 
-	where CPYID = ${cpyNo}`, (err, result) => {
+	on a.INFO_NO = b.INFO_ID 
+	where CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

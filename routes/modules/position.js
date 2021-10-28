@@ -13,8 +13,8 @@ router.put('/:position_no', (req, res) => {
 	const request = new sql.Request(pool)
 	const errors = []
 	request.query(`select *
-	from BOTFRONT_POSITION_INFO a
-	where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
+	from BOTFRONT_POSITION_INFO
+	where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -27,7 +27,7 @@ router.put('/:position_no', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPYID = ${cpyNo}`, (err, result) => {
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -40,7 +40,7 @@ router.put('/:position_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), POSITION_DES)
 			.query(`update BOTFRONT_POSITION_INFO
 			set POSITION_DES = @des
-			where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
+			where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -60,11 +60,11 @@ router.get('/:position_id/edit', (req, res) => {
 	const request = new sql.Request(pool)
 	const errors = []
 
-	request.query(`select POSITION_NO, b.POSITION_NAME, POSITION_DES
+	request.query(`select a.POSITION_NO, b.POSITION_NAME, a.POSITION_DES
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on a.POSITION_NO = b.POSITION_ID 
-	where POSITION_NO = ${position_id} and CPYID = ${cpyNo}`, (err, result) => {
+	where POSITION_NO = ${position_id} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -78,7 +78,7 @@ router.get('/:position_id/edit', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPYID = ${cpyNo}`, (err, result) => {
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -104,7 +104,7 @@ router.delete('/:position_no', (req, res) => {
 
 	request.query(`select * 
 	from BOTFRONT_POSITION_INFO 
-	where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
+	where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -118,7 +118,7 @@ router.delete('/:position_no', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPYID = ${cpyNo}`, (err, result) => {
+			where CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -130,7 +130,7 @@ router.delete('/:position_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_POSITION_INFO 
-			where POSITION_NO = ${position_no} and CPYID = ${cpyNo}`, (err, result) => {
+			where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -160,12 +160,12 @@ router.post('/', (req, res) => {
 	}
 
 	if(errors.length){
-		request.query(`select POSITION_ID, POSITION_NAME 
+		request.query(`select a.POSITION_ID, a.POSITION_NAME 
 		from BOTFRONT_ALL_POSITION a 
 		where not exists (select * 
 		from BOTFRONT_POSITION_INFO b 
 		where  a.POSITION_ID = b.POSITION_NO 
-		and b.CPYID = ${cpyNo}) 
+		and b.CPY_NO = ${cpyNo}) 
 		and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
 			if(err){
 			console.log(err)
@@ -180,7 +180,7 @@ router.post('/', (req, res) => {
 		.input('industry_no', sql.Int, industryNo)
 		.input('position_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
-		.query(`insert into BOTFRONT_POSITION_INFO (CPYID, INDUSTRY_NO, POSITION_NO, POSITION_DES) 
+		.query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES) 
 		values (@cpyNo, @industry_no, @position_no, @des)`, (err, result) => {
 			if(err){
 			console.log(err)
@@ -200,12 +200,12 @@ router.get('/new', (req, res) => {
 	const request = new sql.Request(pool)
 	const warning = []
 	// 抓取未新增過的職缺資料
-	request.query(`select POSITION_ID, POSITION_NAME 
+	request.query(`select a.POSITION_ID, a.POSITION_NAME 
 	from BOTFRONT_ALL_POSITION a 
 	where not exists (select * 
 	from BOTFRONT_POSITION_INFO b 
 	where  a.POSITION_ID = b.POSITION_NO 
-	and b.CPYID = ${cpyNo}) 
+	and b.CPY_NO = ${cpyNo}) 
 	and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
 		if(err){
 		console.log(err)
@@ -234,7 +234,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-	where CPYID = ${cpyNo}`, (err, result) => {
+	where CPY_NO = ${cpyNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
