@@ -234,7 +234,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-	where CPY_NO = ${cpyNo}`, (err, result) => {
+	where CPY_NO = ${cpyNo} and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

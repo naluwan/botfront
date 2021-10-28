@@ -3,26 +3,26 @@
     <div class="card card-body">
       <h1 class="text-center mt-3">註冊帳號</h1>
       {{> message}}
-      <form action="/users/register" method="post">
+      <form action="/adminCompany/new" method="post">
         <div class="form-group">
           <label for="cpy_no">公司代碼</label>
-          <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}">
+          <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}" required>
         </div>
 
         <div class="form-group">
           <label for="cpy_name">公司名稱</label>
-          <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}">
+          <input type="text" id="cpy_name" name="cpy_name" class="form-control" placeholder="請輸入公司名稱" value="{{ cpy_name }}" required>
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" class="form-control" placeholder="請輸入信箱"
-            value="{{ email }}">
+            value="{{ email }}" required>
         </div>
 
         <div class="form-group">
-          <label for="industry_no">產業別</label>
-          <select name="industry_no" id="industry_no" class="form-control">
+          <label for="industry_no">產業類別</label>
+          <select name="industry_no" id="industry_no" class="form-control" required>
             <option value="" selected hidden>請選擇</option>
             {{#each industryInfo}}
             <option value="{{this.INDUSTRY_ID}}">
@@ -34,7 +34,7 @@
 
         <div class="form-group">
           <label for="isadmin">權限</label>
-          <select name="isadmin" id="isadmin" class="form-control">
+          <select name="isadmin" id="isadmin" class="form-control" required>
             <option value="" selected hidden>請選擇</option>
             <option value="1" {{#is isadmin '1'}} selected {{/is}}>管理員</option>
             <option value="0" {{#is isadmin '0'}} selected {{/is}}>一般使用者</option>
@@ -44,17 +44,17 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" class="form-control" placeholder="請輸入密碼"
-            value="{{ password }}">
+            value="{{ password }}" required>
         </div>
 
         <div class="form-group">
           <label for="confirmPassword">Confirm Password</label>
           <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
-            placeholder="請再次輸入密碼" value="{{ confirmPassword }}">
+            placeholder="請再次輸入密碼" value="{{ confirmPassword }}" required>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">註冊</button>
-        <a href="/" class="btn btn-block" role="button">返回</a>
+        <a href="/adminCompany" class="btn btn-block" role="button">返回</a>
       </form>
       <p class="lead mt-4">
         已經有帳號了?<a href="/users/login" style="color: blue;">登入</a>

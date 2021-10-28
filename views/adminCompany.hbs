@@ -22,15 +22,26 @@
                     <p class="des-text">產業名稱：{{ this.INDUSTRY_NAME }}</p>
                     <p class="des-text">管理員權限：{{ this.ISADMIN }}</p>
                   </div>
-                  <div class="d-flex justify-content-center item-buttons">
+                  <div class="d-flex flex-column justify-content-around align-items-stretch item-buttons">
+      
                     <a href="/adminCompany/{{ this.CPY_ID}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
-                        編輯
+                      編輯
                     </a>
+                  
+                    <a href="/adminCompany/{{ this.CPY_ID}}/edit/password" class="btn btn-info mx-2" style="font-size: 1rem; height:fit-content;">
+                      修改密碼
+                    </a>
+            
+                    <a href="/adminCompany/{{ this.CPY_ID}}/edit/industry" class="btn btn-warning mx-2" style="font-size: 1rem; height:fit-content;">
+                      修改產業類別
+                    </a>
+      
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}"
-                        data-name="{{ this.CPY_NAME }}" data-category="adminCompany">
-                        刪除
+                      id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.CPY_ID }}"
+                      data-name="{{ this.CPY_NAME }}" data-category="adminCompany">
+                      刪除
                     </button>
+    
                   </div>
                 </div>
               </div>

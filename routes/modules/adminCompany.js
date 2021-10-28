@@ -7,6 +7,70 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+router.put('/industry/:CPY_ID', (req, res) => {
+  const {CPY_ID} = req.params
+  const {industry_no} = req.body
+  const request = new sql.Request(pool)
+
+  if(!industry_no){
+    req.flash('error', '請選擇產業類別!!')
+    return res.redirect(`/adminCompany/${CPY_ID}/edit/industry`)
+  }
+  
+  request.query(`select * 
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    result = result.recordset[0]
+    if(!result){
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+    request.input('industry_no', sql.Int, industry_no)
+    .query(`update BOTFRONT_USERS_INFO
+    set INDUSTRY_NO = @industry_no 
+    where CPY_ID = ${CPY_ID}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      res.redirect('/adminCompany')
+    })
+  })
+})
+
+router.get('/:CPY_ID/edit/industry', (req, res) => {
+  const  {CPY_ID} = req.params
+
+  const request = new sql.Request(pool)
+  request.query(`select CPY_ID, CPY_NAME 
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCompanyInfo = result.recordset[0]
+    if(!adminCompanyInfo){
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+
+    request.query(`select *
+    from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const industryInfo = result.recordset
+      res.render('adminIndustry', {adminCompanyInfo, industryInfo})
+    })
+  })
+})
+
 router.get('/:CPY_ID/edit', (req, res) => {
   const {CPY_ID} = req.params
   const request = new sql.Request(pool)
@@ -25,16 +89,7 @@ router.get('/:CPY_ID/edit', (req, res) => {
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/adminCompany')
     }
-
-    request.query(`select *
-    from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const industryInfo = result.recordset
-      res.render('edit_adminCompany', {adminCompanyInfo, industryInfo})
-    })
+    res.render('edit_adminCompany', {adminCompanyInfo})
   })
 })
 
