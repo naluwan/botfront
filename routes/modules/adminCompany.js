@@ -7,6 +7,103 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+router.delete('/:CPY_ID', (req, res) => {
+  const {CPY_ID} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    result = result.recordset[0]
+    if(!result){
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+    request.query(`delete BOTFRONT_USERS_INFO
+    where CPY_ID = ${CPY_ID}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      req.flash('success_msg', '刪除成功!!')
+      res.redirect('/adminCompany')
+    })
+  })
+})
+
+router.put('/password/:CPY_ID', (req, res) => {
+  const {CPY_ID} = req.params
+  const {password, confirmPassword} = req.body
+
+  if(!password || !confirmPassword){
+    req.flash('error', '所有欄位都是必填的!!')
+    return res.redirect(`/adminCompany/${CPY_ID}/edit/password`)
+  }
+
+  if(password !== confirmPassword){
+    req.flash('error', '密碼與確認密碼不相符!')
+    return res.redirect(`/adminCompany/${CPY_ID}/edit/password`)
+  }
+
+  const request = new sql.Request(pool)
+
+  request.query(`select CPY_ID, CPY_NAME
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCompanyInfo = result.recordset[0]
+    if(!adminCompanyInfo){
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+    return bcrypt
+      .genSalt(10)
+      .then(salt => bcrypt.hash(password, salt))
+      .then(hash => {
+        request.input('password', sql.NVarChar(100), hash)
+        .query(`update BOTFRONT_USERS_INFO 
+        set password = @password
+        where CPY_ID = ${CPY_ID}`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+        })
+      }).then(() => {
+        req.flash('success_msg', '密碼修改成功!!')
+        return res.redirect('/adminCompany')
+      })
+      .catch(err => console.log(err))
+  })
+})
+
+router.get('/:CPY_ID/edit/password', (req, res) => {
+  const {CPY_ID} = req.params
+
+  const request = new sql.Request(pool)
+  request.query(`select CPY_ID, CPY_NAME
+  from BOTFRONT_USERS_INFO
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCompanyInfo = result.recordset[0]
+    if(!adminCompanyInfo){
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+    res.render('adminPassword', {adminCompanyInfo})
+  })
+})
+
 router.put('/industry/:CPY_ID', (req, res) => {
   const {CPY_ID} = req.params
   const {industry_no} = req.body
@@ -161,7 +258,7 @@ router.post('/new', isAdmin, (req, res) => {
         })
       }).then(() => {
         req.flash('success_msg', '新增成功!!')
-        return res.redirect('/')
+        return res.redirect('/adminCompany')
       })
       .catch(err => console.log(err))
     }

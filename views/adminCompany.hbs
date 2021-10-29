@@ -16,11 +16,11 @@
                     </div>
                   </div>
                   <div class="item-des">
-                    <p class="des-text">CPY_ID：{{ this.CPY_ID}}</p>
+                    <p class="des-text">公司代碼(公司統編)：{{ this.CPY_ID}}</p>
                     <p class="des-text">EMAIL(登入帳號)：{{ this.EMAIL }}</p>
                     <p class="des-text">產業代號：{{ this.INDUSTRY_NO }}</p>
                     <p class="des-text">產業名稱：{{ this.INDUSTRY_NAME }}</p>
-                    <p class="des-text">管理員權限：{{ this.ISADMIN }}</p>
+                    <p class="des-text">管理員權限：{{#if this.ISADMIN }}有{{else}}無{{/if}}</p>
                   </div>
                   <div class="d-flex flex-column justify-content-around align-items-stretch item-buttons">
       
