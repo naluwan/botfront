@@ -168,6 +168,41 @@ router.get('/:CPY_ID/edit/industry', (req, res) => {
   })
 })
 
+router.put('/:CPY_ID', (req, res) => {
+  const {CPY_ID} = req.params
+  const {cpy_no, cpy_name, email, isadmin} = req.body
+
+  const request = new sql.Request(pool)
+
+  request.query(`select CPY_NAME
+  from BOTFRONT_USERS_INFO 
+  where CPY_ID = ${CPY_ID}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminCompanyInfo = result.recordset[0]
+    if(!adminCompanyInfo) {
+      req.flash('error', '查無此公司，請重新嘗試!!')
+      return res.redirect('/adminCompany')
+    }
+    request.input('cpy_no', sql.Int, cpy_no)
+    .input('cpy_name', sql.NVarChar(80), cpy_name)
+    .input('email', sql.NVarChar(80), email)
+    .input('isadmin', sql.Bit, parseInt(isadmin))
+    .query(`update BOTFRONT_USERS_INFO
+    set CPY_ID = @cpy_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin
+    where CPY_ID = ${CPY_ID}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      req.flash('success_msg', '更新資料成功!!')
+      res.redirect('/adminCompany')
+    })
+  })
+})
+
 router.get('/:CPY_ID/edit', (req, res) => {
   const {CPY_ID} = req.params
   const request = new sql.Request(pool)
