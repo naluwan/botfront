@@ -7,6 +7,20 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+router.get('/new', (req, res) => {
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const industryInfo = result.recordset
+    res.render('new_adminPositionInfo', {industryInfo})
+  })
+})
+
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
 
