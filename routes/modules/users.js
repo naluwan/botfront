@@ -7,7 +7,7 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
-router.post('/register', isAdmin, (req, res) => {
+router.post('/register', (req, res) => {
   const {cpy_no, cpy_name, industry_no, email, isadmin, password, confirmPassword} = req.body
 
   const errors = []
@@ -82,7 +82,7 @@ router.post('/register', isAdmin, (req, res) => {
   })
 })
 
-router.get('/register', isAdmin, (req, res) => {
+router.get('/register', (req, res) => {
   const request = new sql.Request(pool)
 
   request.query(`select * 

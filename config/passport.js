@@ -17,7 +17,7 @@ module.exports = app => {
     where EMAIL = '${email}'`, (err, result) => {
       if(err){
         console.log(err)
-        return res.send(err)
+        return
       }
 
       const user = result.recordset[0]

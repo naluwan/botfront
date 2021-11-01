@@ -54,11 +54,13 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block">註冊</button>
-        <a href="/adminCompany" class="btn btn-block" role="button">返回</a>
+        <a href="/" class="btn btn-block" role="button">返回</a>
       </form>
+      {{#unless isAdmin}}
       <p class="lead mt-4">
         已經有帳號了?<a href="/users/login" style="color: blue;">登入</a>
       </p>
+      {{/unless}}
     </div>
   </div>
 </div>
