@@ -1,5 +1,5 @@
 const dataPanel = document.querySelector('#data-panel')
-const searchCompanyInfo = document.querySelector('#searchCompanyInfo')
+const searchInput = document.querySelector('#search')
 
 
 dataPanel.addEventListener('click', event => {
@@ -14,10 +14,10 @@ dataPanel.addEventListener('click', event => {
     }
 })
 
-searchCompanyInfo.addEventListener('focus', e => {
+searchInput.addEventListener('focus', e => {
     const target = e.target
 
-    if(target.matches('#searchCompanyInfo')){
-			document.querySelector('#searchCompanyInfo').value = ''
+    if(target.matches('#search')){
+			document.querySelector('#search').value = ''
     }
 })

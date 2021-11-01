@@ -64,10 +64,10 @@ router.get('/new', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-  const {searchCompanyInfo} = req.query
+  const {search} = req.query
   const warning = []
   
-  if(!searchCompanyInfo){
+  if(!search){
     request.query(`select *
     from BOTFRONT_ALL_COMPANY_INFO`, (err, result) => {
       if(err){
@@ -81,14 +81,14 @@ router.get('/', (req, res) => {
   }else{
     request.query(`select *
     from BOTFRONT_ALL_COMPANY_INFO
-    where INFO_NAME like '%%${searchCompanyInfo}%%'`, (err, result) => {
+    where INFO_NAME like '%%${search}%%'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
       const adminCompanyInfo = result.recordset
       if(!adminCompanyInfo) warning.push({message: '還未新增過此公司資訊類別!'})
-      res.render('adminCompanyInfo', {adminCompanyInfo, warning, searchCompanyInfo})
+      res.render('adminCompanyInfo', {adminCompanyInfo, warning, search})
     })
   }
 })
