@@ -18,7 +18,7 @@ router.put('/:default_no', (req, res) => {
   from BOTFRONT_DEFAULT_INFO a
   left join BOTFRONT_ALL_DEFAULT b
   on a.DEFAULT_NO = b.DEFAULT_ID
-  where a.CPYID = ${cpyNo} and a.DEFAULT_NO = ${default_no}`, (err, result) => {
+  where a.CPY_NO = ${cpyNo} and a.DEFAULT_NO = ${default_no}`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -31,7 +31,7 @@ router.put('/:default_no', (req, res) => {
       from BOTFRONT_DEFAULT_INFO a
       left join BOTFRONT_ALL_DEFAULT b
       on a.DEFAULT_NO = b.DEFAULT_ID
-      where a.CPYID = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
+      where a.CPY_NO = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -44,7 +44,7 @@ router.put('/:default_no', (req, res) => {
       request.input('des', sql.NVarChar(2000), DEFAULT_DES)
       .query(`update BOTFRONT_DEFAULT_INFO
       set DEFAULT_DES = @des
-      where CPYID = ${cpyNo} and DEFAULT_NO = ${default_no}`, (err, result) => {
+      where CPY_NO = ${cpyNo} and DEFAULT_NO = ${default_no}`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -68,7 +68,7 @@ router.get('/:default_no/edit', (req, res) => {
   from BOTFRONT_DEFAULT_INFO a
   left join BOTFRONT_ALL_DEFAULT b
   on a.DEFAULT_NO = b.DEFAULT_ID
-  where a.CPYID = ${cpyNo} and a.DEFAULT_NO = ${default_no}`, (err, result) => {
+  where a.CPY_NO = ${cpyNo} and a.DEFAULT_NO = ${default_no}`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -81,7 +81,7 @@ router.get('/:default_no/edit', (req, res) => {
       from BOTFRONT_DEFAULT_INFO a
       left join BOTFRONT_ALL_DEFAULT b
       on a.DEFAULT_NO = b.DEFAULT_ID
-      where a.CPYID = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
+      where a.CPY_NO = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -106,7 +106,7 @@ router.get('/', (req, res) => {
   from BOTFRONT_DEFAULT_INFO a
   left join BOTFRONT_ALL_DEFAULT b
   on a.DEFAULT_NO = b.DEFAULT_ID
-  where a.CPYID = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
+  where a.CPY_NO = ${cpyNo} order by a.DEFAULT_NO`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -117,7 +117,7 @@ router.get('/', (req, res) => {
     if(defaultInfo.length == 0){
       for(i = 1 ; i <= 3; i++){
         request.input(`des${i}`, sql.NVarChar, '')
-        .query(`insert into BOTFRONT_DEFAULT_INFO (CPYID, DEFAULT_NO, DEFAULT_DES)
+        .query(`insert into BOTFRONT_DEFAULT_INFO (CPY_NO, DEFAULT_NO, DEFAULT_DES)
         values (${cpyNo}, ${i}, @des${i})`, (err, result) => {
           if(err){
             console.log(err)
