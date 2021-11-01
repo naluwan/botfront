@@ -25,13 +25,14 @@
           <select name="industry_no" id="industry_no" class="form-control" required>
             <option value="" selected hidden>請選擇</option>
             {{#each industryInfo}}
-            <option value="{{this.INDUSTRY_ID}}">
+            <option value="{{this.INDUSTRY_ID}}" {{#unless ../isAdmin}} {{#is this.INDUSTRY_ID 0}} hidden disabled {{/is}} {{/unless}}>
             {{this.INDUSTRY_NAME}}
             </option>
             {{/each}}
           </select>
         </div>
 
+        {{#if isAdmin}}
         <div class="form-group">
           <label for="isadmin">權限</label>
           <select name="isadmin" id="isadmin" class="form-control" required>
@@ -40,6 +41,7 @@
             <option value="0" {{#is isadmin '0'}} selected {{/is}}>一般使用者</option>
           </select>
         </div>
+        {{/if}}
 
         <div class="form-group">
           <label for="password">Password</label>
