@@ -3,7 +3,7 @@
     <div class="card card-body">
       <h1 class="text-center mt-3">註冊帳號</h1>
       {{> message}}
-      <form action="/adminCompany/new" method="post">
+      <form {{#if isAdmin}}action="/adminCompany/new"{{else}}action="/users/register"{{/if}} method="post">
         <div class="form-group">
           <label for="cpy_no">公司代碼</label>
           <input type="text" id="cpy_no" name="cpy_no" class="form-control" placeholder="請輸入公司統編" value="{{ cpy_no }}" required>
@@ -25,7 +25,8 @@
           <select name="industry_no" id="industry_no" class="form-control" required>
             <option value="" selected hidden>請選擇</option>
             {{#each industryInfo}}
-            <option value="{{this.INDUSTRY_ID}}" {{#unless ../isAdmin}} {{#is this.INDUSTRY_ID 0}} hidden disabled {{/is}} {{/unless}}>
+            <option value="{{this.INDUSTRY_ID}}" {{#unless ../isAdmin}} {{#is this.INDUSTRY_ID 0}} hidden disabled {{/is}} {{/unless}} 
+            {{#is this.INDUSTRY_ID ../industry_no}} selected {{/is}}>
             {{this.INDUSTRY_NAME}}
             </option>
             {{/each}}
