@@ -1,5 +1,13 @@
 <div class="row d-flex flex-column align-items-center all">
   <h1 class="m-5">公司資訊類別</h1>
+  <div class="row">
+    <div class="industry-filter-wrapper">
+      <form action="/adminCompanyInfo">
+        <label for="searchCompanyInfo">搜尋公司資訊：</label>
+        <input type="text" name="searchCompanyInfo" id="searchCompanyInfo" onchange="submit()" value="{{searchCompanyInfo}}" placeholder="請輸入關鍵字...">
+      </form> 
+    </div>
+  </div>
   <div class="col-9 wrapper">
     {{> message}}
     <div class="scroll-view">

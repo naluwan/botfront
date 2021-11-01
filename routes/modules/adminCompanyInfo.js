@@ -21,7 +21,7 @@ router.delete('/:info_id', (req, res) => {
     }
     result = result.recordset[0]
     if(!result){
-      req.flash('error', '找不到此公司資訊，請重新嘗試!!')
+      req.flash('error', '找不到此公司資訊類別，請重新嘗試!!')
       return res.redirect('/adminCompanyInfo')
     }
     request.query(`delete 
@@ -31,7 +31,7 @@ router.delete('/:info_id', (req, res) => {
         console.log(err)
         return
       }
-      req.flash('success_msg', '已成功刪除公司資訊!!')
+      req.flash('success_msg', '已成功刪除公司資訊類別!!')
       res.redirect('/adminCOmpanyInfo')
     })
   })
@@ -54,7 +54,7 @@ router.post('/', (req, res) => {
       console.log(err)
       return
     }
-    req.flash('success_msg', '新增公司資訊成功!!')
+    req.flash('success_msg', '新增公司資訊類別成功!!')
     res.redirect('/adminCompanyInfo')
   })
 })
@@ -64,17 +64,33 @@ router.get('/new', (req, res) => {
 })
 
 router.get('/', (req, res) => {
+  const {searchCompanyInfo} = req.query
   const warning = []
-  request.query(`select *
-  from BOTFRONT_ALL_COMPANY_INFO`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const adminCompanyInfo = result.recordset
-    if(!adminCompanyInfo) warning.push({message: '查無公司資訊，請拉到下方新增公司資訊類別!'})
-    res.render('adminCompanyInfo', {adminCompanyInfo, warning})
-  })
+  
+  if(!searchCompanyInfo){
+    request.query(`select *
+    from BOTFRONT_ALL_COMPANY_INFO`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const adminCompanyInfo = result.recordset
+      if(!adminCompanyInfo || adminCompanyInfo == '') warning.push({message: '查無公司資訊類別，請拉到下方新增公司資訊類別!'})
+      res.render('adminCompanyInfo', {adminCompanyInfo, warning})
+    })
+  }else{
+    request.query(`select *
+    from BOTFRONT_ALL_COMPANY_INFO
+    where INFO_NAME like '%%${searchCompanyInfo}%%'`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const adminCompanyInfo = result.recordset
+      if(!adminCompanyInfo) warning.push({message: '還未新增過此公司資訊類別!'})
+      res.render('adminCompanyInfo', {adminCompanyInfo, warning, searchCompanyInfo})
+    })
+  }
 })
 
 module.exports = router

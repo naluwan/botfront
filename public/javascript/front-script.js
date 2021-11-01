@@ -1,4 +1,6 @@
 const dataPanel = document.querySelector('#data-panel')
+const searchCompanyInfo = document.querySelector('#searchCompanyInfo')
+
 
 dataPanel.addEventListener('click', event => {
     const target = event.target
@@ -9,5 +11,13 @@ dataPanel.addEventListener('click', event => {
 
         deletePosition.innerText = '「' + target.dataset.name + '」'
         deleteForm.action = `/${target.dataset.category}/${target.dataset.id}?_method=DELETE`
+    }
+})
+
+searchCompanyInfo.addEventListener('focus', e => {
+    const target = e.target
+
+    if(target.matches('#searchCompanyInfo')){
+			document.querySelector('#searchCompanyInfo').value = ''
     }
 })
