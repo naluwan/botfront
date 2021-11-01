@@ -254,6 +254,11 @@ color:#fff;
   flex-wrap: wrap;
 }
 
+.industry-filter-wrapper{
+  width: 100%;
+  font-size: 1.5rem;
+}
+
 /* .rw-conversation-container .rw-message {
   flex-wrap: nowrap !important;
 } */

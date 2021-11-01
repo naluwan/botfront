@@ -77,17 +77,50 @@ router.get('/new', (req, res) => {
 
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
-
-  request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, b.INDUSTRY_NAME
-  from BOTFRONT_ALL_POSITION a
-  left join BOTFRONT_TYPE_OF_INDUSTRY b
-  on a.INDUSTRY_NO = b.INDUSTRY_ID`, (err, result) => {
+  const {industryFilter} = req.query
+  // let industryInfo = []
+  
+  // 取得所有分類類別
+  request.query(`select *
+  from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const adminPositionInfo = result.recordset
-    res.render('adminPositionInfo', {adminPositionInfo})
+    const industryInfo = result.recordset
+
+    // console.log(industryFilter)
+
+    if(!industryFilter || industryFilter == ''){
+      // 如果沒有選擇分類，顯示所有結果
+      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, b.INDUSTRY_NAME
+      from BOTFRONT_ALL_POSITION a
+      left join BOTFRONT_TYPE_OF_INDUSTRY b
+      on a.INDUSTRY_NO = b.INDUSTRY_ID`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+
+        const adminPositionInfo = result.recordset
+        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
+      })
+    }else{
+      // 有選擇分類的話，顯示篩選後結果
+      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, b.INDUSTRY_NAME
+      from BOTFRONT_ALL_POSITION a
+      left join BOTFRONT_TYPE_OF_INDUSTRY b
+      on a.INDUSTRY_NO = b.INDUSTRY_ID
+      where b.INDUSTRY_NAME = '${industryFilter}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        // console.log(industryInfo)
+        const adminPositionInfo = result.recordset
+        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo, industryFilter})
+      })
+    }
   })
 })
 

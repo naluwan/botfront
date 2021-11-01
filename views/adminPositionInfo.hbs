@@ -1,5 +1,19 @@
 <div class="row d-flex flex-column align-items-center all">
   <h1 class="m-5">職缺類別</h1>
+  <div class="row">
+    <div class="industry-filter-wrapper">
+      <form action="/adminPositionInfo">
+        <label for="industryFilter">產業類別篩選：</label>
+        <select name="industryFilter" id="industryFilter" onchange="submit()">
+          <option value="">全部顯示</option>
+          {{#forEach industryInfo}}
+          <option value="{{INDUSTRY_NAME}}" {{#is INDUSTRY_NAME ../industryFilter}} selected {{/is}}
+          {{#is INDUSTRY_NAME 'Admin'}} disabled hidden {{/is}} id="select-item">{{INDUSTRY_NAME}}</option>
+          {{/forEach}}
+        </select>
+      </form> 
+    </div>
+  </div>
   <div class="col-9 wrapper">
     {{> message}}
     <div class="scroll-view">
@@ -69,7 +83,7 @@
         </button>
       </div>
       <div class="modal-body">
-       <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+        <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
