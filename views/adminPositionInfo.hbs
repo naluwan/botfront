@@ -8,7 +8,7 @@
           <option value="">全部顯示</option>
           {{#forEach industryInfo}}
           <option value="{{INDUSTRY_NAME}}" {{#is INDUSTRY_NAME ../industryFilter}} selected {{/is}}
-          {{#is INDUSTRY_NAME 'Admin'}} disabled hidden {{/is}} id="select-item">{{INDUSTRY_NAME}}</option>
+          {{#is INDUSTRY_NAME 'Admin'}} disabled hidden {{/is}}>{{INDUSTRY_NAME}}</option>
           {{/forEach}}
         </select>
       </form> 

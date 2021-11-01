@@ -119,8 +119,8 @@ router.post('/', (req, res) => {
 				return
 			}
 
-			const category = result.recordset
-			return res.render('new_company', {errors, des, category})
+			const categoryInfo = result.recordset
+			return res.render('new_company', {errors, des, categoryInfo, category})
 		})
 	} else {
 		request.input('cpyNo', sql.Int, cpyNo)
@@ -154,12 +154,12 @@ router.get('/new', (req, res) => {
 			console.log(err)
 			return
 		}
-		const category = result.recordset
-		if(category.length == 0) warning.push({message: '目前沒有可新增的公司資訊!'})
+		const categoryInfo = result.recordset
+		if(categoryInfo.length == 0) warning.push({message: '目前沒有可新增的公司資訊!'})
 		if(warning.length){
-			return res.render('new_company', {category, warning})
+			return res.render('new_company', {categoryInfo, warning})
 		} else {
-			return res.render('new_company', {category})
+			return res.render('new_company', {categoryInfo})
 		}
 	})
 })

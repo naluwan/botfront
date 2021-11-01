@@ -104,73 +104,9 @@ router.get('/:CPY_ID/edit/password', (req, res) => {
   })
 })
 
-router.put('/industry/:CPY_ID', (req, res) => {
-  const {CPY_ID} = req.params
-  const {industry_no} = req.body
-  const request = new sql.Request(pool)
-
-  if(!industry_no){
-    req.flash('error', '請選擇產業類別!!')
-    return res.redirect(`/adminCompany/${CPY_ID}/edit/industry`)
-  }
-  
-  request.query(`select * 
-  from BOTFRONT_USERS_INFO
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    result = result.recordset[0]
-    if(!result){
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/adminCompany')
-    }
-    request.input('industry_no', sql.Int, industry_no)
-    .query(`update BOTFRONT_USERS_INFO
-    set INDUSTRY_NO = @industry_no 
-    where CPY_ID = ${CPY_ID}`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      res.redirect('/adminCompany')
-    })
-  })
-})
-
-router.get('/:CPY_ID/edit/industry', (req, res) => {
-  const  {CPY_ID} = req.params
-
-  const request = new sql.Request(pool)
-  request.query(`select CPY_ID, CPY_NAME 
-  from BOTFRONT_USERS_INFO
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const adminCompanyInfo = result.recordset[0]
-    if(!adminCompanyInfo){
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/adminCompany')
-    }
-
-    request.query(`select *
-    from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      const industryInfo = result.recordset
-      res.render('adminIndustry', {adminCompanyInfo, industryInfo})
-    })
-  })
-})
-
 router.put('/:CPY_ID', (req, res) => {
   const {CPY_ID} = req.params
-  const {cpy_no, cpy_name, email, isadmin} = req.body
+  const {cpy_no, cpy_name, email, isadmin, industry_no} = req.body
 
   const request = new sql.Request(pool)
 
@@ -187,11 +123,12 @@ router.put('/:CPY_ID', (req, res) => {
       return res.redirect('/adminCompany')
     }
     request.input('cpy_no', sql.Int, cpy_no)
+    .input('industry_no', sql.Int, industry_no)
     .input('cpy_name', sql.NVarChar(80), cpy_name)
     .input('email', sql.NVarChar(80), email)
     .input('isadmin', sql.Bit, parseInt(isadmin))
     .query(`update BOTFRONT_USERS_INFO
-    set CPY_ID = @cpy_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin
+    set CPY_ID = @cpy_no, INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin
     where CPY_ID = ${CPY_ID}`, (err, result) => {
       if(err){
         console.log(err)
@@ -207,21 +144,30 @@ router.get('/:CPY_ID/edit', (req, res) => {
   const {CPY_ID} = req.params
   const request = new sql.Request(pool)
 
-  request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN
-  from BOTFRONT_USERS_INFO a
-  left join BOTFRONT_TYPE_OF_INDUSTRY b
-  on a.INDUSTRY_NO = b.INDUSTRY_ID
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
+  request.query(`select *
+  from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const adminCompanyInfo = result.recordset[0]
-    if(!adminCompanyInfo) {
-      req.flash('error', '查無此公司，請重新嘗試!!')
-      return res.redirect('/adminCompany')
-    }
-    res.render('edit_adminCompany', {adminCompanyInfo})
+    const industryInfo = result.recordset
+
+    request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN
+    from BOTFRONT_USERS_INFO a
+    left join BOTFRONT_TYPE_OF_INDUSTRY b
+    on a.INDUSTRY_NO = b.INDUSTRY_ID
+    where CPY_ID = ${CPY_ID}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const adminCompanyInfo = result.recordset[0]
+      if(!adminCompanyInfo) {
+        req.flash('error', '查無此公司，請重新嘗試!!')
+        return res.redirect('/adminCompany')
+      }
+      res.render('edit_adminCompany', {adminCompanyInfo, industryInfo})
+    })
   })
 })
 

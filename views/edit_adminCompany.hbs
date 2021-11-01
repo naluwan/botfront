@@ -23,6 +23,18 @@
           </div>
 
           <div class="form-group">
+            <label for="industry_no">產業類別</label>
+            <select name="industry_no" id="industry_no" class="form-control" required>
+              <option value="" selected hidden>請選擇</option>
+              {{#each industryInfo}}
+              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_ID ../adminCompanyInfo.INDUSTRY_NO}} selected {{/is}}>
+              {{this.INDUSTRY_NAME}}
+              </option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="isadmin">權限</label>
             <select name="isadmin" id="isadmin" class="form-control" required>
               <option value="" selected hidden>請選擇</option>

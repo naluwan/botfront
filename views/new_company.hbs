@@ -12,8 +12,8 @@
             </div>
             <select class="custom-select new-title" id="category" name="category" required>
               <option value="" selected hidden>請選擇</option>
-              {{#each category}}
-              <option value="{{this.INFO_ID}}">{{this.INFO_NAME}}</option>
+              {{#each categoryInfo}}
+              <option value="{{this.INFO_ID}}" {{#is this.INFO_ID ../category}} selected {{/is}}>{{this.INFO_NAME}}</option>
               {{/each}}
             </select>
           </div>
