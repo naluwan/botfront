@@ -9,6 +9,35 @@ const pool = require('../../config/connectPool')
 const { query } = require('express')
 const request = new sql.Request(pool)
 
+router.delete('/:leave_id', (req, res) => {
+  const {leave_id} = req.params
+  
+  request.query(`select *
+  from BOTFRONT_ALL_LEAVE
+  where LEAVE_ID = ${leave_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    result = result.recordset[0]
+    if(!result){
+      req.flash('error', '查無此假別資訊，請重新嘗試!!')
+      return res.redirect('/adminLeaveInfo')
+    }
+
+    request.query(`delete
+    from BOTFRONT_ALL_LEAVE
+    where LEAVE_ID = ${leave_id}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      req.flash('success_msg', '已成功刪除公司假別!!')
+      res.redirect('/adminLeaveInfo')
+    })
+  })
+})
+
 router.post('/', (req, res) => {
   const {leave_name, leave_entity_name} = req.body
   const errors = []
