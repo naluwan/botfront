@@ -7,11 +7,11 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
-const request = new sql.Request(pool)
+
 
 router.delete('/:info_id', (req, res) => {
   const {info_id} = req.params
-
+  const request = new sql.Request(pool)
   request.query(`select *
   from BOTFRONT_ALL_COMPANY_INFO
   where INFO_ID = ${info_id}`, (err, result) => {
@@ -40,7 +40,7 @@ router.delete('/:info_id', (req, res) => {
 router.post('/', (req, res) => {
   const {info_name, info_entity_name} = req.body
   const errors = []
-  
+  const request = new sql.Request(pool)
   if(!info_name || !info_entity_name){
     errors.push({message: '所有欄位都是必填的!!'})
     return res.render('new_adminCompanyInfo', {info_name, info_entity_name, errors})
@@ -66,7 +66,7 @@ router.get('/new', (req, res) => {
 router.get('/', (req, res) => {
   const {search} = req.query
   const warning = []
-  
+  const request = new sql.Request(pool)
   if(!search){
     request.query(`select *
     from BOTFRONT_ALL_COMPANY_INFO`, (err, result) => {

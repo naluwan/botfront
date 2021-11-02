@@ -7,11 +7,11 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
-const request = new sql.Request(pool)
+
 
 router.delete('/:subsidy_id', (req, res) => {
   const {subsidy_id} = req.params
-
+  const request = new sql.Request(pool)
   request.query(`select *
   from BOTFRONT_ALL_SUBSIDY
   where SUBSIDY_ID = ${subsidy_id}`, (err, result) => {
@@ -40,6 +40,7 @@ router.delete('/:subsidy_id', (req, res) => {
 
 router.post('/', (req, res) => {
   const {subsidy_name, subsidy_entity_name} = req.body
+  const request = new sql.Request(pool)
   const errors = []
 
   if(!subsidy_name || !subsidy_entity_name){
@@ -57,6 +58,7 @@ router.post('/', (req, res) => {
     }
     req.flash('success_msg', '新增公司補助類別成功!!')
     res.redirect('/adminSubsidyInfo')
+    sql.close()
   })
 })
 
@@ -67,6 +69,7 @@ router.get('/new', (req, res) => {
 router.get('/', (req, res) => {
   const {search} = req.query
   const warning = []
+  const request = new sql.Request(pool)
   if(!search){
     request.query(`select *
     from BOTFRONT_ALL_SUBSIDY`, (err, result) => {
