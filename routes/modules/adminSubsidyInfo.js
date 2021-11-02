@@ -9,6 +9,61 @@ const pool = require('../../config/connectPool')
 const { query } = require('express')
 const request = new sql.Request(pool)
 
+router.delete('/:subsidy_id', (req, res) => {
+  const {subsidy_id} = req.params
+
+  request.query(`select *
+  from BOTFRONT_ALL_SUBSIDY
+  where SUBSIDY_ID = ${subsidy_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    result = result.recordset[0]
+    if(!result){
+      req.flash('error', '查無此補助類別，請重新嘗試!!')
+      return res.redirect('/adminSubsidyInfo')
+    }
+
+    request.query(`delete
+    from BOTFRONT_ALL_SUBSIDY
+    where SUBSIDY_ID = ${subsidy_id}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      req.flash('success_msg', '已成功刪除公司補助類別!!')
+      res.redirect('/adminSubsidyInfo')
+    })
+  })
+})
+
+router.post('/', (req, res) => {
+  const {subsidy_name, subsidy_entity_name} = req.body
+  const errors = []
+
+  if(!subsidy_name || !subsidy_entity_name){
+    errors.push({message: '所有欄位都是必填的!!'})
+    return res.render('new_adminSubsidyInfo', {subsidy_name, subsidy_entity_name, errors})
+  }
+
+  request.input('subsidy_name', sql.NVarChar(20), subsidy_name)
+  .input('subsidy_entity_name', sql.NVarChar(50), subsidy_entity_name)
+  .query(`insert into BOTFRONT_ALL_SUBSIDY (SUBSIDY_NAME, SUBSIDY_ENTITY_NAME)
+  values (@subsidy_name, @subsidy_entity_name)`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    req.flash('success_msg', '新增公司補助類別成功!!')
+    res.redirect('/adminSubsidyInfo')
+  })
+})
+
+router.get('/new', (req, res) => {
+  res.render('new_adminSubsidyInfo')
+})
+
 router.get('/', (req, res) => {
   const {search} = req.query
   const warning = []
