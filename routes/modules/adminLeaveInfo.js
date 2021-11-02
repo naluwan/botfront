@@ -76,7 +76,7 @@ router.get('/', (req, res) => {
         return
       }
       const adminLeaveInfo = result.recordset
-      if(!adminLeaveInfo || adminLeaveInfo == '') warning.push('查無公司假別，請拉到下方新增公司假別!!')
+      if(!adminLeaveInfo || adminLeaveInfo == '') warning.push({message: '查無公司假別，請拉到下方新增公司假別!!'})
       res.render('adminLeaveInfo', {adminLeaveInfo, warning})
     })
   }else{
