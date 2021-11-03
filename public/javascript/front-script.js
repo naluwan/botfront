@@ -12,6 +12,14 @@ dataPanel.addEventListener('click', event => {
         deletePosition.innerText = '「' + target.dataset.name + '」'
         deleteForm.action = `/${target.dataset.category}/${target.dataset.id}?_method=DELETE`
     }
+
+    if(target.matches('#adminSearch-delete-btn')){
+        const deletePosition = document.querySelector('#delete-position')
+        const deleteForm = document.querySelector('#delete-form')
+
+        deletePosition.innerText = '「' + target.dataset.cpyname + '的' + target.dataset.name + '」'
+        deleteForm.action = `/${target.dataset.category}/${target.dataset.cpyno}/${target.dataset.table}/${target.dataset.id}?_method=DELETE`
+    }
 })
 
 searchInput.addEventListener('focus', e => {
