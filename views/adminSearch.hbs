@@ -2,7 +2,7 @@
   <h1 class="m-5">查詢各公司回覆資料</h1>
   <div class="row">
     <div class="admin-search-wrapper">
-      <form action="/adminSearch">
+      <form action="/adminSearch/filter">
         <label for="companyFilter">公司：</label>
         <select name="companyFilter" id="companyFilter" onchange="submit()">
           <option value="" selected hidden>請選擇</option>
@@ -17,8 +17,8 @@
           <option value="" selected hidden>請選擇</option>
           <option value="COMPANY" {{#is tableFilter 'COMPANY'}} selected {{/is}}>公司資訊</option>
           <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
-          <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>假別資訊</option>
-          <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>補助資訊</option>
+          <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
+          <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
         </select>
 
         <label for="search">搜尋：</label>

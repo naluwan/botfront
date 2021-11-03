@@ -22,6 +22,7 @@ dataPanel.addEventListener('click', event => {
     }
 })
 
+
 searchInput.addEventListener('focus', e => {
     const target = e.target
 
