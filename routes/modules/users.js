@@ -74,12 +74,12 @@ router.post('/register', (req, res) => {
         .then(hash => {
           request.input('cpy_no', sql.Int, parseInt(cpy_no))
           .input('cpy_name', sql.NVarChar(80), cpy_name)
-        .input('industry_no', sql.Int, parseInt(industry_no))
-        .input('email', sql.NVarChar(80), email)
-        .input('isadmin', sql.Bit, parseInt(isadmin))
-        .input('password', sql.NVarChar(100), hash)
-        .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN)
-        values (@cpy_no, @cpy_name, @email, @password, @industry_no, @isadmin)`, (err, result) => {
+          .input('industry_no', sql.Int, parseInt(industry_no))
+          .input('email', sql.NVarChar(80), email)
+          .input('isadmin', sql.Bit, parseInt(isadmin))
+          .input('password', sql.NVarChar(100), hash)
+          .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN)
+          values (@cpy_no, @cpy_name, @email, @password, @industry_no, @isadmin)`, (err, result) => {
           if(err){
             console.log(err)
             return
