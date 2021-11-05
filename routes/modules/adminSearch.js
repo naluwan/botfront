@@ -8,6 +8,76 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 
+// admin 刪除個公司各類別的回覆
+router.delete('/:cpy_no/:table/:project_no', (req, res) => {
+  const {cpy_no, table, project_no} = req.params
+  const request = new sql.Request(pool)
+
+  // 刪除資料來自哪一個tableFilter
+  // 因為COMPANY_INFO的資料庫欄位名稱與其他幾個不一樣，所以需要單獨拉出來寫
+  if(table == 'COMPANY'){
+    // 驗證要刪除的資料是否存在
+    request.query(`select *
+    from BOTFRONT_${table}_INFO
+    where CPY_NO = ${cpy_no}
+    and INFO_NO = ${project_no}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const infoCheck = result.recordset
+      if(infoCheck.length == 0){
+        req.flash('error', '查無此筆資料，請重新嘗試!!')
+        return res.redirect(`/adminSearch/filter?companyFilter=${cpy_no}&tableFilter=${table}&search=`)
+      }else{
+        // 刪除該筆資料
+        request.query(`delete
+        from BOTFRONT_${table}_INFO
+        where CPY_NO = ${cpy_no}
+        and INFO_NO = ${project_no}`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          req.flash('success_msg', '已成功刪除資料!!')
+          return res.redirect(`/adminSearch/filter?companyFilter=${cpy_no}&tableFilter=${table}&search=`)
+        })
+      }
+    })
+  }else{
+    // tableFilter除了COMPANY之外，其他都在這處理
+    // 驗證要刪除的資料是否存在
+    request.query(`select *
+    from BOTFRONT_${table}_INFO
+    where CPY_NO = ${cpy_no}
+    and ${table}_NO = ${project_no}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const infoCheck = result.recordset
+      if(infoCheck.length == 0){
+        req.flash('error', '查無此筆資料，請重新嘗試!!')
+        return res.redirect(`/adminSearch/filter?companyFilter=${cpy_no}&tableFilter=${table}&search=`)
+      }else{
+        // 刪除該筆資料
+        request.query(`delete
+        from BOTFRONT_${table}_INFO
+        where CPY_NO = ${cpy_no}
+        and ${table}_NO = ${project_no}`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          req.flash('success_msg', '已成功刪除資料!!')
+          return res.redirect(`/adminSearch/filter?companyFilter=${cpy_no}&tableFilter=${table}&search=`)
+        })
+      }
+    })
+  }
+})
+
+// admin 新增各公司各類別的回覆
 router.post('/', (req, res) => {
   const {companyFilter, tableFilter, industry_select, adminSearch_des, admin_select } = req.body
   const errors = []
@@ -130,7 +200,9 @@ router.post('/', (req, res) => {
       })
     }
 
+    // tableFilter選擇假別或補助
     if(tableFilter == 'SUBSIDY' || tableFilter == 'LEAVE'){
+      // 驗證要新增的假別或補助類別是否有在相對應的類別中
       request.query(`select * 
       from BOTFRONT_ALL_${tableFilter}
       where ${tableFilter}_ID = ${admin_select}`, (err, result) => {
@@ -143,6 +215,7 @@ router.post('/', (req, res) => {
           req.flash('error', '無此新增項目，請重新嘗試!!')
           return res.redirect('/adminSearch/new')
         }else{
+          // 驗證要新增的假別或補助類別是否已經新增過
           request.query(`select * 
           from BOTFRONT_${tableFilter}_INFO
           where CPY_NO = ${companyFilter} 
@@ -152,6 +225,7 @@ router.post('/', (req, res) => {
               return
             }
             const projectAdded = result.recordset
+            // 如果沒有新增過，結果會是[]
             if(projectAdded.length == 0){
               request.input('cpy_no', sql.Int, companyFilter)
               .input('project_no', sql.Int, admin_select)
@@ -243,7 +317,7 @@ router.get('/api/v1/new/:table/:cpy_no', (req, res) => {
       console.log(err)
       return
       }
-      
+
       return res.send(result)
     })
   }
@@ -406,7 +480,7 @@ router.put('/:cpy_no/:table/:adminSearch_no', (req, res) => {
   }
 })
 
-// 顯示編輯頁面
+// 顯示 admin 編輯頁面
 router.get('/:cpy_no/:table/:adminSearch_no/edit', (req, res) => {
   const {cpy_no, table, adminSearch_no} = req.params
 
@@ -452,7 +526,7 @@ router.get('/:cpy_no/:table/:adminSearch_no/edit', (req, res) => {
   }
 })
 
-// 篩選公司及類別進行查詢並顯示頁面
+// admin 篩選公司及類別進行查詢並顯示頁面
 router.get('/filter', (req, res) => {
   const {companyFilter, tableFilter, search} = req.query
 
@@ -488,7 +562,7 @@ router.get('/filter', (req, res) => {
       // 其他類別資料庫名稱為BOTFRONT_ALL_xxxx，公司資訊類別資料庫名稱為BOTFRONT_ALL_COMPANY_INFO
       if(tableFilter == 'COMPANY'){
         // 類別選擇「是」公司資訊
-        request.query(`select a.CPY_NO, a.INFO_NO as adminSearch_no, a.INFO_DES as adminSearch_des, b.INFO_NAME as adminSearch_name
+        request.query(`select a.CPY_NO, c.CPY_NAME, a.INFO_NO as adminSearch_no, a.INFO_DES as adminSearch_des, b.INFO_NAME as adminSearch_name
         from BOTFRONT_COMPANY_INFO a
         left join BOTFRONT_ALL_COMPANY_INFO b
         on a.INFO_NO = b.INFO_ID
@@ -509,7 +583,7 @@ router.get('/filter', (req, res) => {
         })
       }else{
         // 類別選擇「不是」公司資訊
-        request.query(`select a.CPY_NO, a.${tableFilter}_NO as adminSearch_no, a.${tableFilter}_DES as adminSearch_des, b.${tableFilter}_NAME as adminSearch_name
+        request.query(`select a.CPY_NO, c.CPY_NAME, a.${tableFilter}_NO as adminSearch_no, a.${tableFilter}_DES as adminSearch_des, b.${tableFilter}_NAME as adminSearch_name
         from BOTFRONT_${tableFilter}_INFO a
         left join BOTFRONT_ALL_${tableFilter} b
         on a.${tableFilter}_NO = b.${tableFilter}_ID
@@ -533,7 +607,7 @@ router.get('/filter', (req, res) => {
       
       if(tableFilter == 'COMPANY'){
         // 類別選擇「是」公司資訊
-        request.query(`select a.CPY_NO, a.INFO_NO as adminSearch_no, a.INFO_DES as adminSearch_des, b.INFO_NAME as adminSearch_name
+        request.query(`select a.CPY_NO, c.CPY_NAME, a.INFO_NO as adminSearch_no, a.INFO_DES as adminSearch_des, b.INFO_NAME as adminSearch_name
         from BOTFRONT_COMPANY_INFO a
         left join BOTFRONT_ALL_COMPANY_INFO b
         on a.INFO_NO = b.INFO_ID
@@ -554,7 +628,7 @@ router.get('/filter', (req, res) => {
         })
       }else{
         // 類別選擇「不是」公司資訊
-        request.query(`select a.CPY_NO, a.${tableFilter}_NO as adminSearch_no, a.${tableFilter}_DES as adminSearch_des, b.${tableFilter}_NAME as adminSearch_name
+        request.query(`select a.CPY_NO, c.CPY_NAME, a.${tableFilter}_NO as adminSearch_no, a.${tableFilter}_DES as adminSearch_des, b.${tableFilter}_NAME as adminSearch_name
         from BOTFRONT_${tableFilter}_INFO a
         left join BOTFRONT_ALL_${tableFilter} b
         on a.${tableFilter}_NO = b.${tableFilter}_ID
@@ -578,7 +652,7 @@ router.get('/filter', (req, res) => {
   })
 })
 
-// 顯示空白查詢頁面
+// 顯示 admin 空白查詢頁面
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
 
