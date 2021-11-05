@@ -7,7 +7,7 @@
         <select name="companyFilter" id="companyFilter" onchange="submit()">
           <option value="" selected hidden>請選擇</option>
           {{#each adminCompany}}
-          <option value="{{this.CPY_NAME}}" {{#is this.CPY_NAME ../companyFilter}} selected {{/is}}
+          <option value="{{this.CPY_ID}}" {{#is this.CPY_ID ../companyFilter}} selected {{/is}}
           {{#is this.CPY_NAME 'Admin'}} disabled hidden {{/is}}>{{this.CPY_NAME}}</option>
           {{/each}}
         </select>
@@ -19,6 +19,8 @@
           <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
           <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
           <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
+          <option value="GREET" {{#is tableFilter 'GREET'}} selected {{/is}}>問候資訊</option>
+              <option value="DEFAULT" {{#is tableFilter 'DEFAULT'}} selected {{/is}}>預設回覆</option>
         </select>
 
         <label for="search">搜尋：</label>

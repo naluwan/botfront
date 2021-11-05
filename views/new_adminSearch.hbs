@@ -12,7 +12,8 @@
             <select name="companyFilter" id="companyFilter" class="form-control new-des" required>
               <option value="" selected hidden>請選擇</option>
               {{#each adminCompany}}
-              <option value="{{this.CPY_NAME}}" {{#is this.CPY_NAME 'Admin'}} hidden disabled {{/is}}>
+              <option value="{{this.CPY_ID}}" {{#is this.CPY_NAME 'Admin'}} hidden disabled {{/is}}
+              {{#is this.CPY_ID ../companyFilter}} selected {{/is}}>
               {{this.CPY_NAME}}
               </option>
               {{/each}}
@@ -25,69 +26,36 @@
             </div>
             <select name="tableFilter" id="tableFilter" class="form-control new-des" required>
               <option value="" selected hidden>請選擇</option>
-              <option value="COMPANY" {{#is tableFilter 'COMPANY'}} selected {{/is}}>公司資訊</option>
-              <option value="POSITION" {{#is tableFilter 'POSITION'}} selected {{/is}}>職缺資訊</option>
-              <option value="SUBSIDY" {{#is tableFilter 'SUBSIDY'}} selected {{/is}}>補助資訊</option>
-              <option value="LEAVE" {{#is tableFilter 'LEAVE'}} selected {{/is}}>假別資訊</option>
+              <option value="COMPANY">公司資訊</option>
+              <option value="POSITION">職缺資訊</option>
+              <option value="SUBSIDY">補助資訊</option>
+              <option value="LEAVE">假別資訊</option>
+              {{!-- <option value="GREET">問候資訊</option>
+              <option value="DEFAULT">預設回覆</option> --}}
             </select>
           </div>
 
-          
-          <div class="input-group pt-3" id="industry-select" hidden>
+          {{!-- 選完公司後，產業類別直接由API帶入 --}}
+          <div class="input-group pt-3" id="industry-block" hidden>
             <div class="input-group-prepend">
               <span class="input-group-text new-title">產業類別</span>
             </div>
-            <select name="industry_no" id="industry_no" class="form-control new-des" required>
+            <select name="industry_select" id="industry_select" class="form-control new-des">
               <option value="" selected hidden>請選擇</option>
-              {{#each industryInfo}}
-              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}}>
+              {{!-- {{#each industryInfo}}
+              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}} 
+              {{#is ../adminCompany.INDUSTRY_NO this.INDUSTRY_ID}} selected {{/is}}>
               {{this.INDUSTRY_NAME}}
               </option>
-              {{/each}}
+              {{/each}} --}}
             </select>
           </div>
 
-          <div class="input-group pt-3" id="company-select" hidden>
+          <div class="input-group pt-3" id="adminSearch-block">
             <div class="input-group-prepend">
-              <span class="input-group-text new-title">公司資訊名稱</span>
+              <span class="input-group-text new-title">項目</span>
             </div>
-            <select name="company_no" id="company_no" class="form-control new-des" required>
-              <option value="" selected hidden>請選擇</option>
-              {{#each adminSearchSelect}}
-              <option value="{{this.adminSearch_id}}">{{this.adminSearch_name}}</option>
-              {{/each}}
-            </select>
-          </div>
-
-          <div class="input-group pt-3" id="position-select" hidden>
-            <div class="input-group-prepend">
-              <span class="input-group-text new-title">職缺名稱</span>
-            </div>
-            <select name="position_no" id="position_no" class="form-control new-des" required>
-              <option value="" selected hidden>請選擇</option>
-              {{#each adminSearchSelect}}
-              <option value="{{this.adminSearch_id}}">{{this.adminSearch_name}}</option>
-              {{/each}}
-            </select>
-          </div>
-
-          <div class="input-group pt-3" id="subsidy-select" hidden>
-            <div class="input-group-prepend">
-              <span class="input-group-text new-title">補助名稱</span>
-            </div>
-            <select name="subsidy_no" id="subsidy_no" class="form-control new-des" required>
-              <option value="" selected hidden>請選擇</option>
-              {{#each adminSearchSelect}}
-              <option value="{{this.adminSearch_id}}">{{this.adminSearch_name}}</option>
-              {{/each}}
-            </select>
-          </div>
-
-          <div class="input-group pt-3" id="leave-select" hidden>
-            <div class="input-group-prepend">
-              <span class="input-group-text new-title">假別名稱</span>
-            </div>
-            <select name="leave_no" id="leave_no" class="form-control new-des" required>
+            <select name="admin_select" id="admin_select" class="form-control new-des" disabled required>
               <option value="" selected hidden>請選擇</option>
               {{#each adminSearchSelect}}
               <option value="{{this.adminSearch_id}}">{{this.adminSearch_name}}</option>
