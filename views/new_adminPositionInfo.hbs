@@ -12,7 +12,8 @@
             <select name="industry_no" id="industry_no" class="form-control new-des" required>
               <option value="" selected hidden>請選擇</option>
               {{#each industryInfo}}
-              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}}>
+              <option value="{{this.INDUSTRY_ID}}" {{#is this.INDUSTRY_NAME 'Admin'}} hidden {{/is}}
+              {{#is this.INDUSTRY_ID ../industry_no}} selected {{/is}}>
               {{this.INDUSTRY_NAME}}
               </option>
               {{/each}}
@@ -23,14 +24,14 @@
             <div class="input-group-prepend">
               <span class="input-group-text new-title">職缺名稱</span>
             </div>
-            <input type="text" class="form-control new-des" name="position_name" placeholder="請輸入職缺名稱" required>
+            <input type="text" class="form-control new-des" name="position_name" placeholder="請輸入職缺名稱" value="{{position_name}}" required>
           </div>
 
           <div class="input-group pt-3">
             <div class="input-group-prepend">
               <span class="input-group-text new-title">職缺英文名稱</span>
             </div>
-            <input type="text" class="form-control new-des" name="position_entity_name" placeholder="請輸入職缺英文名稱" required>
+            <input type="text" class="form-control new-des" name="position_entity_name" placeholder="請輸入職缺英文名稱" value="{{position_entity_name}}" required>
           </div>
 
         </div>

@@ -47,16 +47,34 @@ router.post('/', (req, res) => {
     return res.render('new_adminLeaveInfo', {leave_name, leave_entity_name, errors})
   }
 
-  request.input('leave_name', sql.NVarChar(20), leave_name)
-  .input('leave_entity_name', sql.NVarChar(50), leave_entity_name)
-  .query(`insert into BOTFRONT_ALL_LEAVE (LEAVE_NAME, LEAVE_ENTITY_NAME)
-  values (@leave_name, @leave_entity_name)`, (err, result) => {
+  request.query(`select *
+  from BOTFRONT_ALL_LEAVE
+  where LEAVE_NAME = '${leave_name}' or LEAVE_ENTITY_NAME = '${leave_entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    req.flash('success_msg', '公司假別新增成功!!')
-    res.redirect('/adminLeaveInfo')
+    const leaveCheck = result.recordset
+    if(leaveCheck.length){
+      errors.push({message: '此假別名稱或英文名稱重複，請確認後重新嘗試!!'})
+      return res.render('new_adminLeaveInfo', {
+        errors,
+        leave_name,
+        leave_entity_name
+      })
+    }else{
+      request.input('leave_name', sql.NVarChar(20), leave_name)
+      .input('leave_entity_name', sql.NVarChar(50), leave_entity_name)
+      .query(`insert into BOTFRONT_ALL_LEAVE (LEAVE_NAME, LEAVE_ENTITY_NAME)
+      values (@leave_name, @leave_entity_name)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '公司假別新增成功!!')
+        res.redirect('/adminLeaveInfo')
+      })
+    }
   })
 })
 

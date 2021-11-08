@@ -46,16 +46,34 @@ router.post('/', (req, res) => {
     return res.render('new_adminCompanyInfo', {info_name, info_entity_name, errors})
   }
 
-  request.input('info_name', sql.NVarChar(200), info_name)
-  .input('info_entity_name', sql.NVarChar(200), info_entity_name)
-  .query(`insert into BOTFRONT_ALL_COMPANY_INFO (INFO_NAME, INFO_ENTITY_NAME)
-  values (@info_name, @info_entity_name)`, (err, result) => {
+  request.query(`select *
+  from BOTFRONT_ALL_COMPANY_INFO
+  where INFO_NAME = '${info_name}' or INFO_ENTITY_NAME = '${info_entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    req.flash('success_msg', '新增公司資訊類別成功!!')
-    res.redirect('/adminCompanyInfo')
+    const infoCheck = result.recordset
+    if(infoCheck.length){
+      errors.push({message: '此資訊名稱或英文名稱重複，請確認後重新嘗試!!'})
+      return res.render('new_adminCompanyInfo',{
+        errors,
+        info_name,
+        info_entity_name
+      })
+    }else{
+      request.input('info_name', sql.NVarChar(200), info_name)
+      .input('info_entity_name', sql.NVarChar(200), info_entity_name)
+      .query(`insert into BOTFRONT_ALL_COMPANY_INFO (INFO_NAME, INFO_ENTITY_NAME)
+      values (@info_name, @info_entity_name)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '新增公司資訊類別成功!!')
+        res.redirect('/adminCompanyInfo')
+      })
+    }
   })
 })
 

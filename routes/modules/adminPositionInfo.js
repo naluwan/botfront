@@ -47,17 +47,47 @@ router.post('/', (req, res) => {
   }
 
   const request = new sql.Request(pool)
-  request.input('industry_no', sql.Int, industry_no)
-  .input('position_name', sql.NVarChar(200), position_name)
-  .input('position_entity_name', sql.NVarChar(200), position_entity_name)
-  .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)
-  values (@industry_no, @position_name, @position_entity_name)`, (err, result) => {
+  const errors = []
+
+  request.query(`select *
+  from BOTFRONT_ALL_POSITION
+  where industry_no = ${industry_no} and POSITION_NAME = '${position_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    req.flash('success_msg', '新增成功!!')
-    res.redirect('/adminPositionInfo')
+    const positionCheck = result.recordset
+    if(positionCheck.length){
+      errors.push({message: '職缺類別已存在，請確認後重新嘗試!!'})
+      request.query(`select *
+      from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const industryInfo = result.recordset
+        return res.render('new_adminPositionInfo', {
+          errors,
+          industry_no,
+          position_name,
+          position_entity_name,
+          industryInfo
+        })
+      })
+    }else{
+      request.input('industry_no', sql.Int, industry_no)
+      .input('position_name', sql.NVarChar(200), position_name)
+      .input('position_entity_name', sql.NVarChar(200), position_entity_name)
+      .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)
+      values (@industry_no, @position_name, @position_entity_name)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '新增成功!!')
+        res.redirect('/adminPositionInfo')
+      })
+    }
   })
 })
 

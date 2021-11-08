@@ -48,17 +48,34 @@ router.post('/', (req, res) => {
     return res.render('new_adminSubsidyInfo', {subsidy_name, subsidy_entity_name, errors})
   }
 
-  request.input('subsidy_name', sql.NVarChar(20), subsidy_name)
-  .input('subsidy_entity_name', sql.NVarChar(50), subsidy_entity_name)
-  .query(`insert into BOTFRONT_ALL_SUBSIDY (SUBSIDY_NAME, SUBSIDY_ENTITY_NAME)
-  values (@subsidy_name, @subsidy_entity_name)`, (err, result) => {
+  request.query(`select *
+  from BOTFRONT_ALL_SUBSIDY
+  where SUBSIDY_NAME = '${subsidy_name}' or SUBSIDY_ENTITY_NAME = '${subsidy_entity_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    req.flash('success_msg', '新增公司補助類別成功!!')
-    res.redirect('/adminSubsidyInfo')
-    sql.close()
+    const subsidyCheck = result.recordset
+    if(subsidyCheck.length){
+      errors.push({message: '補助名稱或英文名稱重複，請確認後重新嘗試!!'})
+      return res.render('new_adminSubsidyInfo', {
+        errors,
+        subsidy_name,
+        subsidy_entity_name
+      })
+    }else{
+      request.input('subsidy_name', sql.NVarChar(20), subsidy_name)
+      .input('subsidy_entity_name', sql.NVarChar(50), subsidy_entity_name)
+      .query(`insert into BOTFRONT_ALL_SUBSIDY (SUBSIDY_NAME, SUBSIDY_ENTITY_NAME)
+      values (@subsidy_name, @subsidy_entity_name)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '新增公司補助類別成功!!')
+        res.redirect('/adminSubsidyInfo')
+      })
+    }
   })
 })
 
