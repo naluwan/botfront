@@ -36,6 +36,7 @@
     "js-yaml": "^4.1.0",
     "method-override": "^3.0.0",
     "mssql": "^7.2.1",
+    "nodemailer": "^6.7.0",
     "nodemon": "^2.0.12",
     "object-hash": "^1.1.5",
     "passport": "^0.5.0",
