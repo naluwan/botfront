@@ -1,10 +1,10 @@
 const sql = require('mssql')
 
 const db = {
-  user: "sa",
-  password: "12345",
-  server: "192.168.1.72",
-  database: "hrm8_jordan",
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_DATABASE,
   pool: {
     max: 10,
     min: 0,

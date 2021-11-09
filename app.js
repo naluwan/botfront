@@ -6,6 +6,9 @@ const hbshelpers = require('handlebars-helpers')
 const multihelpers = hbshelpers()
 const flash = require('connect-flash')
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 
 data = {
@@ -17,7 +20,7 @@ const usePassport = require('./config/passport')
 require('./config/connectPool')
 
 const app = express()
-const PORT = 3030
+const PORT = process.env.PORT
 
 app.engine('hbs', hbs({defaultLayout: 'main', extname: '.hbs'}))
 app.set('view engine', 'hbs')
