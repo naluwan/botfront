@@ -18,8 +18,8 @@ const transporter = nodemailer.createTransport({
     rejectUnauthorized: false
   },
   auth: {
-      user:'harrychien',
-      pass:'Qwedcxzas5438'
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASSWORD
   }
 });
 
@@ -27,10 +27,16 @@ const transporter = nodemailer.createTransport({
 router.post('/api/v1/user', (req, res) => {
   // 需要的參數
   const { cpy_id, cpy_name, email, password, token} = req.body
-  // 連接資料庫
-  const request = new sql.Request(pool)
-  // 將token放在req.body中，送過來做驗證
-  if(token == 'interInfo_botfront'){
+  
+   // 將token放在req.body中，送過來做驗證
+  if(token == process.env.API_TOKEN){
+
+    // 驗證參數是否都有值
+    if(!cpy_id || !cpy_name || !email || !password){
+      return res.status(400).send('需求參數：cpy_id => 公司代號(統編), cpy_name => 公司名稱, email => 信箱(帳號), password => 密碼')
+    }
+    // 連接資料庫
+    const request = new sql.Request(pool)
     // 驗證使用者資訊是否重複
     request.query(`select *
     from BOTFRONT_USERS_INFO
@@ -55,59 +61,105 @@ router.post('/api/v1/user', (req, res) => {
         }
         
       }else{
+        // 利用公司名稱和公司代號創建產業類別
+        request.input('industry_name', sql.NVarChar(200), cpy_name)
+        .input('industry_id', sql.Int, cpy_id)
+        .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
+        values (@industry_id, @industry_name)`,(err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+        })
         // 使用bcrypt加密密碼再存進資料庫
         bcrypt
         .genSalt(10)
         .then(salt => bcrypt.hash(password, salt))
         .then(hash => {
           // 新增進資料庫
-          request.input('cpy_id', sql.Int, parseInt(cpy_id))
-          .input('cpy_name', sql.NVarChar(80), cpy_name)
-          .input('email', sql.NVarChar(80), email)
-          .input('password', sql.NVarChar(100), hash)
-          .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD)
-          values (@cpy_id, @cpy_name, @email, @password)`, (err, result) => {
+          request.query(`select INDUSTRY_ID
+          from BOTFRONT_TYPE_OF_INDUSTRY
+          where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
             if(err){
               console.log(err)
               return
             }
-          })
-        }).then(() => {
-          // 使用者資料新增進資料庫後，套用mail template發送mail通知admin設定產業類別
-          res.render('mail_newUser', {layout: null, cpy_name, email}, 
-            function(err, html){
-              if (err) {
-                console.log('error in email template');
+            const industry_no = result.recordset[0].INDUSTRY_ID
+            request.input('cpy_id', sql.Int, parseInt(cpy_id))
+            .input('cpy_name', sql.NVarChar(80), cpy_name)
+            .input('email', sql.NVarChar(80), email)
+            .input('password', sql.NVarChar(100), hash)
+            .input('industry_no', sql.Int, industry_no)
+            .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
+            values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
               }
-              // console.log(html)
-              transporter.sendMail({
-                from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
-                to: 'harrychien@interinfo.com.tw',
-                subject: '有新使用者加入',
-                html: html,
-              },
-                function(err) {
+              // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
+              res.render('mail_newUser', {layout: null, cpy_id, cpy_name, email}, 
+                function(err, html){
                   if (err) {
-                    console.error('Unable to send confirmation: ' + err.stack);
+                    console.log('error in email template');
                   }
-                },
+                  // console.log(html)
+                  transporter.sendMail({
+                    from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+                    to: 'harrychien@interinfo.com.tw',
+                    subject: '新使用者加入',
+                    html: html,
+                  },
+                    function(err) {
+                      if (err) {
+                        console.error('Unable to send confirmation: ' + err.stack);
+                      }
+                    },
+                  )
+                }
               )
-            }
-          )
-          // res.render('mail_newUser', {cpy_name, email})
-          // 成功後給予回覆
-          return res.status(200).send('帳號寫入成功!!')
-        })
+              // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
+              return res.status(200).send({'message':'使用者資料寫入成功!!', industry_no})
+            })
+          })
+        }).catch(err => console.log(err))
       }
     })
   }else{
     // 如果沒有token或token錯誤，就返回無權限
-    return res.status(400).send('你沒有權限!!')
+    return res.status(400).send('沒有足夠權限做此操作!!')
   }
 })
 
-router.post('/api/v1/allposition', (req, res) => {
+// 新增新職缺類別
+router.post('/api/v1/allPosition', (req, res) => {
+  const {industry_no, position_name, position_entity_name, token} = req.body
 
+  if(token == process.env.API_TOKEN){
+    if(!industry_no || !position_name || !position_entity_name){
+      return res.status(400).send(`需求參數：industry_no => 產業類別代號(傳入新使用者帳戶資料會回傳industry_no), 
+      position_name => 職缺名稱, position_entity_name => 職缺英文名稱`)
+    }
+
+    const request = new sql.Request(pool)
+    request.query(`select *
+    from BOTFRONT_ALL_POSITION
+    where POSITION_NAME = '${position_name}'`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const positionCheck = result.recordset[0]
+      if(positionCheck){
+        console.log(positionCheck)
+      }else{
+        console.log('new one!!')
+      }
+    })
+
+  }else{
+    // 如果沒有token或token錯誤，就返回無權限
+    return res.status(400).send('沒有足夠權限做此操作!!')
+  }
 })
 
 module.exports = router
