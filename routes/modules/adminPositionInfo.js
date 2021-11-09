@@ -8,11 +8,13 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 
+// 刪除職缺類別
 router.delete('/:POSITION_ID', (req, res) => {
   const {POSITION_ID} = req.params
 
   const request = new sql.Request(pool)
 
+  // 驗證是否有這個職缺類別
   request.query(`select * 
   from BOTFRONT_ALL_POSITION
   where POSITION_ID = ${POSITION_ID}`, (err, result) => {
@@ -25,6 +27,7 @@ router.delete('/:POSITION_ID', (req, res) => {
       req.flash('error', '查無此職缺類別，請重新嘗試!')
       return res.redirect('/adminPositionInfo')
     }
+    // 刪除職缺類別
     request.query(`delete
     from BOTFRONT_ALL_POSITION
     where POSITION_ID = ${POSITION_ID}`, (err, result) => {
@@ -38,17 +41,21 @@ router.delete('/:POSITION_ID', (req, res) => {
   })
 })
 
+// 新增職缺類別
 router.post('/', (req, res) => {
   const {industry_no, position_name, position_entity_name} = req.body
 
+  // 驗證欄位
   if(!industry_no || !position_name || !position_entity_name){
     req.flash('error', '所有欄位都是必填的!!')
     return res.redirect('/adminPositionInfo/new')
   }
 
+  // 連接資料庫
   const request = new sql.Request(pool)
   const errors = []
 
+  // 驗證此產業類別中是否有相同的職缺類別
   request.query(`select *
   from BOTFRONT_ALL_POSITION
   where industry_no = ${industry_no} and POSITION_NAME = '${position_name}'`, (err, result) => {
@@ -91,9 +98,11 @@ router.post('/', (req, res) => {
   })
 })
 
+// 顯示新增頁面
 router.get('/new', (req, res) => {
   const request = new sql.Request(pool)
 
+  // 抓取產業類別
   request.query(`select *
   from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
     if(err){
