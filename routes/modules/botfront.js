@@ -49,15 +49,15 @@ router.post('/api/v1/user', (req, res) => {
       // console.log(userCheck)
       if(userCheck){
         if(userCheck.CPY_ID == cpy_id){
-          return res.status(409).send('公司代號重複!!請重新嘗試!!')
+          return res.status(409).send({message: '公司代號重複!!請重新嘗試!!'})
         }
 
         if(userCheck.CPY_NAME == cpy_name){
-          return res.status(409).send('公司名稱重複!!請重新嘗試!!')
+          return res.status(409).send({message: '公司名稱重複!!請重新嘗試!!'})
         }
 
         if(userCheck.EMAIL == email){
-          return res.status(409).send('公司信箱重複!!請重新嘗試!!')
+          return res.status(409).send({message: '公司信箱重複!!請重新嘗試!!'})
         }
         
       }else{
@@ -118,7 +118,7 @@ router.post('/api/v1/user', (req, res) => {
                 }
               )
               // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
-              return res.status(200).send({'message':'使用者資料寫入成功!!', industry_no})
+              return res.status(200).send({message:'使用者資料寫入成功!!', industry_no})
             })
           })
         }).catch(err => console.log(err))
@@ -133,7 +133,7 @@ router.post('/api/v1/user', (req, res) => {
 // 新增新職缺類別
 router.post('/api/v1/allPosition', (req, res) => {
   const {industry_no, position_name, position_entity_name, token} = req.body
-
+  
   if(token == process.env.API_TOKEN){
     if(!industry_no || !position_name || !position_entity_name){
       return res.status(400).send(`需求參數：industry_no => 產業類別代號(傳入新使用者帳戶資料會回傳industry_no), 
@@ -141,18 +141,55 @@ router.post('/api/v1/allPosition', (req, res) => {
     }
 
     const request = new sql.Request(pool)
+    // 驗證新增職缺是否存在全部職缺中(以position_entity_name判斷)
     request.query(`select *
     from BOTFRONT_ALL_POSITION
-    where POSITION_NAME = '${position_name}'`, (err, result) => {
+    where POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
       if(err){
         console.log(err)
         return
       }
-      const positionCheck = result.recordset[0]
-      if(positionCheck){
-        console.log(positionCheck)
+      const allPositionCheck = result.recordset[0]
+      // console.log(positionCheck)
+      if(allPositionCheck){
+        request.query(`select *
+        from BOTFRONT_ALL_POSITION
+        where INDUSTRY_NO = ${industry_no} 
+        and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          const industryPositionCheck = result.recordset[0]
+          if(industryPositionCheck){
+            return res.status(409).send({message: '職缺英文名稱(position_entity_name)重複!'})
+          }else{
+            request.input('industry_no', sql.Int, industry_no)
+            .input('position_name', sql.NVarChar(200), position_name)
+            .input('position_entity_name', sql.NVarChar(200), allPositionCheck.POSITION_ENTITY_NAME) // entity_name一樣，代表有訓練過
+            .input('trained', sql.Bit, 1)
+            .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME, TRAINED)
+            values (@industry_no, @position_name, @position_entity_name, @trained)`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+              return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
+            })
+          }
+        })
       }else{
-        console.log('new one!!')
+        request.input('industry_no', sql.Int, industry_no)
+        .input('position_name', sql.NVarChar(200), position_name)
+        .input('position_entity_name', sql.NVarChar(200), position_entity_name)
+        .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)
+        values (@industry_no, @position_name, @position_entity_name)`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
+        })
       }
     })
 
