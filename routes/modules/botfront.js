@@ -82,19 +82,19 @@ router.post('/api/v1/user', (req, res) => {
       }
     })
   }else{
-    return res.status(400).send('沒有足夠權限做此操作!!')
+    return res.status(401).send('沒有足夠權限做此操作!!')
   }
 })
 
 // 新增新職缺類別及職缺資訊
 router.post('/api/v1/position', (req, res) => {
-  const {industry_no, position_name, position_entity_name, token} = req.body
+  const {cpy_no, industry_no, position_name, position_entity_name, position_des, token} = req.body
   
   // 判斷傳入的token是否正確
   if(token == process.env.API_TOKEN){
-    if(!industry_no || !position_name || !position_entity_name){
-      return res.status(400).send(`需求參數：industry_no => 產業類別代號(傳入新使用者帳戶資料會回傳industry_no), 
-      position_name => 職缺名稱, position_entity_name => 職缺英文名稱`)
+    if(!cpy_no || !industry_no || !position_name || !position_entity_name || !position_des){
+      return res.status(400).send(`需求參數：cpy_no => 公司代號(統編), industry_no => 產業類別代號(新增使用者帳戶後會回傳industry_no), 
+      position_name => 職缺名稱, position_entity_name => 職缺英文名稱, position_des => 職缺資訊`)
     }
 
     // 連接資料庫
@@ -141,14 +141,75 @@ router.post('/api/v1/position', (req, res) => {
                 console.log(err)
                 return
               }
-              // 新增完成後的通知
-              // 如果中英文相同，代表這個職缺之前已經新增並訓練過，直接回覆新增職缺類別成功即可
-              if(positionCNCheck.POSITION_ENTITY_NAME == position_entity_name){
-                return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
-              }else{
-                // 如果中文相同，英文名稱不同，則會提示對方因為此職缺名稱重複，所以資料會直接套用資料庫裡原有的資料新增
-                return res.status(200).send({message: `新增成功!!職缺名稱：「${position_name}」已重複，將套用資料庫資料新增!!`})
-              }
+              // 查詢新增職缺的position_no
+              request.query(`select *
+              from BOTFRONT_ALL_POSITION
+              where INDUSTRY_NO = ${industry_no}
+              and POSITION_NAME = '${position_name}'`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                const position_no = result.recordset[0].POSITION_ID
+                if(!position_no){
+                  request.query(`delete from BOTFRONT_ALL_POSITION
+                  where INDUSTRY_NO = ${industry_no}
+                  and POSITION_NAME = '${positionCNCheck.POSITION_NAME}'
+                  and POSITION_ENTITY_NAME = '${positionCNCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    return res.status(404).send('查無此職缺類別，請重新嘗試!')
+                  })
+                }else{
+                  // 新增職缺資訊
+                  // 由於前面新增用過industry_no這個變數，在同一個連接池不能有相同的變數名，所以再連接一個新的連接池
+                  const request = new sql.Request(pool)
+                  request.query(`select *
+                  from BOTFRONT_USERS_INFO
+                  where CPY_ID = ${cpy_no}
+                  and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    const cpyCheck = result.recordset[0]
+                    if(!cpyCheck){
+                      request.query(`delete from BOTFRONT_ALL_POSITION
+                      where INDUSTRY_NO = ${industry_no}
+                      and POSITION_NAME = '${positionCNCheck.POSITION_NAME}'
+                      and POSITION_ENTITY_NAME = '${positionCNCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        return res.status(404).send('查無此公司或產業類別，請重新嘗試!')
+                      })
+                    }else{
+                      request.input('cpy_no', sql.Int, cpy_no)
+                      .input('industry_no', sql.Int, industry_no) 
+                      .input('position_no', sql.Int, position_no)
+                      .input('position_des', sql.NVarChar(2000), position_des)
+                      .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
+                      values (@cpy_no, @industryNo, @position_no, @position_des)`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        // 新增完成後的通知
+                        // 如果中英文相同，代表這個職缺之前已經新增並訓練過，直接回覆新增職缺類別成功即可
+                        if(positionCNCheck.POSITION_ENTITY_NAME == position_entity_name){
+                          return res.status(200).send({message: `新增職缺類別「${position_name}」及職缺資訊成功!!`})
+                        }else{
+                          // 如果中文相同，英文名稱不同，則會提示對方因為此職缺名稱重複，所以資料會直接套用資料庫裡原有的資料新增
+                          return res.status(200).send({message: `新增職缺類別及資訊成功!!職缺名稱：「${position_name}」已重複，將套用資料庫資料新增!!`})
+                        }
+                      })
+                    }
+                  })
+                }
+              })
             })
           }else{ // 中文名稱不同
             // 判斷英文名稱是否相同
@@ -172,8 +233,67 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
-                  positionSendMail(res, 'mail_newPosition', position_name, positionENCheck.POSITION_ENTITY_NAME, '新職缺類別')
-                  return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
+                  request.query(`select * 
+                  from BOTFRONT_ALL_POSITION
+                  where INDUSTRY_NO = ${industry_no}
+                  and POSITION_NAME = '${position_name}'`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    const position_no = result.recordset[0].POSITION_ID
+                    if(!position_no){
+                      request.query(`delete from
+                      BOTFRONT_ALL_POSITION
+                      where INDUSTRY_NO = ${industry_no}
+                      and POISTION_NAME = '${position_name}'
+                      and POSITION_ENTITY_NAME = '${positionENCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        return res.status(404).send('查無此職缺類別，請重新嘗試!')
+                      })
+                    }else{
+                      const request = new sql.Request(pool)
+                      request.query(`select *
+                      from BOTFRONT_USERS_INFO
+                      where CPY_ID = ${cpy_no}
+                      and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        const cpyCheck = result.recordset[0]
+                        if(!cpyCheck){
+                          request.query(`delete from BOTFRONT_ALL_POSITION
+                          where INDUSTRY_NO = ${industry_no}
+                          and POSITION_NAME = '${position_name}'
+                          and POSITION_ENTITY_NAME = '${positionENCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
+                            if(err){
+                              console.log(err)
+                              return
+                            }
+                            return res.status(404).send('查無此公司或產業類別，請重新嘗試!')
+                          })
+                        }else{
+                          request.input('cpy_no', sql.Int, cpy_no)
+                          .input('industry_no', sql.Int, industry_no)
+                          .input('position_no', sql.Int, position_no)
+                          .input('position_des', sql.NVarChar(2000), position_des)
+                          .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
+                          values (@cpy_no, @industry_no, @position_no, @position_des)`, (err, result) => {
+                            if(err){
+                              console.log(err)
+                              return
+                            }
+                            positionSendMail(res, 'mail_newPosition', position_name, positionENCheck.POSITION_ENTITY_NAME, '新職缺類別')
+                            return res.status(200).send({message: `新增職缺類別「${position_name}」及職缺資訊成功!!`})
+                          })
+                        }
+                      })
+                    }
+                  })
                 })
               }else{
                 // 中文不同，英文不同，代表新增的職缺是沒有訓練過並從來有出現在資料庫的職缺
@@ -197,7 +317,7 @@ router.post('/api/v1/position', (req, res) => {
       }
     })
   }else{
-    return res.status(400).send('沒有足夠權限做此操作!!')
+    return res.status(401).send('沒有足夠權限做此操作!!')
   }
 })
 
