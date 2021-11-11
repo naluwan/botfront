@@ -5,37 +5,15 @@ const bcrypt = require('bcryptjs')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-
-// const transporter = require('../../modules/sendMail')
-const nodemailer = require('nodemailer')
-
-const transporter = nodemailer.createTransport({
-  host: "mail.interinfo.com.tw", // hostname
-  secureConnection: true, // TLS requires secureConnection to be false
-  port: 587, // port for secure SMTP
-  tls: {
-    ciphers:'SSLv3',
-    rejectUnauthorized: false
-  },
-  auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASSWORD
-  }
-});
+const {positionSendMail, userSendMAil} = require('../../modules/sendMail')
 
 // 使用者帳號
 router.post('/api/v1/user', (req, res) => {
-  // 需要的參數
   const { cpy_id, cpy_name, email, password, token} = req.body
-  
-   // 將token放在req.body中，送過來做驗證
   if(token == process.env.API_TOKEN){
-
-    // 驗證參數是否都有值
     if(!cpy_id || !cpy_name || !email || !password){
       return res.status(400).send('需求參數：cpy_id => 公司代號(統編), cpy_name => 公司名稱, email => 信箱(帳號), password => 密碼')
     }
-    // 連接資料庫
     const request = new sql.Request(pool)
     // 驗證使用者資訊是否重複
     request.query(`select *
@@ -46,7 +24,6 @@ router.post('/api/v1/user', (req, res) => {
         return
       }
       const userCheck = result.recordset[0]
-      // console.log(userCheck)
       if(userCheck){
         if(userCheck.CPY_ID == cpy_id){
           return res.status(409).send({message: '公司代號重複!!請重新嘗試!!'})
@@ -76,7 +53,6 @@ router.post('/api/v1/user', (req, res) => {
         .genSalt(10)
         .then(salt => bcrypt.hash(password, salt))
         .then(hash => {
-          // 新增進資料庫
           request.query(`select INDUSTRY_ID
           from BOTFRONT_TYPE_OF_INDUSTRY
           where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
@@ -85,6 +61,7 @@ router.post('/api/v1/user', (req, res) => {
               return
             }
             const industry_no = result.recordset[0].INDUSTRY_ID
+            // 新增進資料庫
             request.input('cpy_id', sql.Int, parseInt(cpy_id))
             .input('cpy_name', sql.NVarChar(80), cpy_name)
             .input('email', sql.NVarChar(80), email)
@@ -96,27 +73,7 @@ router.post('/api/v1/user', (req, res) => {
                 console.log(err)
                 return
               }
-              // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
-              res.render('mail_newUser', {layout: null, cpy_id, cpy_name, email}, 
-                function(err, html){
-                  if (err) {
-                    console.log('error in email template');
-                  }
-                  // console.log(html)
-                  transporter.sendMail({
-                    from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
-                    to: 'harrychien@interinfo.com.tw',
-                    subject: '新使用者加入',
-                    html: html,
-                  },
-                    function(err) {
-                      if (err) {
-                        console.error('Unable to send confirmation: ' + err.stack);
-                      }
-                    },
-                  )
-                }
-              )
+              userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
               // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
               return res.status(200).send({message:'使用者資料寫入成功!!', industry_no})
             })
@@ -125,12 +82,11 @@ router.post('/api/v1/user', (req, res) => {
       }
     })
   }else{
-    // 如果沒有token或token錯誤，就返回無權限
     return res.status(400).send('沒有足夠權限做此操作!!')
   }
 })
 
-// 新增新職缺類別
+// 新增新職缺類別及職缺資訊
 router.post('/api/v1/position', (req, res) => {
   const {industry_no, position_name, position_entity_name, token} = req.body
   
@@ -216,28 +172,7 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
-                  // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
-                  res.render('mail_newPosition', {layout: null, industry_no, position_name, email}, 
-                    function(err, html){
-                      if (err) {
-                        console.log('error in email template');
-                      }
-                      // console.log(html)
-                      transporter.sendMail({
-                        from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
-                        to: 'harrychien@interinfo.com.tw',
-                        subject: '有需要訓練的新職缺類別',
-                        html: html,
-                      },
-                        function(err) {
-                          if (err) {
-                            console.error('Unable to send confirmation: ' + err.stack);
-                          }
-                        },
-                      )
-                    }
-                  )
-                  // 回傳新增成功通知
+                  positionSendMail(res, 'mail_newPosition', position_name, positionENCheck.POSITION_ENTITY_NAME, '新職缺類別')
                   return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
                 })
               }else{
@@ -252,28 +187,7 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
-                  // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
-                  res.render('mail_newPosition', {layout: null, industry_no, position_name, email}, 
-                    function(err, html){
-                      if (err) {
-                        console.log('error in email template');
-                      }
-                      // console.log(html)
-                      transporter.sendMail({
-                        from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
-                        to: 'harrychien@interinfo.com.tw',
-                        subject: '有需要訓練的新職缺類別',
-                        html: html,
-                      },
-                        function(err) {
-                          if (err) {
-                            console.error('Unable to send confirmation: ' + err.stack);
-                          }
-                        },
-                      )
-                    }
-                  )
-                  // 回傳新增成功通知
+                  positionSendMail(res, 'mail_newPosition', position_name, position_entity_name, '新職缺類別')
                   return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
                 })
               }
@@ -282,69 +196,7 @@ router.post('/api/v1/position', (req, res) => {
         })
       }
     })
-    
-
-    // ------------------------------------------------------
-    // 驗證新增職缺是否存在全部職缺中(以position_name判斷)
-    // request.query(`select *
-    // from BOTFRONT_ALL_POSITION
-    // where POSITION_NAME = '${position_name}'`, (err, result) => {
-    //   if(err){
-    //     console.log(err)
-    //     return
-    //   }
-    //   // console.log(result)
-    //   const positionCNCheck = result.recordset[0]
-
-    //   // 驗證職缺是否已存在此產業類別
-    //   if(positionCNCheck){
-    //     request.query(`select *
-    //     from BOTFRONT_ALL_POSITION
-    //     where INDUSTRY_NO = ${industry_no}
-    //     and (POSITION_NAME = '${position_name}' or POSITION_ENTITY_NAME = '${position_entity_name}')`, (err, result) => {
-    //       if(err){
-    //         console.log(err)
-    //         return
-    //       }
-    //       const industryPositionCheck = result.recordset[0]
-    //       // 以position_name, position_entity_name下去比對，如果有值代表重複
-    //       if(industryPositionCheck){
-    //         return res.status(409).send({message: '職缺類別重複，請重新嘗試!!'})
-    //       }else{
-    //           request.input('industry_no', sql.Int, industry_no)
-    //           .input('position_name', sql.NVarChar(200), positionCNCheck.POSITION_NAME)
-    //           .input('position_entity_name', sql.NVarChar(200), positionCNCheck.POSITION_ENTITY_NAME) // entity_name一樣，代表有訓練過
-    //           .input('trained', sql.Bit, 1) // 1代表訓練過/0代表沒訓練過
-    //           .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME, TRAINED)
-    //           values (@industry_no, @position_name, @position_entity_name, @trained)`, (err, result) => {
-    //             if(err){
-    //               console.log(err)
-    //               return
-    //             }
-    //             if(positionCheck.POSITION_ENTITY_NAME == position_entity_name){
-    //               return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
-    //             }else{
-    //               return res.status(200).send({message: `新增成功!!職缺名稱：「${position_name}」已重複，將套用資料庫資料新增!!`})
-    //             }
-    //           })
-    //       }
-    //     })
-    //   }else{
-    //     request.query(`select *
-    //     from BOTFRONT_ALL_POSITION
-    //     where POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
-    //       if(err){
-    //         console.log(err)
-    //         return
-    //       }
-    //       const positionENCheck = result.recordset[0]
-          
-    //     })
-    //   }
-    // })
-    // -------------------------------------------------------------------
   }else{
-    // 如果沒有token或token錯誤，就返回無權限
     return res.status(400).send('沒有足夠權限做此操作!!')
   }
 })
