@@ -134,13 +134,16 @@ router.post('/api/v1/user', (req, res) => {
 router.post('/api/v1/position', (req, res) => {
   const {industry_no, position_name, position_entity_name, token} = req.body
   
+  // 判斷傳入的token是否正確
   if(token == process.env.API_TOKEN){
     if(!industry_no || !position_name || !position_entity_name){
       return res.status(400).send(`需求參數：industry_no => 產業類別代號(傳入新使用者帳戶資料會回傳industry_no), 
       position_name => 職缺名稱, position_entity_name => 職缺英文名稱`)
     }
 
+    // 連接資料庫
     const request = new sql.Request(pool)
+    // 判斷新增職缺是否在此產業類別中
     request.query(`select *
     from BOTFRONT_ALL_POSITION
     where INDUSTRY_NO = ${industry_no}
@@ -150,13 +153,17 @@ router.post('/api/v1/position', (req, res) => {
         return
       }
       const industryPositionCheck = result.recordset[0]
+      // 有值代表要新增的職缺已存在此產業類別中
       if(industryPositionCheck){
+        // 判斷是中文名稱重複還是英文名稱重複
         if(industryPositionCheck.POSITION_NAME == position_name){
           return res.status(409).send({message: '職缺類別名稱重複，請重新嘗試!!'})
         }else if(industryPositionCheck.POSITION_ENTITY_NAME == position_entity_name){
           return res.status(409).send({message: '職缺類別英文名稱重複，請重新嘗試!!'})
         }
-      }else{
+      }else{ // 在此產業類別中沒有相同的職缺
+        // 判斷新增的職缺是否存在全部職缺中(判斷有無訓練過)
+        // 因為botfront訓練時，同個中文詞不能有兩個英文名稱(entity)，所以先以中文判別是否有相同的職缺
         request.query(`select *
         from BOTFRONT_ALL_POSITION
         where POSITION_NAME = '${position_name}'`, (err, result) => {
@@ -165,6 +172,8 @@ router.post('/api/v1/position', (req, res) => {
             return
           }
           const positionCNCheck = result.recordset[0]
+          // 如果中文名稱相同，則從全部職缺中抓取相同的資料(中文和英文名稱)，再新增進此產業類別
+          // 因為此職缺是從資料庫抓資料，代表已經訓練過，所以在insert的時候要多一個值trained並給值1，在提醒訓練時不會顯示
           if(positionCNCheck){
             request.input('industry_no', sql.Int, industry_no)
             .input('position_name', sql.NVarChar(200), positionCNCheck.POSITION_NAME)
@@ -176,13 +185,17 @@ router.post('/api/v1/position', (req, res) => {
                 console.log(err)
                 return
               }
+              // 新增完成後的通知
+              // 如果中英文相同，代表這個職缺之前已經新增並訓練過，直接回覆新增職缺類別成功即可
               if(positionCNCheck.POSITION_ENTITY_NAME == position_entity_name){
                 return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
               }else{
+                // 如果中文相同，英文名稱不同，則會提示對方因為此職缺名稱重複，所以資料會直接套用資料庫裡原有的資料新增
                 return res.status(200).send({message: `新增成功!!職缺名稱：「${position_name}」已重複，將套用資料庫資料新增!!`})
               }
             })
-          }else{
+          }else{ // 中文名稱不同
+            // 判斷英文名稱是否相同
             request.query(`select *
             from BOTFRONT_ALL_POSITION
             where POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
@@ -191,6 +204,8 @@ router.post('/api/v1/position', (req, res) => {
                 return
               }
               const positionENCheck = result.recordset[0]
+              // 如果中文名稱不同，英文名稱相同，則會從資料庫抓取英文名稱並在insert進此產業類別時帶入新的中文名稱
+              // botfront訓練時，同個英文名稱(entity)，可以有多個中文詞，但必須新增並訓練
               if(positionENCheck){
                 request.input('industry_no', sql.Int, industry_no)
                 .input('position_name', sql.NVarChar(200), position_name)
@@ -201,9 +216,33 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
+                  // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
+                  res.render('mail_newPosition', {layout: null, industry_no, position_name, email}, 
+                    function(err, html){
+                      if (err) {
+                        console.log('error in email template');
+                      }
+                      // console.log(html)
+                      transporter.sendMail({
+                        from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+                        to: 'harrychien@interinfo.com.tw',
+                        subject: '有需要訓練的新職缺類別',
+                        html: html,
+                      },
+                        function(err) {
+                          if (err) {
+                            console.error('Unable to send confirmation: ' + err.stack);
+                          }
+                        },
+                      )
+                    }
+                  )
+                  // 回傳新增成功通知
                   return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
                 })
               }else{
+                // 中文不同，英文不同，代表新增的職缺是沒有訓練過並從來有出現在資料庫的職缺
+                // 所以新增完成後，必須到botfront新增並訓練
                 request.input('industry_no', sql.Int, industry_no)
                 .input('position_name', sql.NVarChar(200), position_name)
                 .input('position_entity_name', sql.NVarChar(200), position_entity_name)
@@ -213,6 +252,28 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
+                  // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
+                  res.render('mail_newPosition', {layout: null, industry_no, position_name, email}, 
+                    function(err, html){
+                      if (err) {
+                        console.log('error in email template');
+                      }
+                      // console.log(html)
+                      transporter.sendMail({
+                        from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+                        to: 'harrychien@interinfo.com.tw',
+                        subject: '有需要訓練的新職缺類別',
+                        html: html,
+                      },
+                        function(err) {
+                          if (err) {
+                            console.error('Unable to send confirmation: ' + err.stack);
+                          }
+                        },
+                      )
+                    }
+                  )
+                  // 回傳新增成功通知
                   return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
                 })
               }
