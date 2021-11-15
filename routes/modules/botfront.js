@@ -151,6 +151,7 @@ router.post('/api/v1/position', (req, res) => {
                   return
                 }
                 const position_no = result.recordset[0].POSITION_ID
+                // 查詢新增職缺的position_id，如果找不到則刪除剛剛新增的職缺資訊
                 if(!position_no){
                   request.query(`delete from BOTFRONT_ALL_POSITION
                   where INDUSTRY_NO = ${industry_no}
@@ -166,6 +167,7 @@ router.post('/api/v1/position', (req, res) => {
                   // 新增職缺資訊
                   // 由於前面新增用過industry_no這個變數，在同一個連接池不能有相同的變數名，所以再連接一個新的連接池
                   const request = new sql.Request(pool)
+                  // 驗證傳進的cpy_no是否存在以及industry_no是否符合
                   request.query(`select *
                   from BOTFRONT_USERS_INFO
                   where CPY_ID = ${cpy_no}
@@ -192,7 +194,7 @@ router.post('/api/v1/position', (req, res) => {
                       .input('position_no', sql.Int, position_no)
                       .input('position_des', sql.NVarChar(2000), position_des)
                       .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
-                      values (@cpy_no, @industryNo, @position_no, @position_des)`, (err, result) => {
+                      values (@cpy_no, @industry_no, @position_no, @position_des)`, (err, result) => {
                         if(err){
                           console.log(err)
                           return
@@ -203,7 +205,8 @@ router.post('/api/v1/position', (req, res) => {
                           return res.status(200).send({message: `新增職缺類別「${position_name}」及職缺資訊成功!!`})
                         }else{
                           // 如果中文相同，英文名稱不同，則會提示對方因為此職缺名稱重複，所以資料會直接套用資料庫裡原有的資料新增
-                          return res.status(200).send({message: `新增職缺類別及資訊成功!!職缺名稱：「${position_name}」已重複，將套用資料庫資料新增!!`})
+                          return res.status(200).send({message: `新增職缺類別及資訊成功!!職缺名稱：「${position_name}」已重複，職缺英文名稱將套用資料庫資料新增!!`})
+                          // return console.log(`新增職缺類別及資訊成功!!職缺名稱：「${position_name}」已重複，職缺英文名稱將套用資料庫資料新增!!`)
                         }
                       })
                     }
@@ -296,6 +299,7 @@ router.post('/api/v1/position', (req, res) => {
                   })
                 })
               }else{
+                const request = new sql.Request(pool)
                 // 中文不同，英文不同，代表新增的職缺是沒有訓練過並從來有出現在資料庫的職缺
                 // 所以新增完成後，必須到botfront新增並訓練
                 request.input('industry_no', sql.Int, industry_no)
@@ -307,8 +311,69 @@ router.post('/api/v1/position', (req, res) => {
                     console.log(err)
                     return
                   }
-                  positionSendMail(res, 'mail_newPosition', position_name, position_entity_name, '新職缺類別')
-                  return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
+                  request.query(`select *
+                  from BOTFRONT_ALL_POSITION
+                  where INDUSTRY_NO = ${industry_no}
+                  and POSITION_NAME = '${position_name}'
+                  and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    const position_no = result.recordset[0].POSITION_ID
+                    if(!position_no){
+                      request.query(`delete *
+                      from BOTFRONT_ALL_POSITION
+                      where INDUSTRY_NO = ${industry_no}
+                      and POSITION_NAME = '${position_name}'
+                      and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        return res.status(404).send('查無此職缺類別，請重新嘗試!')
+                      })
+                    }else{
+                      request.query(`select *
+                      from BOTFRONT_USERS_INFO
+                      where CPY_ID = ${cpy_no}
+                      and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                        if(err){
+                          console.log(err)
+                          return
+                        }
+                        const cpyCheck = result.recordset[0]
+                        if(!cpyCheck){
+                          request.query(`delete *
+                          from BOTFRONT_ALL_POSITION
+                          where INDUSTRY_NO = ${industry_no}
+                          and POSITION_NAME = '${position_name}'
+                          and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
+                            if(err){
+                              console.log(err)
+                              return
+                            }
+                            return res.status(404).send('查無此公司或產業類別，請重新嘗試!')
+                          })
+                        }else{
+                          const request = new sql.Request(pool)
+                          request.input('cpy_no', sql.Int, cpy_no)
+                          .input('industry_no', sql.Int, industry_no)
+                          .input('position_no', sql.Int, position_no)
+                          .input('position_des', sql.NVarChar(2000), position_des)
+                          .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
+                          values (@cpy_no, @industry_no, @position_no, @position_des)`, (err, result) => {
+                            if(err){
+                              console.log(err)
+                              return
+                            }
+                            positionSendMail(res, 'mail_newPosition', position_name, position_entity_name, '新職缺類別')
+                            return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
+                          })
+                        }
+                      })
+                    }
+                  })
                 })
               }
             })
