@@ -119,7 +119,7 @@ input:invalid {
 .rw-conversation-container .rw-messages-container .rw-replies {
   display: block;
   overflow-y: scroll;
-  max-height: 10vw;
+  max-height: 10rem;
 }
 
 .rw-replies::-webkit-scrollbar {
@@ -145,6 +145,11 @@ input:invalid {
 
 .rw-conversation-container {
   height: 80vh;
+}
+
+/* 輪播圖subtitle */
+.rw-carousel-card-subtitle{
+  height: 5rem;
 }
 
 .alert-danger,
@@ -259,6 +264,21 @@ color:#fff;
   width: 100%;
   font-size: 1.5rem;
   display: flex;
+}
+
+#position-block{
+  position: relative;
+}
+
+.not-read-block,
+.not-trained-block {
+ font-weight: 400;
+ color: #e91616;
+}
+
+.position-detail-block {
+  position: absolute;
+  right: -15%;
 }
 
 /* .rw-conversation-container .rw-message {

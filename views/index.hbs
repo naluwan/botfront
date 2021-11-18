@@ -20,9 +20,12 @@
     </div> 
 
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center">
+      <div class="col-10 d-flex align-items-center justify-content-center" id="position-block">
         <label class="m-5 label-title">公司職缺類別:</label>
-        {{#if notTrained}}<div>未訓練：{{notTrained}}</div>{{/if}}{{#if notRead}}<div>今日新增：{{notRead}}</div>{{/if}}
+        <div class="position-detail-block">
+          {{#if notTrained}}<div class="not-trained-block">未訓練：{{notTrained}}</div>{{/if}}
+          {{#if notRead}}<div class="not-read-block">今日新增：{{notRead}}</div>{{/if}}
+        </div>
         <a href="/adminPositionInfo" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div>
