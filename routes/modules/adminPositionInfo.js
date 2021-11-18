@@ -114,6 +114,81 @@ router.get('/new', (req, res) => {
   })
 })
 
+router.put('/trained/:position_id', (req, res) => {
+  const {position_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BOTFRONT_ALL_POSITION
+  where POSITION_ID = ${position_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const positionCheck = result.recordset[0]
+
+    if(!positionCheck){
+      req.flash('error', '查無此職缺類別!請重新嘗試!!')
+      return res.redirect('/adminPositionInfo/notTrained')
+    }else{
+      request.query(`update BOTFRONT_ALL_POSITION
+      set TRAINED = 1
+      where POSITION_ID = ${position_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', `職缺類別：『${positionCheck.POSITION_NAME}』已訓練完成!`)
+        return res.redirect('/adminPositionInfo/notTrained')
+      })
+    }
+  })
+})
+
+// 顯示沒有訓練過的職缺類別
+router.get('/notTrained', (req, res) => {
+  const request = new sql.Request(pool)
+  const warning = []
+
+  request.query(`select *
+  from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const industryInfo = result.recordset
+
+    request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
+    from BOTFRONT_ALL_POSITION a
+    left join BOTFRONT_TYPE_OF_INDUSTRY b
+    on a.INDUSTRY_NO = b.INDUSTRY_ID
+    where a.TRAINED = 0`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+
+      const adminPositionInfo = result.recordset
+      if(adminPositionInfo.length == 0){
+        warning.push({message: '沒有需要訓練的職缺類別!!'})
+        return res.render('adminPositionInfo', {warning, industryInfo})
+      }else{
+        adminPositionInfo.forEach(position => {
+          request.query(`update BOTFRONT_ALL_POSITION
+          set HAD_READ = 1
+          where POSITION_ID = ${position.POSITION_ID}`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+          })
+        })
+        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
+      }
+    })
+  })
+})
+
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
   const {industryFilter} = req.query
@@ -132,7 +207,7 @@ router.get('/', (req, res) => {
 
     if(!industryFilter || industryFilter == ''){
       // 如果沒有選擇分類，顯示所有結果
-      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, b.INDUSTRY_NAME
+      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
       from BOTFRONT_ALL_POSITION a
       left join BOTFRONT_TYPE_OF_INDUSTRY b
       on a.INDUSTRY_NO = b.INDUSTRY_ID`, (err, result) => {
@@ -146,7 +221,7 @@ router.get('/', (req, res) => {
       })
     }else{
       // 有選擇分類的話，顯示篩選後結果
-      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, b.INDUSTRY_NAME
+      request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
       from BOTFRONT_ALL_POSITION a
       left join BOTFRONT_TYPE_OF_INDUSTRY b
       on a.INDUSTRY_NO = b.INDUSTRY_ID
