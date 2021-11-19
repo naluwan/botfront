@@ -1,6 +1,6 @@
 {{#if isAdmin}}
 <div class="row">
-  <div class="col-6 mx-auto mt-3">
+  <div class="col-10 mx-auto mt-3">
   {{> message}}
   </div>
   <div class="col-12 mx-auto home">
@@ -23,8 +23,8 @@
       <div class="col-10 d-flex align-items-center justify-content-center" id="position-block">
         <label class="m-5 label-title">公司職缺類別:</label>
         <div class="position-detail-block">
-          {{#if notRead}}<div class="not-read-block">今日新增：{{notRead}}</div>{{/if}}
-          {{#if notTrained}}<div ><a href="/adminPositionInfo/notTrained" class="not-trained-block">未訓練：{{notTrained}}</a></div>{{/if}}
+          {{#if notRead}}<div><a href="/adminPositionInfo/notRead" class="not-read-block">今日新增：{{notRead}}</a></div>{{/if}}
+          {{#if notTrained}}<div><a href="/adminPositionInfo/notTrained" class="not-trained-block">未訓練：{{notTrained}}</a></div>{{/if}}
         </div>
         <a href="/adminPositionInfo" class="btn btn-success active col-3" role="button">設定</a>
       </div>
