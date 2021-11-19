@@ -57,5 +57,26 @@ module.exports = {
         )
       }
     )
+  },
+  resetMail:  (res, template, email, subject) => {
+    res.render(template, {layout: null, email}, 
+      function(err, html){
+        if (err) {
+          console.log('error in email template');
+        }
+        transporter.sendMail({
+          from: '"BOTFRONT" <harrychien@interinfo.com.tw>',
+          to: email,
+          subject: subject,
+          html: html,
+        },
+          function(err) {
+            if (err) {
+              console.error('Unable to send confirmation: ' + err.stack);
+            }
+          },
+        )
+      }
+    )
   }
 }
