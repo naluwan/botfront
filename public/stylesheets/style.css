@@ -153,7 +153,8 @@ input:invalid {
 }
 
 .alert-danger,
-.alert-warning {
+.alert-warning,
+.alert-success {
   font-size: 1rem;
   font-weight: bold;
 }
@@ -270,10 +271,14 @@ color:#fff;
   position: relative;
 }
 
-.not-read-block,
+.not-read-block{
+  font-weight: 400;
+  color: #1b5cb6;
+}
+
 .not-trained-block {
- font-weight: 400;
- color: #e91616;
+  font-weight: 400;
+  color: #e91616;
 }
 
 .position-detail-block {
