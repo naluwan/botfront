@@ -114,10 +114,55 @@ router.get('/new', (req, res) => {
   })
 })
 
+// 顯示今日新增且未讀的職缺類別
+router.get('/notRead', (req, res) => {
+  const request = new sql.Request(pool)
+
+  // 查詢未讀的職缺類別
+  request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
+  from BOTFRONT_ALL_POSITION a
+  left join BOTFRONT_TYPE_OF_INDUSTRY b
+  on a.INDUSTRY_NO = b.INDUSTRY_ID
+  where a.HAD_READ = 0`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const adminPositionInfo = result.recordset
+    if(adminPositionInfo.length == 0){
+      req.flash('warning', '沒有未讀的職缺類別!')
+      return res.redirect('/adminPositionInfo')
+    }else{
+      request.query(`select *
+      from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const industryInfo = result.recordset
+        // 點擊顯示後將未讀改成已讀
+        adminPositionInfo.forEach(position => {
+          request.query(`update BOTFRONT_ALL_POSITION
+          set HAD_READ = 1
+          where POSITION_ID = ${position.POSITION_ID}`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+          })
+        })
+        return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
+      })
+    }
+  })
+})
+
+// 點擊完成訓練後更新SQL資料庫TRAINED狀態
 router.put('/trained/:position_id', (req, res) => {
   const {position_id} = req.params
   const request = new sql.Request(pool)
 
+  // 驗證職缺類別是否存在
   request.query(`select *
   from BOTFRONT_ALL_POSITION
   where POSITION_ID = ${position_id}`, (err, result) => {
@@ -138,8 +183,24 @@ router.put('/trained/:position_id', (req, res) => {
           console.log(err)
           return
         }
-        req.flash('success_msg', `職缺類別：『${positionCheck.POSITION_NAME}』已訓練完成!`)
-        return res.redirect('/adminPositionInfo/notTrained')
+        req.flash('success_msg', `職缺類別：『${positionCheck.POSITION_NAME}』已訓練完成`)
+        // 查詢是否還有未訓練的職缺類別
+        request.query(`select * 
+        from BOTFRONT_ALL_POSITION
+        where TRAINED = 0`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          const trainedCheck = result.recordset
+          if(trainedCheck.length > 0){
+            return res.redirect('/adminPositionInfo/notTrained')
+          }else{
+            req.flash('success_msg', '所有職缺類別已訓練完成!!')
+            return res.redirect('/')
+          }
+        })
+        
       })
     }
   })
@@ -148,31 +209,29 @@ router.put('/trained/:position_id', (req, res) => {
 // 顯示沒有訓練過的職缺類別
 router.get('/notTrained', (req, res) => {
   const request = new sql.Request(pool)
-  const warning = []
 
-  request.query(`select *
-  from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+  request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
+  from BOTFRONT_ALL_POSITION a
+  left join BOTFRONT_TYPE_OF_INDUSTRY b
+  on a.INDUSTRY_NO = b.INDUSTRY_ID
+  where a.TRAINED = 0`, (err, result) => {
     if(err){
       console.log(err)
       return
     }
-    const industryInfo = result.recordset
 
-    request.query(`select a.POSITION_ID, a.POSITION_NAME, a.POSITION_ENTITY_NAME, a.TRAINED, a.HAD_READ, b.INDUSTRY_NAME
-    from BOTFRONT_ALL_POSITION a
-    left join BOTFRONT_TYPE_OF_INDUSTRY b
-    on a.INDUSTRY_NO = b.INDUSTRY_ID
-    where a.TRAINED = 0`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-
-      const adminPositionInfo = result.recordset
-      if(adminPositionInfo.length == 0){
-        warning.push({message: '沒有需要訓練的職缺類別!!'})
-        return res.render('adminPositionInfo', {warning, industryInfo})
-      }else{
+    const adminPositionInfo = result.recordset
+    if(adminPositionInfo.length == 0){
+      req.flash('warning', '沒有需要訓練的職缺類別!')
+      return res.redirect('/adminPositionInfo')
+    }else{
+      request.query(`select *
+      from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const industryInfo = result.recordset
         adminPositionInfo.forEach(position => {
           request.query(`update BOTFRONT_ALL_POSITION
           set HAD_READ = 1
@@ -184,8 +243,8 @@ router.get('/notTrained', (req, res) => {
           })
         })
         return res.render('adminPositionInfo', {adminPositionInfo, industryInfo})
-      }
-    })
+      })
+    }
   })
 })
 
