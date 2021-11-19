@@ -6,6 +6,85 @@ const {isAdmin} = require('../../middleware/auth')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
+const {resetMail} = require('../../modules/sendMail')
+
+router.put('/resetPassword/:email', (req, res) => {
+  const {email} = req.params
+  const {password, confirmPassword} = req.body
+  const request = new sql.Request(pool)
+
+  if(password !== confirmPassword){
+    req.flash('error', '密碼與確認密碼不符，請重新嘗試!!')
+    return res.redirect(`/users/resetPassword/${email}`)
+  }
+
+  request.query(`select * 
+  from BOTFRONT_USERS_INFO
+  where EMAIL = '${email}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const emailCheck = result.recordset[0]
+    if(!emailCheck){
+      req.flash('error', '查無此帳號，請重新嘗試!!')
+      return res.redirect(`/users/resetPassword/${email}`)
+    }else{
+      return bcrypt.genSalt(10)
+      .then(salt => bcrypt.hash(password, salt))
+      .then(hash => {
+        request.input('password', sql.NVarChar(100), hash)
+        .query(`update BOTFRONT_USERS_INFO
+        set PASSWORD = '@password'
+        where EMAIL = '${email}'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        // console.log(result)
+        })
+      }).then(() => {
+        req.flash('success_msg', '密碼修改成功，請使用新密碼登入!!')
+        // 寄送修改密碼完成mail
+
+
+
+        return res.redirect('/users/login')
+      }).catch(err => console.log(err))
+    }
+  })
+})
+
+// 郵件連接至重設密碼頁面
+router.get('/resetPassword/:email', (req, res) => {
+  const {email} = req.params
+  return res.render('resetPassword', {email})
+})
+
+// 發送重設密碼郵件
+router.get('/sendResetMail', (req, res) => {
+  const {resetEmail} = req.query
+  const request = new sql.Request(pool)
+
+  // 驗證帳號是否存在
+  request.query(`select * 
+  from BOTFRONT_USERS_INFO
+  where EMAIL = '${resetEmail}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const emailCheck = result.recordset[0]
+    if(!emailCheck){
+      req.flash('error', '查無此帳號，請重新嘗試!!')
+      return res.redirect('/users/login')
+    }else{
+      resetMail(res, 'mail_resetPassword', resetEmail, 'Botfront Interface 密碼重置')
+      req.flash('success_msg', `重設密碼郵件已經發送至${resetEmail}，請至信箱查看!`)
+      return res.redirect('/users/login')
+    }
+  })
+})
 
 router.post('/register', (req, res) => {
   const {cpy_no, cpy_name, industry_no, email, password, confirmPassword} = req.body
