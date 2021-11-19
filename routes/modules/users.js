@@ -8,16 +8,19 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const {resetMail} = require('../../modules/sendMail')
 
+// 重置密碼
 router.put('/resetPassword/:email', (req, res) => {
   const {email} = req.params
   const {password, confirmPassword} = req.body
   const request = new sql.Request(pool)
 
+  // 驗證密碼與確認密碼是否相符
   if(password !== confirmPassword){
     req.flash('error', '密碼與確認密碼不符，請重新嘗試!!')
     return res.redirect(`/users/resetPassword/${email}`)
   }
 
+  // 驗證帳號使否存在
   request.query(`select * 
   from BOTFRONT_USERS_INFO
   where EMAIL = '${email}'`, (err, result) => {
@@ -30,6 +33,7 @@ router.put('/resetPassword/:email', (req, res) => {
       req.flash('error', '查無此帳號，請重新嘗試!!')
       return res.redirect(`/users/resetPassword/${email}`)
     }else{
+      // 使用bcrypt加密並存入資料庫
       return bcrypt.genSalt(10)
       .then(salt => bcrypt.hash(password, salt))
       .then(hash => {
