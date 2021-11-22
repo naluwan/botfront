@@ -6,21 +6,28 @@
   <div class="col-12 mx-auto home">
     <div class="row col-6 d-flex mx-auto justify-content-center">
       <a href="/train" class="btn btn-dark active mx-3" role="button" hidden>Train</a>
-      <div class="col-10 d-flex align-items-center justify-content-center">
+      <div class="col-12 d-flex align-items-center justify-content-center">
         <label class="m-5 label-title">公司帳號資料:</label>
         <a href="/adminCompany" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div> 
 
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center">
+      <div class="col-12 d-flex align-items-center justify-content-center">
         <label class="m-5 label-title">公司資訊類別:</label>
         <a href="/adminCompanyInfo" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div> 
 
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center" id="position-block">
+      <div class="col-12 d-flex align-items-center justify-content-center">
+        <label class="m-5 label-title">公司產業類別:</label>
+        <a href="/adminIndustryInfo" class="btn btn-success active col-3" role="button">設定</a>
+      </div>
+    </div> 
+
+    <div class="row col-6 d-flex mx-auto justify-content-center">
+      <div class="col-12 d-flex align-items-center justify-content-center" id="position-block">
         <label class="m-5 label-title">公司職缺類別:</label>
         <div class="position-detail-block">
           {{#if notRead}}<div><a href="/adminPositionInfo/notRead" class="not-read-block">今日新增：{{notRead}}</a></div>{{/if}}
@@ -31,22 +38,22 @@
     </div>
 
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center">
+      <div class="col-12 d-flex align-items-center justify-content-center">
         <label class="m-5 label-title">公司假別類別:</label>
         <a href="/adminLeaveInfo" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div>
 
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center">
+      <div class="col-12 d-flex align-items-center justify-content-center">
         <label class="m-5 label-title">公司補助類別:</label>
         <a href="/adminSubsidyInfo" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div>
 
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-10 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">各公司回覆查詢:</label>
+    <div class="row col-12 d-flex mx-auto justify-content-start">
+      <div class="col-6 d-flex align-items-center justify-content-center">
+        <label class="m-5 label-title">公司回覆查詢:</label>
         <a href="/adminSearch" class="btn btn-success active col-3" role="button">設定</a>
       </div>
     </div> 
