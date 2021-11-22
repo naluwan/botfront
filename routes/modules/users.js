@@ -39,7 +39,7 @@ router.put('/resetPassword/:email', (req, res) => {
       .then(hash => {
         request.input('password', sql.NVarChar(100), hash)
         .query(`update BOTFRONT_USERS_INFO
-        set PASSWORD = '@password'
+        set PASSWORD = @password
         where EMAIL = '${email}'`, (err, result) => {
         if(err){
           console.log(err)
@@ -50,9 +50,7 @@ router.put('/resetPassword/:email', (req, res) => {
       }).then(() => {
         req.flash('success_msg', '密碼修改成功，請使用新密碼登入!!')
         // 寄送修改密碼完成mail
-
-
-
+        resetMail(res, 'mail_resetPasswordDone', email, '密碼修改成功')
         return res.redirect('/users/login')
       }).catch(err => console.log(err))
     }
