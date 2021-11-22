@@ -38,47 +38,70 @@ router.post('/api/v1/user', (req, res) => {
         }
         
       }else{
-        // 利用公司名稱和公司代號創建產業類別
-        request.input('industry_name', sql.NVarChar(200), cpy_name)
-        .input('industry_id', sql.Int, cpy_id)
-        .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
-        values (@industry_id, @industry_name)`,(err, result) => {
+        // 驗證資料庫裡cpy_id和cpy_name是否有重複的值
+        request.query(`select * 
+        from BOTFRONT_TYPE_OF_INDUSTRY
+        where INDUSTRY_ID = '${cpy_id}'
+        or INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
           if(err){
             console.log(err)
             return
           }
-        })
-        // 使用bcrypt加密密碼再存進資料庫
-        bcrypt
-        .genSalt(10)
-        .then(salt => bcrypt.hash(password, salt))
-        .then(hash => {
-          request.query(`select INDUSTRY_ID
-          from BOTFRONT_TYPE_OF_INDUSTRY
-          where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
-            if(err){
-              console.log(err)
-              return
-            }
-            const industry_no = result.recordset[0].INDUSTRY_ID
-            // 新增進資料庫
-            request.input('cpy_id', sql.Int, parseInt(cpy_id))
-            .input('cpy_name', sql.NVarChar(80), cpy_name)
-            .input('email', sql.NVarChar(80), email)
-            .input('password', sql.NVarChar(100), hash)
-            .input('industry_no', sql.Int, industry_no)
-            .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
-            values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+          const industryCheck = result.recordset[0]
+          if(industryCheck){
+            return res.status(409).send({message: '公司代號或公司名稱重複!!請重新嘗試!!'})
+          }else{
+            // 利用公司名稱和公司代號創建產業類別
+            request.input('industry_name', sql.NVarChar(200), cpy_name)
+            .input('industry_id', sql.NVarChar(30), cpy_id)
+            .query(`insert into BOTFRONT_TYPE_OF_INDUSTRY(INDUSTRY_ID, INDUSTRY_NAME)
+            values (@industry_id, @industry_name)`,(err, result) => {
               if(err){
                 console.log(err)
                 return
               }
-              userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
-              // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
-              return res.status(200).send({message:'使用者資料寫入成功!!', industry_no})
             })
-          })
-        }).catch(err => console.log(err))
+            // 使用bcrypt加密密碼再存進資料庫
+            bcrypt
+            .genSalt(10)
+            .then(salt => bcrypt.hash(password, salt))
+            .then(hash => {
+              request.query(`select INDUSTRY_ID
+              from BOTFRONT_TYPE_OF_INDUSTRY
+              where INDUSTRY_NAME = '${cpy_name}'`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                const industry_no = result.recordset[0].INDUSTRY_ID
+                // 新增進資料庫
+                request.input('cpy_id', sql.Int, parseInt(cpy_id))
+                .input('cpy_name', sql.NVarChar(80), cpy_name)
+                .input('email', sql.NVarChar(80), email)
+                .input('password', sql.NVarChar(100), hash)
+                .input('industry_no', sql.NVarChar(30), industry_no)
+                .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO)
+                values (@cpy_id, @cpy_name, @email, @password, @industry_no)`, (err, result) => {
+                  if(err){
+                    console.log(err)
+                    return
+                  }
+                  // 增加公司資訊description(ex.tel, address)
+
+
+
+
+
+
+
+                  userSendMAil(res, 'mail_newUser', cpy_id, cpy_name, email, '新使用者加入')
+                  // 用response回傳狀態碼和成功資訊，另外回傳此間公司的industry_no，以便要傳入職缺類別
+                  return res.status(200).send({message:'使用者資料寫入成功!!', industry_no})
+                })
+              })
+            }).catch(err => console.log(err))
+          }
+        })
       }
     })
   }else{
@@ -102,7 +125,7 @@ router.post('/api/v1/position', (req, res) => {
     // 判斷新增職缺是否在此產業類別中
     request.query(`select *
     from BOTFRONT_ALL_POSITION
-    where INDUSTRY_NO = ${industry_no}
+    where INDUSTRY_NO = '${industry_no}'
     and (POSITION_NAME = '${position_name}' or POSITION_ENTITY_NAME = '${position_entity_name}')`, (err, result) => {
       if(err){
         console.log(err)
@@ -131,7 +154,7 @@ router.post('/api/v1/position', (req, res) => {
           // 如果中文名稱相同，則從全部職缺中抓取相同的資料(中文和英文名稱)，再新增進此產業類別
           // 因為此職缺是從資料庫抓資料，代表已經訓練過，所以在insert的時候要多一個值trained並給值1，在提醒訓練時不會顯示
           if(positionCNCheck){
-            request.input('industry_no', sql.Int, industry_no)
+            request.input('industry_no', sql.NVarChar(30), industry_no)
             .input('position_name', sql.NVarChar(200), positionCNCheck.POSITION_NAME)
             .input('position_entity_name', sql.NVarChar(200), positionCNCheck.POSITION_ENTITY_NAME)
             .input('trained', sql.Bit, 1)
@@ -144,7 +167,7 @@ router.post('/api/v1/position', (req, res) => {
               // 查詢新增職缺的position_no
               request.query(`select *
               from BOTFRONT_ALL_POSITION
-              where INDUSTRY_NO = ${industry_no}
+              where INDUSTRY_NO = '${industry_no}'
               and POSITION_NAME = '${position_name}'`, (err, result) => {
                 if(err){
                   console.log(err)
@@ -154,7 +177,7 @@ router.post('/api/v1/position', (req, res) => {
                 // 查詢新增職缺的position_id，如果找不到則刪除剛剛新增的職缺資訊
                 if(!position_no){
                   request.query(`delete from BOTFRONT_ALL_POSITION
-                  where INDUSTRY_NO = ${industry_no}
+                  where INDUSTRY_NO = '${industry_no}'
                   and POSITION_NAME = '${positionCNCheck.POSITION_NAME}'
                   and POSITION_ENTITY_NAME = '${positionCNCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
                     if(err){
@@ -171,7 +194,7 @@ router.post('/api/v1/position', (req, res) => {
                   request.query(`select *
                   from BOTFRONT_USERS_INFO
                   where CPY_ID = ${cpy_no}
-                  and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                  and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                     if(err){
                       console.log(err)
                       return
@@ -179,7 +202,7 @@ router.post('/api/v1/position', (req, res) => {
                     const cpyCheck = result.recordset[0]
                     if(!cpyCheck){
                       request.query(`delete from BOTFRONT_ALL_POSITION
-                      where INDUSTRY_NO = ${industry_no}
+                      where INDUSTRY_NO = '${industry_no}'
                       and POSITION_NAME = '${positionCNCheck.POSITION_NAME}'
                       and POSITION_ENTITY_NAME = '${positionCNCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
                         if(err){
@@ -190,7 +213,7 @@ router.post('/api/v1/position', (req, res) => {
                       })
                     }else{
                       request.input('cpy_no', sql.Int, cpy_no)
-                      .input('industry_no', sql.Int, industry_no) 
+                      .input('industry_no', sql.NVarChar(30), industry_no) 
                       .input('position_no', sql.Int, position_no)
                       .input('position_des', sql.NVarChar(2000), position_des)
                       .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
@@ -227,7 +250,7 @@ router.post('/api/v1/position', (req, res) => {
               // 如果中文名稱不同，英文名稱相同，則會從資料庫抓取英文名稱並在insert進此產業類別時帶入新的中文名稱
               // botfront訓練時，同個英文名稱(entity)，可以有多個中文詞，但必須新增並訓練
               if(positionENCheck){
-                request.input('industry_no', sql.Int, industry_no)
+                request.input('industry_no', sql.NVarChar(30), industry_no)
                 .input('position_name', sql.NVarChar(200), position_name)
                 .input('position_entity_name', sql.NVarChar(200), positionENCheck.POSITION_ENTITY_NAME)
                 .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)
@@ -238,7 +261,7 @@ router.post('/api/v1/position', (req, res) => {
                   }
                   request.query(`select * 
                   from BOTFRONT_ALL_POSITION
-                  where INDUSTRY_NO = ${industry_no}
+                  where INDUSTRY_NO = '${industry_no}'
                   and POSITION_NAME = '${position_name}'`, (err, result) => {
                     if(err){
                       console.log(err)
@@ -248,7 +271,7 @@ router.post('/api/v1/position', (req, res) => {
                     if(!position_no){
                       request.query(`delete from
                       BOTFRONT_ALL_POSITION
-                      where INDUSTRY_NO = ${industry_no}
+                      where INDUSTRY_NO = '${industry_no}'
                       and POISTION_NAME = '${position_name}'
                       and POSITION_ENTITY_NAME = '${positionENCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
                         if(err){
@@ -262,7 +285,7 @@ router.post('/api/v1/position', (req, res) => {
                       request.query(`select *
                       from BOTFRONT_USERS_INFO
                       where CPY_ID = ${cpy_no}
-                      and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                      and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                         if(err){
                           console.log(err)
                           return
@@ -270,7 +293,7 @@ router.post('/api/v1/position', (req, res) => {
                         const cpyCheck = result.recordset[0]
                         if(!cpyCheck){
                           request.query(`delete from BOTFRONT_ALL_POSITION
-                          where INDUSTRY_NO = ${industry_no}
+                          where INDUSTRY_NO = '${industry_no}'
                           and POSITION_NAME = '${position_name}'
                           and POSITION_ENTITY_NAME = '${positionENCheck.POSITION_ENTITY_NAME}'`, (err, result) => {
                             if(err){
@@ -281,7 +304,7 @@ router.post('/api/v1/position', (req, res) => {
                           })
                         }else{
                           request.input('cpy_no', sql.Int, cpy_no)
-                          .input('industry_no', sql.Int, industry_no)
+                          .input('industry_no', sql.NVarChar(30), industry_no)
                           .input('position_no', sql.Int, position_no)
                           .input('position_des', sql.NVarChar(2000), position_des)
                           .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
@@ -302,7 +325,7 @@ router.post('/api/v1/position', (req, res) => {
                 const request = new sql.Request(pool)
                 // 中文不同，英文不同，代表新增的職缺是沒有訓練過並從來有出現在資料庫的職缺
                 // 所以新增完成後，必須到botfront新增並訓練
-                request.input('industry_no', sql.Int, industry_no)
+                request.input('industry_no', sql.NVarChar(30), industry_no)
                 .input('position_name', sql.NVarChar(200), position_name)
                 .input('position_entity_name', sql.NVarChar(200), position_entity_name)
                 .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)
@@ -313,7 +336,7 @@ router.post('/api/v1/position', (req, res) => {
                   }
                   request.query(`select *
                   from BOTFRONT_ALL_POSITION
-                  where INDUSTRY_NO = ${industry_no}
+                  where INDUSTRY_NO = '${industry_no}'
                   and POSITION_NAME = '${position_name}'
                   and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
                     if(err){
@@ -324,7 +347,7 @@ router.post('/api/v1/position', (req, res) => {
                     if(!position_no){
                       request.query(`delete *
                       from BOTFRONT_ALL_POSITION
-                      where INDUSTRY_NO = ${industry_no}
+                      where INDUSTRY_NO = '${industry_no}'
                       and POSITION_NAME = '${position_name}'
                       and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
                         if(err){
@@ -337,7 +360,7 @@ router.post('/api/v1/position', (req, res) => {
                       request.query(`select *
                       from BOTFRONT_USERS_INFO
                       where CPY_ID = ${cpy_no}
-                      and INDUSTRY_NO = ${industry_no}`, (err, result) => {
+                      and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                         if(err){
                           console.log(err)
                           return
@@ -346,7 +369,7 @@ router.post('/api/v1/position', (req, res) => {
                         if(!cpyCheck){
                           request.query(`delete *
                           from BOTFRONT_ALL_POSITION
-                          where INDUSTRY_NO = ${industry_no}
+                          where INDUSTRY_NO = '${industry_no}'
                           and POSITION_NAME = '${position_name}'
                           and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
                             if(err){
@@ -358,7 +381,7 @@ router.post('/api/v1/position', (req, res) => {
                         }else{
                           const request = new sql.Request(pool)
                           request.input('cpy_no', sql.Int, cpy_no)
-                          .input('industry_no', sql.Int, industry_no)
+                          .input('industry_no', sql.NVarChar(30), industry_no)
                           .input('position_no', sql.Int, position_no)
                           .input('position_des', sql.NVarChar(2000), position_des)
                           .query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES)
