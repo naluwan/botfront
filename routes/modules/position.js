@@ -166,7 +166,7 @@ router.post('/', (req, res) => {
 		from BOTFRONT_POSITION_INFO b 
 		where  a.POSITION_ID = b.POSITION_NO 
 		and b.CPY_NO = ${cpyNo}) 
-		and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
+		and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 			if(err){
 			console.log(err)
 			return
@@ -177,7 +177,7 @@ router.post('/', (req, res) => {
 		})
 	}else{
 		request.input('cpyNo', sql.Int, cpyNo)
-		.input('industry_no', sql.Int, industryNo)
+		.input('industry_no', sql.NVarChar(30), industryNo)
 		.input('position_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
 		.query(`insert into BOTFRONT_POSITION_INFO (CPY_NO, INDUSTRY_NO, POSITION_NO, POSITION_DES) 
@@ -206,7 +206,7 @@ router.get('/new', (req, res) => {
 	from BOTFRONT_POSITION_INFO b 
 	where  a.POSITION_ID = b.POSITION_NO 
 	and b.CPY_NO = ${cpyNo}) 
-	and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
+	and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -234,7 +234,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-	where CPY_NO = ${cpyNo} and a.INDUSTRY_NO = ${industryNo}`, (err, result) => {
+	where CPY_NO = ${cpyNo} and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

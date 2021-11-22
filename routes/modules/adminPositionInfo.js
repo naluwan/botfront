@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
   // 驗證此產業類別中是否有相同的職缺類別
   request.query(`select *
   from BOTFRONT_ALL_POSITION
-  where industry_no = ${industry_no} and POSITION_NAME = '${position_name}'`, (err, result) => {
+  where industry_no = '${industry_no}' and POSITION_NAME = '${position_name}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -82,7 +82,7 @@ router.post('/', (req, res) => {
         })
       })
     }else{
-      request.input('industry_no', sql.Int, industry_no)
+      request.input('industry_no', sql.NVarChar(30), industry_no)
       .input('position_name', sql.NVarChar(200), position_name)
       .input('position_entity_name', sql.NVarChar(200), position_entity_name)
       .query(`insert into BOTFRONT_ALL_POSITION (INDUSTRY_NO, POSITION_NAME, POSITION_ENTITY_NAME)

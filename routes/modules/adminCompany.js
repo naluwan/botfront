@@ -123,7 +123,7 @@ router.put('/:CPY_ID', (req, res) => {
       return res.redirect('/adminCompany')
     }
     request.input('cpy_no', sql.Int, cpy_no)
-    .input('industry_no', sql.Int, industry_no)
+    .input('industry_no', sql.NVarChar(30), industry_no)
     .input('cpy_name', sql.NVarChar(80), cpy_name)
     .input('email', sql.NVarChar(80), email)
     .input('isadmin', sql.Bit, parseInt(isadmin))
@@ -274,7 +274,7 @@ router.post('/new', isAdmin, (req, res) => {
           .then(hash => {
             request.input('cpy_no', sql.Int, parseInt(cpy_no))
             .input('cpy_name', sql.NVarChar(80), cpy_name)
-            .input('industry_no', sql.Int, parseInt(industry_no))
+            .input('industry_no', sql.NVarChar(30), parseInt(industry_no))
             .input('email', sql.NVarChar(80), email)
             .input('isadmin', sql.Bit, parseInt(isadmin))
             .input('password', sql.NVarChar(100), hash)
