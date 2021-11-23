@@ -15,7 +15,7 @@ router.delete('/:subsidy_no', (req, res) => {
 
 	request.query(`select * 
 	from BOTFRONT_SUBSIDY_INFO 
-	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -29,7 +29,7 @@ router.delete('/:subsidy_no', (req, res) => {
       from BOTFRONT_SUBSIDY_INFO a
       left join BOTFRONT_ALL_SUBSIDY b
       on b.SUBSIDY_ID = a.SUBSIDY_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -41,7 +41,7 @@ router.delete('/:subsidy_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_SUBSIDY_INFO 
-			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -63,7 +63,7 @@ router.put('/:subsidy_no', (req, res) => {
 	const errors = []
 	request.query(`select *
 	from BOTFRONT_SUBSIDY_INFO a
-	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where SUBSIDY_NO = ${subsidy_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -76,7 +76,7 @@ router.put('/:subsidy_no', (req, res) => {
       from BOTFRONT_SUBSIDY_INFO a
       left join BOTFRONT_ALL_SUBSIDY b
       on b.SUBSIDY_ID = a.SUBSIDY_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -89,7 +89,7 @@ router.put('/:subsidy_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), SUBSIDY_DES)
 			.query(`update BOTFRONT_SUBSIDY_INFO
 			set SUBSIDY_DES = @des
-			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where SUBSIDY_NO = ${subsidy_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -112,7 +112,7 @@ router.get('/:subsidy_no/edit', (req, res) => {
 	from BOTFRONT_SUBSIDY_INFO a
 	left join BOTFRONT_ALL_SUBSIDY b
 	on a.SUBSIDY_NO = b.SUBSIDY_ID 
-	where a.SUBSIDY_NO = ${subsidy_no} and a.CPY_NO = ${cpyNo}`, (err, result) => {
+	where a.SUBSIDY_NO = ${subsidy_no} and a.CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -126,7 +126,7 @@ router.get('/:subsidy_no/edit', (req, res) => {
       from BOTFRONT_SUBSIDY_INFO a
       left join BOTFRONT_ALL_SUBSIDY b
       on b.SUBSIDY_ID = a.SUBSIDY_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -159,7 +159,7 @@ router.post('/', (req, res) => {
     where not exists (select * 
     from BOTFRONT_SUBSIDY_INFO b 
     where  a.SUBSIDY_ID = b.SUBSIDY_NO 
-    and b.CPY_NO = ${cpyNo})`, (err, result) => {
+    and b.CPY_NO = '${cpyNo}')`, (err, result) => {
 			if(err){
 			console.log(err)
 			return
@@ -169,7 +169,7 @@ router.post('/', (req, res) => {
 			return res.render('new_subsidy', {errors, des, category})
 		})
 	}else{
-		request.input('cpyNo', sql.Int, cpyNo)
+		request.input('cpyNo', sql.NVarChar(30), cpyNo)
 		.input('subsidy_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
 		.query(`insert into BOTFRONT_SUBSIDY_INFO (CPY_NO, SUBSIDY_NO, SUBSIDY_DES) 
@@ -195,7 +195,7 @@ router.get('/new', (req, res) => {
 	where not exists (select * 
 	from BOTFRONT_SUBSIDY_INFO b 
 	where  a.SUBSIDY_ID = b.SUBSIDY_NO 
-	and b.CPY_NO = ${cpyNo})`, (err, result) => {
+	and b.CPY_NO = '${cpyNo}')`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -221,7 +221,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_SUBSIDY_INFO a
 	left join BOTFRONT_ALL_SUBSIDY b
 	on b.SUBSIDY_ID = a.SUBSIDY_NO
-	where CPY_NO = ${cpyNo}`, (err, result) => {
+	where CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

@@ -14,7 +14,7 @@ router.put('/:position_no', (req, res) => {
 	const errors = []
 	request.query(`select *
 	from BOTFRONT_POSITION_INFO
-	where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where POSITION_NO = ${position_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -27,7 +27,7 @@ router.put('/:position_no', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -40,7 +40,7 @@ router.put('/:position_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), POSITION_DES)
 			.query(`update BOTFRONT_POSITION_INFO
 			set POSITION_DES = @des
-			where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where POSITION_NO = ${position_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -64,7 +64,7 @@ router.get('/:position_id/edit', (req, res) => {
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on a.POSITION_NO = b.POSITION_ID 
-	where POSITION_NO = ${position_id} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where POSITION_NO = ${position_id} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -78,7 +78,7 @@ router.get('/:position_id/edit', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -104,7 +104,7 @@ router.delete('/:position_no', (req, res) => {
 
 	request.query(`select * 
 	from BOTFRONT_POSITION_INFO 
-	where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where POSITION_NO = ${position_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -118,7 +118,7 @@ router.delete('/:position_no', (req, res) => {
 			from BOTFRONT_POSITION_INFO a
 			left join BOTFRONT_ALL_POSITION b
 			on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -130,7 +130,7 @@ router.delete('/:position_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_POSITION_INFO 
-			where POSITION_NO = ${position_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where POSITION_NO = ${position_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -165,7 +165,7 @@ router.post('/', (req, res) => {
 		where not exists (select * 
 		from BOTFRONT_POSITION_INFO b 
 		where  a.POSITION_ID = b.POSITION_NO 
-		and b.CPY_NO = ${cpyNo}) 
+		and b.CPY_NO = '${cpyNo}') 
 		and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 			if(err){
 			console.log(err)
@@ -176,7 +176,7 @@ router.post('/', (req, res) => {
 			return res.render('new_position', {errors, des, category})
 		})
 	}else{
-		request.input('cpyNo', sql.Int, cpyNo)
+		request.input('cpyNo', sql.NVarChar(30), cpyNo)
 		.input('industry_no', sql.NVarChar(30), industryNo)
 		.input('position_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
@@ -205,7 +205,7 @@ router.get('/new', (req, res) => {
 	where not exists (select * 
 	from BOTFRONT_POSITION_INFO b 
 	where  a.POSITION_ID = b.POSITION_NO 
-	and b.CPY_NO = ${cpyNo}) 
+	and b.CPY_NO = '${cpyNo}') 
 	and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
@@ -234,7 +234,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_POSITION_INFO a
 	left join BOTFRONT_ALL_POSITION b
 	on b.INDUSTRY_NO = a.INDUSTRY_NO and b.POSITION_ID = a.POSITION_NO
-	where CPY_NO = ${cpyNo} and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
+	where CPY_NO = '${cpyNo}' and a.INDUSTRY_NO = '${industryNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

@@ -18,7 +18,7 @@ router.put('/:greet_no', (req, res) => {
   from BOTFRONT_GREET_INFO a
   left join BOTFRONT_ALL_GREET b
   on a.GREET_NO = b.GREET_ID
-  where a.CPY_NO = ${cpyNo} and a.GREET_NO = ${greet_no}`, (err, result) => {
+  where a.CPY_NO = '${cpyNo}' and a.GREET_NO = ${greet_no}`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -31,7 +31,7 @@ router.put('/:greet_no', (req, res) => {
       from BOTFRONT_GREET_INFO a
       left join BOTFRONT_ALL_GREET b
       on a.GREET_NO = b.GREET_ID
-      where a.CPY_NO = ${cpyNo}`, (err, result) => {
+      where a.CPY_NO = '${cpyNo}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -44,7 +44,7 @@ router.put('/:greet_no', (req, res) => {
       request.input('des', sql.NVarChar(2000), GREET_DES)
       .query(`update BOTFRONT_GREET_INFO
       set GREET_DES = @des
-      where CPY_NO = ${cpyNo} and GREET_NO = ${greet_no}`, (err, result) => {
+      where CPY_NO = '${cpyNo}' and GREET_NO = ${greet_no}`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -68,7 +68,7 @@ router.get('/:greet_no/edit', (req, res) => {
   from BOTFRONT_GREET_INFO a
   left join BOTFRONT_ALL_GREET b
   on a.GREET_NO = b.GREET_ID
-  where a.CPY_NO = ${cpyNo} and a.GREET_NO = ${greet_no}`, (err, result) => {
+  where a.CPY_NO = '${cpyNo}' and a.GREET_NO = ${greet_no}`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -81,7 +81,7 @@ router.get('/:greet_no/edit', (req, res) => {
       from BOTFRONT_GREET_INFO a
       left join BOTFRONT_ALL_GREET b
       on a.GREET_NO = b.GREET_ID
-      where a.CPY_NO = ${cpyNo}`, (err, result) => {
+      where a.CPY_NO = '${cpyNo}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -106,7 +106,7 @@ router.get('/', (req, res) => {
   from BOTFRONT_GREET_INFO a
   left join BOTFRONT_ALL_GREET b
   on a.GREET_NO = b.GREET_ID
-  where a.CPY_NO = ${cpyNo} order by a.GREET_NO`, (err, result) => {
+  where a.CPY_NO = '${cpyNo}' order by a.GREET_NO`, (err, result) => {
     if(err){
       console.log(err)
       return

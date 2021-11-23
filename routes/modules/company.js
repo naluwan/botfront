@@ -16,7 +16,7 @@ router.get('/:info_no/edit', (req, res) => {
 	from BOTFRONT_COMPANY_INFO a 
 	left join BOTFRONT_ALL_COMPANY_INFO b 
 	on a.INFO_NO = b.INFO_ID 
-	where a.INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where a.INFO_NO = ${info_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -29,7 +29,7 @@ router.get('/:info_no/edit', (req, res) => {
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
 			on a.INFO_NO = b.INFO_ID 
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -57,7 +57,7 @@ router.put('/:info_no', (req, res) => {
 	from BOTFRONT_COMPANY_INFO a
 	left join BOTFRONT_ALL_COMPANY_INFO b
 	on a.INFO_NO = b.INFO_ID
-	where a.INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where a.INFO_NO = ${info_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -70,7 +70,7 @@ router.put('/:info_no', (req, res) => {
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
 			on a.INFO_NO = b.INFO_ID 
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -82,7 +82,7 @@ router.put('/:info_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), INFO_DES)
 			.query(`update BOTFRONT_COMPANY_INFO
 			set INFO_DES = @des
-			where INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where INFO_NO = ${info_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -113,7 +113,7 @@ router.post('/', (req, res) => {
 		from BOTFRONT_ALL_COMPANY_INFO a 
 		where not exists (select * 
 		from BOTFRONT_COMPANY_INFO b 
-		where b.INFO_NO = a.INFO_ID and CPY_NO = ${cpyNo})`, (err, result) => {
+		where b.INFO_NO = a.INFO_ID and CPY_NO = '${cpyNo}')`, (err, result) => {
 			if(err){
 				console.log(err)
 				return
@@ -123,7 +123,7 @@ router.post('/', (req, res) => {
 			return res.render('new_company', {errors, des, categoryInfo, category})
 		})
 	} else {
-		request.input('cpyNo', sql.Int, cpyNo)
+		request.input('cpyNo', sql.NVarChar(30), cpyNo)
 		.input('info_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
 		.query(`insert into BOTFRONT_COMPANY_INFO (CPY_NO, INFO_NO, INFO_DES) 
@@ -149,7 +149,7 @@ router.get('/new', (req, res) => {
 	from BOTFRONT_ALL_COMPANY_INFO a 
 	where not exists (select * 
 	from BOTFRONT_COMPANY_INFO b 
-	where b.INFO_NO = a.INFO_ID and CPY_NO = ${cpyNo})`, (err, result) => {
+	where b.INFO_NO = a.INFO_ID and CPY_NO = '${cpyNo}')`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -174,7 +174,7 @@ router.delete('/:info_no', (req, res) => {
 	// 檢查info_no是否有在table中
 	request.query(`select * 
 	from BOTFRONT_COMPANY_INFO 
-	where INFO_NO = ${info_no} AND CPY_NO = ${cpyNo}`, (err, result) => {
+	where INFO_NO = ${info_no} AND CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 			console.log(err)
 			return
@@ -187,7 +187,7 @@ router.delete('/:info_no', (req, res) => {
 			from BOTFRONT_COMPANY_INFO a 
 			left join BOTFRONT_ALL_COMPANY_INFO b 
 			on a.INFO_NO = b.INFO_ID 
-			where CPY_NO = ${cpyNo}`, (err, result) => {
+			where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -199,7 +199,7 @@ router.delete('/:info_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_COMPANY_INFO 
-			where INFO_NO = ${info_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where INFO_NO = ${info_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 					console.log(err)
 					return
@@ -221,7 +221,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_COMPANY_INFO a 
 	left join BOTFRONT_ALL_COMPANY_INFO b 
 	on a.INFO_NO = b.INFO_ID 
-	where CPY_NO = ${cpyNo}`, (err, result) => {
+	where CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

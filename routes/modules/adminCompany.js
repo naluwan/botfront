@@ -13,7 +13,7 @@ router.delete('/:CPY_ID', (req, res) => {
 
   request.query(`select *
   from BOTFRONT_USERS_INFO
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
+  where CPY_ID = '${CPY_ID}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -24,7 +24,7 @@ router.delete('/:CPY_ID', (req, res) => {
       return res.redirect('/adminCompany')
     }
     request.query(`delete BOTFRONT_USERS_INFO
-    where CPY_ID = ${CPY_ID}`, (err, result) => {
+    where CPY_ID = '${CPY_ID}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -53,7 +53,7 @@ router.put('/password/:CPY_ID', (req, res) => {
 
   request.query(`select CPY_ID, CPY_NAME
   from BOTFRONT_USERS_INFO
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
+  where CPY_ID = '${CPY_ID}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -70,7 +70,7 @@ router.put('/password/:CPY_ID', (req, res) => {
         request.input('password', sql.NVarChar(100), hash)
         .query(`update BOTFRONT_USERS_INFO 
         set password = @password
-        where CPY_ID = ${CPY_ID}`, (err, result) => {
+        where CPY_ID = '${CPY_ID}'`, (err, result) => {
           if(err){
             console.log(err)
             return
@@ -90,7 +90,7 @@ router.get('/:CPY_ID/edit/password', (req, res) => {
   const request = new sql.Request(pool)
   request.query(`select CPY_ID, CPY_NAME
   from BOTFRONT_USERS_INFO
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
+  where CPY_ID = '${CPY_ID}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -112,7 +112,7 @@ router.put('/:CPY_ID', (req, res) => {
 
   request.query(`select CPY_NAME
   from BOTFRONT_USERS_INFO 
-  where CPY_ID = ${CPY_ID}`, (err, result) => {
+  where CPY_ID = '${CPY_ID}'`, (err, result) => {
     if(err){
       console.log(err)
       return
@@ -122,7 +122,7 @@ router.put('/:CPY_ID', (req, res) => {
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/adminCompany')
     }
-    request.input('cpy_no', sql.Int, cpy_no)
+    request.input('cpy_no', sql.NVarChar(30), cpy_no)
     .input('industry_no', sql.NVarChar(30), industry_no)
     .input('cpy_name', sql.NVarChar(80), cpy_name)
     .input('email', sql.NVarChar(80), email)
@@ -156,7 +156,7 @@ router.get('/:CPY_ID/edit', (req, res) => {
     from BOTFRONT_USERS_INFO a
     left join BOTFRONT_TYPE_OF_INDUSTRY b
     on a.INDUSTRY_NO = b.INDUSTRY_ID
-    where CPY_ID = ${CPY_ID}`, (err, result) => {
+    where CPY_ID = '${CPY_ID}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -214,7 +214,7 @@ router.post('/new', isAdmin, (req, res) => {
       const industryInfo = result.recordset
       request.query(`select * 
       from BOTFRONT_USERS_INFO
-      where EMAIL = '${email}' or CPY_ID = ${cpy_no} or CPY_NAME = '${cpy_name}'`, (err, result) => {
+      where EMAIL = '${email}' or CPY_ID = '${cpy_no}' or CPY_NAME = '${cpy_name}'`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -272,9 +272,9 @@ router.post('/new', isAdmin, (req, res) => {
           .genSalt(10)
           .then(salt => bcrypt.hash(password, salt))
           .then(hash => {
-            request.input('cpy_no', sql.Int, parseInt(cpy_no))
+            request.input('cpy_no', sql.NVarChar(30), cpy_no)
             .input('cpy_name', sql.NVarChar(80), cpy_name)
-            .input('industry_no', sql.NVarChar(30), parseInt(industry_no))
+            .input('industry_no', sql.NVarChar(30), industry_no)
             .input('email', sql.NVarChar(80), email)
             .input('isadmin', sql.Bit, parseInt(isadmin))
             .input('password', sql.NVarChar(100), hash)

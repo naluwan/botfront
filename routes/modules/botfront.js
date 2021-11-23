@@ -18,7 +18,7 @@ router.post('/api/v1/user', (req, res) => {
     // 驗證使用者資訊是否重複
     request.query(`select *
     from BOTFRONT_USERS_INFO
-    where CPY_ID = ${cpy_id} or CPY_NAME = '${cpy_name}' or EMAIL = '${email}'`, (err, result) => {
+    where CPY_ID = '${cpy_id}' or CPY_NAME = '${cpy_name}' or EMAIL = '${email}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -75,7 +75,7 @@ router.post('/api/v1/user', (req, res) => {
                 }
                 const industry_no = result.recordset[0].INDUSTRY_ID
                 // 新增進資料庫
-                request.input('cpy_id', sql.Int, parseInt(cpy_id))
+                request.input('cpy_id', sql.NVarChar(30), cpy_id)
                 .input('cpy_name', sql.NVarChar(80), cpy_name)
                 .input('email', sql.NVarChar(80), email)
                 .input('password', sql.NVarChar(100), hash)
@@ -193,7 +193,7 @@ router.post('/api/v1/position', (req, res) => {
                   // 驗證傳進的cpy_no是否存在以及industry_no是否符合
                   request.query(`select *
                   from BOTFRONT_USERS_INFO
-                  where CPY_ID = ${cpy_no}
+                  where CPY_ID = '${cpy_no}'
                   and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                     if(err){
                       console.log(err)
@@ -212,7 +212,7 @@ router.post('/api/v1/position', (req, res) => {
                         return res.status(404).send('查無此公司或產業類別，請重新嘗試!')
                       })
                     }else{
-                      request.input('cpy_no', sql.Int, cpy_no)
+                      request.input('cpy_no', sql.NVarChar(30), cpy_no)
                       .input('industry_no', sql.NVarChar(30), industry_no) 
                       .input('position_no', sql.Int, position_no)
                       .input('position_des', sql.NVarChar(2000), position_des)
@@ -284,7 +284,7 @@ router.post('/api/v1/position', (req, res) => {
                       const request = new sql.Request(pool)
                       request.query(`select *
                       from BOTFRONT_USERS_INFO
-                      where CPY_ID = ${cpy_no}
+                      where CPY_ID = '${cpy_no}'
                       and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                         if(err){
                           console.log(err)
@@ -303,7 +303,7 @@ router.post('/api/v1/position', (req, res) => {
                             return res.status(404).send('查無此公司或產業類別，請重新嘗試!')
                           })
                         }else{
-                          request.input('cpy_no', sql.Int, cpy_no)
+                          request.input('cpy_no', sql.NVarChar(30), cpy_no)
                           .input('industry_no', sql.NVarChar(30), industry_no)
                           .input('position_no', sql.Int, position_no)
                           .input('position_des', sql.NVarChar(2000), position_des)
@@ -359,7 +359,7 @@ router.post('/api/v1/position', (req, res) => {
                     }else{
                       request.query(`select *
                       from BOTFRONT_USERS_INFO
-                      where CPY_ID = ${cpy_no}
+                      where CPY_ID = '${cpy_no}'
                       and INDUSTRY_NO = '${industry_no}'`, (err, result) => {
                         if(err){
                           console.log(err)
@@ -380,7 +380,7 @@ router.post('/api/v1/position', (req, res) => {
                           })
                         }else{
                           const request = new sql.Request(pool)
-                          request.input('cpy_no', sql.Int, cpy_no)
+                          request.input('cpy_no', sql.NVarChar(30), cpy_no)
                           .input('industry_no', sql.NVarChar(30), industry_no)
                           .input('position_no', sql.Int, position_no)
                           .input('position_des', sql.NVarChar(2000), position_des)

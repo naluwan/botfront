@@ -14,7 +14,7 @@ router.delete('/:leave_no', (req, res) => {
 
 	request.query(`select * 
 	from BOTFRONT_LEAVE_INFO 
-	where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where LEAVE_NO = ${leave_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -28,7 +28,7 @@ router.delete('/:leave_no', (req, res) => {
       from BOTFRONT_LEAVE_INFO a
       left join BOTFRONT_ALL_LEAVE b
       on b.LEAVE_ID = a.LEAVE_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -40,7 +40,7 @@ router.delete('/:leave_no', (req, res) => {
 		} else {
 			request.query(`delete 
 			from BOTFRONT_LEAVE_INFO 
-			where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where LEAVE_NO = ${leave_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -62,7 +62,7 @@ router.put('/:leave_no', (req, res) => {
 	const errors = []
 	request.query(`select *
 	from BOTFRONT_LEAVE_INFO a
-	where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+	where LEAVE_NO = ${leave_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -75,7 +75,7 @@ router.put('/:leave_no', (req, res) => {
       from BOTFRONT_LEAVE_INFO a
       left join BOTFRONT_ALL_LEAVE b
       on b.LEAVE_ID = a.LEAVE_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -88,7 +88,7 @@ router.put('/:leave_no', (req, res) => {
 			request.input('des', sql.NVarChar(2000), LEAVE_DES)
 			.query(`update BOTFRONT_LEAVE_INFO
 			set LEAVE_DES = @des
-			where LEAVE_NO = ${leave_no} and CPY_NO = ${cpyNo}`, (err, result) => {
+			where LEAVE_NO = ${leave_no} and CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -111,7 +111,7 @@ router.get('/:leave_no/edit', (req, res) => {
 	from BOTFRONT_LEAVE_INFO a
 	left join BOTFRONT_ALL_LEAVE b
 	on a.LEAVE_NO = b.LEAVE_ID 
-	where a.LEAVE_NO = ${leave_no} and a.CPY_NO = ${cpyNo}`, (err, result) => {
+	where a.LEAVE_NO = ${leave_no} and a.CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -125,7 +125,7 @@ router.get('/:leave_no/edit', (req, res) => {
       from BOTFRONT_LEAVE_INFO a
       left join BOTFRONT_ALL_LEAVE b
       on b.LEAVE_ID = a.LEAVE_NO
-      where CPY_NO = ${cpyNo}`, (err, result) => {
+      where CPY_NO = '${cpyNo}'`, (err, result) => {
 				if(err){
 				console.log(err)
 				return
@@ -158,7 +158,7 @@ router.post('/', (req, res) => {
     where not exists (select * 
     from BOTFRONT_LEAVE_INFO b 
     where  a.LEAVE_ID = b.LEAVE_NO 
-    and b.CPY_NO = ${cpyNo})`, (err, result) => {
+    and b.CPY_NO = '${cpyNo}')`, (err, result) => {
 			if(err){
 			console.log(err)
 			return
@@ -168,7 +168,7 @@ router.post('/', (req, res) => {
 			return res.render('new_leave', {errors, des, category})
 		})
 	}else{
-		request.input('cpyNo', sql.Int, cpyNo)
+		request.input('cpyNo', sql.NVarChar(30), cpyNo)
 		.input('leave_no', sql.Int, category)
 		.input('des', sql.NVarChar(2000), des)
 		.query(`insert into BOTFRONT_LEAVE_INFO (CPY_NO, LEAVE_NO, LEAVE_DES) 
@@ -194,7 +194,7 @@ router.get('/new', (req, res) => {
 	where not exists (select * 
 	from BOTFRONT_LEAVE_INFO b 
 	where  a.LEAVE_ID = b.LEAVE_NO 
-	and b.CPY_NO = ${cpyNo})`, (err, result) => {
+	and b.CPY_NO = '${cpyNo}')`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -220,7 +220,7 @@ router.get('/', (req, res) => {
 	from BOTFRONT_LEAVE_INFO a
 	left join BOTFRONT_ALL_LEAVE b
 	on b.LEAVE_ID = a.LEAVE_NO
-	where CPY_NO = ${cpyNo}`, (err, result) => {
+	where CPY_NO = '${cpyNo}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return

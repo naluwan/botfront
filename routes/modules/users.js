@@ -94,6 +94,7 @@ router.post('/register', (req, res) => {
 
   const request = new sql.Request(pool)
   const errors = []
+  
 
   // isadmin沒有要給使用者設定，故在這設預設值如果沒有收到值就給0
   if(!isadmin) isadmin = 0
@@ -127,7 +128,6 @@ router.post('/register', (req, res) => {
         confirmPassword})
     })
   }else{
-    
     request.query(`select * 
     from BOTFRONT_TYPE_OF_INDUSTRY`, (err, result) => {
       if(err){
@@ -137,7 +137,7 @@ router.post('/register', (req, res) => {
       const industryInfo = result.recordset
       request.query(`select * 
       from BOTFRONT_USERS_INFO
-      where EMAIL = '${email}' or CPY_ID = ${cpy_no} or CPY_NAME = '${cpy_name}'`, (err, result) => {
+      where EMAIL = '${email}' or CPY_ID = '${cpy_no}' or CPY_NAME = '${cpy_name}'`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -195,9 +195,9 @@ router.post('/register', (req, res) => {
           .genSalt(10)
           .then(salt => bcrypt.hash(password, salt))
           .then(hash => {
-            request.input('cpy_no', sql.Int, parseInt(cpy_no))
+            request.input('cpy_no', sql.NVarChar(30), cpy_no)
             .input('cpy_name', sql.NVarChar(80), cpy_name)
-            .input('industry_no', sql.NVarChar(30), parseInt(industry_no))
+            .input('industry_no', sql.NVarChar(30), industry_no)
             .input('email', sql.NVarChar(80), email)
             .input('isadmin', sql.Bit, parseInt(isadmin))
             .input('password', sql.NVarChar(100), hash)
@@ -207,10 +207,10 @@ router.post('/register', (req, res) => {
               console.log(err)
               return
             }
-            // console.log(result)
+            
             })
           }).then(() => {
-            req.flash('success_msg', '帳號註冊成功!!')
+            req.flash('success_msg', `帳號註冊成功!!`)
             return res.redirect('/users/login')
           })
           .catch(err => console.log(err))

@@ -19,7 +19,7 @@ router.delete('/:cpy_no/:table/:project_no', (req, res) => {
     // 驗證要刪除的資料是否存在
     request.query(`select *
     from BOTFRONT_${table}_INFO
-    where CPY_NO = ${cpy_no}
+    where CPY_NO = '${cpy_no}'
     and INFO_NO = ${project_no}`, (err, result) => {
       if(err){
         console.log(err)
@@ -33,7 +33,7 @@ router.delete('/:cpy_no/:table/:project_no', (req, res) => {
         // 刪除該筆資料
         request.query(`delete
         from BOTFRONT_${table}_INFO
-        where CPY_NO = ${cpy_no}
+        where CPY_NO = '${cpy_no}'
         and INFO_NO = ${project_no}`, (err, result) => {
           if(err){
             console.log(err)
@@ -49,7 +49,7 @@ router.delete('/:cpy_no/:table/:project_no', (req, res) => {
     // 驗證要刪除的資料是否存在
     request.query(`select *
     from BOTFRONT_${table}_INFO
-    where CPY_NO = ${cpy_no}
+    where CPY_NO = '${cpy_no}'
     and ${table}_NO = ${project_no}`, (err, result) => {
       if(err){
         console.log(err)
@@ -63,7 +63,7 @@ router.delete('/:cpy_no/:table/:project_no', (req, res) => {
         // 刪除該筆資料
         request.query(`delete
         from BOTFRONT_${table}_INFO
-        where CPY_NO = ${cpy_no}
+        where CPY_NO = '${cpy_no}'
         and ${table}_NO = ${project_no}`, (err, result) => {
           if(err){
             console.log(err)
@@ -120,7 +120,7 @@ router.post('/', (req, res) => {
           from BOTFRONT_COMPANY_INFO a
           left join BOTFRONT_ALL_COMPANY_INFO b
           on a.INFO_NO = b.INFO_ID
-          where a.CPY_NO = ${companyFilter} and a.INFO_NO = ${admin_select}`, (err, result) => {
+          where a.CPY_NO = '${companyFilter}' and a.INFO_NO = ${admin_select}`, (err, result) => {
             if(err){
               console.log(err)
               return
@@ -128,7 +128,7 @@ router.post('/', (req, res) => {
             const infoAdded = result.recordset
             // 如果沒有新增過，結果會是一個[]
             if(infoAdded.length == 0){
-              request.input('cpy_no', sql.Int, companyFilter)
+              request.input('cpy_no', sql.NVarChar(30), companyFilter)
               .input('info_no', sql.Int, admin_select)
               .input('des', sql.NVarChar(2000), adminSearch_des)
               .query(`insert into BOTFRONT_COMPANY_INFO (CPY_NO, INFO_NO, INFO_DES)
@@ -168,7 +168,7 @@ router.post('/', (req, res) => {
           // 驗證要新增的職缺類別是否已經新增過
           request.query(`select * 
           from BOTFRONT_POSITION_INFO
-          where CPY_NO = ${companyFilter} 
+          where CPY_NO = '${companyFilter}'
           and INDUSTRY_NO = ${industry_select} 
           and POSITION_NO = ${admin_select}`, (err, result) => {
             if(err){
@@ -178,7 +178,7 @@ router.post('/', (req, res) => {
             const positionAdded = result.recordset
             // 如果沒有新增過，結果會是[]
             if(positionAdded.length == 0){
-              request.input('cpy_no', sql.Int, companyFilter)
+              request.input('cpy_no', sql.NVarChar(30), companyFilter)
               .input('industry_no', sql.Int, industry_select)
               .input('position_no', sql.Int, admin_select)
               .input('des', sql.NVarChar(2000), adminSearch_des)
@@ -218,7 +218,7 @@ router.post('/', (req, res) => {
           // 驗證要新增的假別或補助類別是否已經新增過
           request.query(`select * 
           from BOTFRONT_${tableFilter}_INFO
-          where CPY_NO = ${companyFilter} 
+          where CPY_NO = '${companyFilter}'
           and ${tableFilter}_NO = ${admin_select}`, (err, result) => {
             if(err){
               console.log(err)
@@ -227,7 +227,7 @@ router.post('/', (req, res) => {
             const projectAdded = result.recordset
             // 如果沒有新增過，結果會是[]
             if(projectAdded.length == 0){
-              request.input('cpy_no', sql.Int, companyFilter)
+              request.input('cpy_no', sql.NVarChar(30), companyFilter)
               .input('project_no', sql.Int, admin_select)
               .input('des', sql.NVarChar(2000), adminSearch_des)
               .query(`insert into BOTFRONT_${tableFilter}_INFO (CPY_NO, ${tableFilter}_NO, ${tableFilter}_DES)
@@ -262,8 +262,8 @@ router.get('/api/v1/new/POSITION/:cpy_no/:industry_no', (req, res) => {
 	where not exists (select * 
 	from BOTFRONT_POSITION_INFO b 
 	where  a.POSITION_ID = b.POSITION_NO 
-	and b.CPY_NO = ${cpy_no}) 
-	and a.INDUSTRY_NO = ${industry_no}`, (err, result) => {
+	and b.CPY_NO = '${cpy_no}') 
+	and a.INDUSTRY_NO = '${industry_no}'`, (err, result) => {
 		if(err){
 		console.log(err)
 		return
@@ -284,7 +284,7 @@ router.get('/api/v1/new/:table/:cpy_no', (req, res) => {
     from BOTFRONT_USERS_INFO a
     left join BOTFRONT_TYPE_OF_INDUSTRY b
     on a.INDUSTRY_NO = b.INDUSTRY_ID
-    where CPY_ID = ${cpy_no}`, (err, result) => {
+    where CPY_ID = '${cpy_no}'`, (err, result) => {
       if(err){
       console.log(err)
       return
@@ -298,7 +298,7 @@ router.get('/api/v1/new/:table/:cpy_no', (req, res) => {
     where not exists (select * 
     from BOTFRONT_COMPANY_INFO b 
     where  a.INFO_ID = b.INFO_NO 
-    and b.CPY_NO = ${cpy_no})`, (err, result) => {
+    and b.CPY_NO = '${cpy_no}')`, (err, result) => {
       if(err){
       console.log(err)
       return
@@ -312,7 +312,7 @@ router.get('/api/v1/new/:table/:cpy_no', (req, res) => {
     where not exists (select * 
     from BOTFRONT_${table}_INFO b 
     where  a.${table}_ID = b.${table}_NO 
-    and b.CPY_NO = ${cpy_no})`, (err, result) => {
+    and b.CPY_NO = '${cpy_no}')`, (err, result) => {
       if(err){
       console.log(err)
       return
@@ -359,7 +359,7 @@ router.put('/:cpy_no/:table/:adminSearch_no', (req, res) => {
     from BOTFRONT_COMPANY_INFO a
     left join BOTFRONT_USERS_INFO b
     on a.CPY_NO = b.CPY_ID 
-    where a.INFO_NO = ${adminSearch_no} and a.CPY_NO = ${cpy_no}`, (err, result) => {
+    where a.INFO_NO = ${adminSearch_no} and a.CPY_NO = '${cpy_no}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -374,7 +374,7 @@ router.put('/:cpy_no/:table/:adminSearch_no', (req, res) => {
       request.input('adminSearch_des', sql.NVarChar(2000), adminSearch_des)
       .query(`update BOTFRONT_COMPANY_INFO
       set INFO_DES = @adminSearch_des
-      where CPY_NO = ${cpy_no} and INFO_NO = ${adminSearch_no}`, (err, result) => {
+      where CPY_NO = '${cpy_no}' and INFO_NO = ${adminSearch_no}`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -421,7 +421,7 @@ router.put('/:cpy_no/:table/:adminSearch_no', (req, res) => {
     from BOTFRONT_${table}_INFO a
     left join BOTFRONT_USERS_INFO b
     on a.CPY_NO = b.CPY_ID 
-    where ${table}_NO = ${adminSearch_no} and CPY_NO = ${cpy_no}`, (err, result) => {
+    where ${table}_NO = ${adminSearch_no} and CPY_NO = '${cpy_no}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -436,7 +436,7 @@ router.put('/:cpy_no/:table/:adminSearch_no', (req, res) => {
       request.input('adminSearch_des', sql.NVarChar(2000), adminSearch_des)
       .query(`update BOTFRONT_${table}_INFO
       set ${table}_DES = @adminSearch_des
-      where CPY_NO = ${cpy_no} and ${table}_NO = ${adminSearch_no}`, (err, result) => {
+      where CPY_NO = '${cpy_no}' and ${table}_NO = ${adminSearch_no}`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -493,7 +493,7 @@ router.get('/:cpy_no/:table/:adminSearch_no/edit', (req, res) => {
     from BOTFRONT_COMPANY_INFO a
     left join BOTFRONT_ALL_COMPANY_INFO b
     on a.INFO_NO = b.INFO_ID
-    where INFO_NO = ${adminSearch_no} and CPY_NO = ${cpy_no}`, (err, result) => {
+    where INFO_NO = ${adminSearch_no} and CPY_NO = '${cpy_no}'`, (err, result) => {
       if(err){
         console.log(err)
         return
@@ -511,7 +511,7 @@ router.get('/:cpy_no/:table/:adminSearch_no/edit', (req, res) => {
     from BOTFRONT_${table}_INFO a
     left join BOTFRONT_ALL_${table} b
     on a.${table}_NO = b.${table}_ID
-    where ${table}_NO = ${adminSearch_no} and CPY_NO = ${cpy_no}`, (err, result) => {
+    where ${table}_NO = ${adminSearch_no} and CPY_NO = '${cpy_no}'`, (err, result) => {
       if(err){
         console.log(err)
         return

@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.11.80:3030'
+const BASE_URL = 'http://localhost:3030'
 const INDEX_URL = BASE_URL + '/adminSearch/api/v1/new/'
 
 
