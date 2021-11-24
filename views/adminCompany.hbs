@@ -19,6 +19,7 @@
                     <p class="des-text">公司代碼(公司統編)：{{ this.CPY_ID}}</p>
                     <p class="des-text">EMAIL(登入帳號)：{{ this.EMAIL }}</p>
                     <p class="des-text">產業類別：{{ this.INDUSTRY_NAME }}</p>
+                    <p class="des-text">客服使用者：{{#if this.ISHR}}是{{else}}否{{/if}}</p>
                     <p class="des-text">管理員權限：{{#if this.ISADMIN }}管理者{{else}}一般使用者{{/if}}</p>
                   </div>
                   <div class="d-flex flex-column justify-content-around align-items-stretch item-buttons">

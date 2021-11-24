@@ -106,11 +106,16 @@ router.get('/:CPY_ID/edit/password', (req, res) => {
 
 router.put('/:CPY_ID', (req, res) => {
   const {CPY_ID} = req.params
-  const {cpy_no, cpy_name, email, isadmin, industry_no} = req.body
+  const {cpy_no, cpy_name, email, isadmin, industry_no, ishr} = req.body
 
   const request = new sql.Request(pool)
 
-  request.query(`select CPY_NAME
+  if(!cpy_no || !cpy_name || !email || !isadmin || !industry_no || !ishr){
+    req.flash('error', '所有欄位都是必填的!!')
+    return res.redirect(`/adminCompany/${CPY_ID}/edit`)
+  }
+
+  request.query(`select *
   from BOTFRONT_USERS_INFO 
   where CPY_ID = '${CPY_ID}'`, (err, result) => {
     if(err){
@@ -122,21 +127,40 @@ router.put('/:CPY_ID', (req, res) => {
       req.flash('error', '查無此公司，請重新嘗試!!')
       return res.redirect('/adminCompany')
     }
-    request.input('cpy_no', sql.NVarChar(30), cpy_no)
-    .input('industry_no', sql.NVarChar(30), industry_no)
-    .input('cpy_name', sql.NVarChar(80), cpy_name)
-    .input('email', sql.NVarChar(80), email)
-    .input('isadmin', sql.Bit, parseInt(isadmin))
-    .query(`update BOTFRONT_USERS_INFO
-    set CPY_ID = @cpy_no, INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin
-    where CPY_ID = ${CPY_ID}`, (err, result) => {
-      if(err){
-        console.log(err)
-        return
-      }
-      req.flash('success_msg', '更新資料成功!!')
-      res.redirect('/adminCompany')
-    })
+    if(adminCompanyInfo.CPY_ID == cpy_no){
+      request.input('industry_no', sql.NVarChar(30), industry_no)
+      .input('cpy_name', sql.NVarChar(80), cpy_name)
+      .input('email', sql.NVarChar(80), email)
+      .input('isadmin', sql.Bit, parseInt(isadmin))
+      .input('ishr', sql.Bit, parseInt(ishr))
+      .query(`update BOTFRONT_USERS_INFO
+      set INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
+      where CPY_ID = ${CPY_ID}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新資料成功!!')
+        return res.redirect('/adminCompany')
+      })
+    }else{
+      request.input('cpy_no', sql.NVarChar(30), cpy_no)
+      .input('industry_no', sql.NVarChar(30), industry_no)
+      .input('cpy_name', sql.NVarChar(80), cpy_name)
+      .input('email', sql.NVarChar(80), email)
+      .input('isadmin', sql.Bit, parseInt(isadmin))
+      .input('ishr', sql.Bit, parseInt(ishr))
+      .query(`update BOTFRONT_USERS_INFO
+      set CPY_ID = @cpy_no, INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
+      where CPY_ID = ${CPY_ID}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新資料成功!!')
+        return res.redirect('/adminCompany')
+      })
+    }
   })
 })
 
@@ -152,7 +176,7 @@ router.get('/:CPY_ID/edit', (req, res) => {
     }
     const industryInfo = result.recordset
 
-    request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN
+    request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN, a.ISHR
     from BOTFRONT_USERS_INFO a
     left join BOTFRONT_TYPE_OF_INDUSTRY b
     on a.INDUSTRY_NO = b.INDUSTRY_ID
@@ -172,11 +196,11 @@ router.get('/:CPY_ID/edit', (req, res) => {
 })
 
 router.post('/new', isAdmin, (req, res) => {
-  const {cpy_no, cpy_name, industry_no, email, isadmin, password, confirmPassword} = req.body
+  const {cpy_no, cpy_name, industry_no, email, isadmin, password, confirmPassword, ishr} = req.body
 
   const request = new sql.Request(pool)
   const errors = []
-  if(!cpy_no || !cpy_name ||!industry_no || !email || !isadmin || !password || !confirmPassword){
+  if(!cpy_no || !cpy_name ||!industry_no || !email || !isadmin || !password || !confirmPassword || !ishr){
     errors.push({message: '所有欄位都是必填的!'})
   }
 
@@ -200,6 +224,7 @@ router.post('/new', isAdmin, (req, res) => {
         industry_no,
         email,
         isadmin,
+        ishr,
         password,
         confirmPassword})
     })
@@ -231,6 +256,7 @@ router.post('/new', isAdmin, (req, res) => {
             industry_no,
             email,
             isadmin,
+            ishr,
             password,
             confirmPassword,
             industryInfo
@@ -246,6 +272,7 @@ router.post('/new', isAdmin, (req, res) => {
             industry_no,
             email,
             isadmin,
+            ishr,
             password,
             confirmPassword,
             industryInfo
@@ -261,6 +288,7 @@ router.post('/new', isAdmin, (req, res) => {
             industry_no,
             email,
             isadmin,
+            ishr,
             password,
             confirmPassword,
             industryInfo
@@ -277,9 +305,10 @@ router.post('/new', isAdmin, (req, res) => {
             .input('industry_no', sql.NVarChar(30), industry_no)
             .input('email', sql.NVarChar(80), email)
             .input('isadmin', sql.Bit, parseInt(isadmin))
+            .input('ishr', sql.Bit, parseInt(ishr))
             .input('password', sql.NVarChar(100), hash)
-            .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN)
-            values (@cpy_no, @cpy_name, @email, @password, @industry_no, @isadmin)`, (err, result) => {
+            .query(`insert into BOTFRONT_USERS_INFO (CPY_ID, CPY_NAME, EMAIL, PASSWORD, INDUSTRY_NO, ISADMIN, ISHR)
+            values (@cpy_no, @cpy_name, @email, @password, @industry_no, @isadmin, @ishr)`, (err, result) => {
             if(err){
               console.log(err)
               return
@@ -314,7 +343,7 @@ router.get('/new', isAdmin, (req, res) => {
 router.get('/', (req, res) => {
   const request = new sql.Request(pool)
 
-  request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN
+  request.query(`select a.CPY_ID, a.CPY_NAME, a.EMAIL, a.PASSWORD, a.INDUSTRY_NO, b.INDUSTRY_NAME, a.ISADMIN, a.ISHR
   from BOTFRONT_USERS_INFO a
   left join BOTFRONT_TYPE_OF_INDUSTRY b
   on a.INDUSTRY_NO = b.INDUSTRY_ID`, (err, result) => {
