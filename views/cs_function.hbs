@@ -1,5 +1,25 @@
 <div class="row d-flex flex-column align-items-center all">
   <h1 class="m-5">功能資訊</h1>
+  <div class="row">
+    <div class="admin-search-wrapper">
+      <form action="/bf_cs/function/filter">
+
+        <label for="category">類別：</label>
+        <select name="category" id="category" onchange="submit()">
+          <option value="" selected hidden>請選擇</option>
+          {{#each categoryInfo}}
+          <option value="{{this.CATEGORY_ID}}" {{#is this.CATEGORY_ID ../category}} selected {{/is}}>{{this.CATEGORY_NAME}}</option>
+          {{/each}}
+        </select>
+
+        <label for="search">搜尋：</label>
+        <input type="text" name="search" id="search" value="{{search}}" onchange="submit()" placeholder="請輸入關鍵字...(可空白)">
+      
+        {{!-- <button type="submit" class="btn btn-outline-dark" style="font-size: 1.5rem;">查詢</button> --}}
+      </form> 
+    </div>
+  </div>
+
   <div class="col-9 wrapper">
     {{> message}}
     <div class="scroll-view">
@@ -17,19 +37,19 @@
                     </div>
                     <div class="d-flex">
                       <div class="label-title">功能英文名稱：</div>
-                      <div class="label-des">{{this.FUNCTION_ENTITY_NAME}}</div>
+                      <div class="label-des">{{this.ENTITY_NAME}}</div>
                     </div>
+                  </div>
                   <div class="d-flex justify-content-center item-buttons">
-                    <a href="/bf_cs/{{ this.FUNCTION_ID}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
+                    {{!-- <a href="/bf_cs/{{ this.FUNCTION_ID}}/edit" class="btn btn-primary mx-2" style="font-size: 1rem; height:fit-content;">
                         編輯
-                    </a>
+                    </a> --}}
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
                         id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.FUNCTION_ID }}"
                         data-name="{{ this.FUNCTION_NAME }}" data-category="bf_cs">
                         刪除
                     </button>
                   </div>
-                </div>
               </div>
             </li>
           </div>
@@ -39,13 +59,13 @@
     </div>
   </div>
 
- <div class="col-10 my-5 d-flex">
-    <div class="col-6">
+ <div class="col-10 my-5 d-flex justify-content-center">
+    {{!-- <div class="col-6">
       <div class="row justify-content-center">
-        <a href="/position/new" class="btn btn-outline-warning col-8" id="create-btn"
-          style="font-size: 1.5rem;">新增職缺</a>
+        <a href="/bf_cs/function/new" class="btn btn-outline-warning col-8" id="create-btn"
+          style="font-size: 1.5rem;">新增功能</a>
       </div>
-    </div>
+    </div> --}}
     <div class="col-6">
       <div class="row justify-content-center">
         <a href="/" class="btn btn-outline-dark col-8" id="create-btn"
