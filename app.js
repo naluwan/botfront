@@ -45,6 +45,7 @@ app.use((req, res, next) => {
   const user = res.locals.user
   if(res.locals.isAuthenticated){
     res.locals.isAdmin = user.ISADMIN
+    res.locals.isHr = user.ISHR
   }
   res.locals.warning_msg = req.flash('warning_msg')
   res.locals.success_msg = req.flash('success_msg')
