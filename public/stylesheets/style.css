@@ -261,7 +261,8 @@ color:#fff;
 }
 
 .industry-filter-wrapper,
-.admin-search-wrapper{
+.admin-search-wrapper,
+.cs-search-wrapper{
   width: 100%;
   font-size: 1.5rem;
   display: flex;
