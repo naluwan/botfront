@@ -135,7 +135,7 @@ router.put('/:CPY_ID', (req, res) => {
       .input('ishr', sql.Bit, parseInt(ishr))
       .query(`update BOTFRONT_USERS_INFO
       set INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
-      where CPY_ID = ${CPY_ID}`, (err, result) => {
+      where CPY_ID = '${CPY_ID}'`, (err, result) => {
         if(err){
           console.log(err)
           return
@@ -152,7 +152,7 @@ router.put('/:CPY_ID', (req, res) => {
       .input('ishr', sql.Bit, parseInt(ishr))
       .query(`update BOTFRONT_USERS_INFO
       set CPY_ID = @cpy_no, INDUSTRY_NO = @industry_no, CPY_NAME = @cpy_name, EMAIL = @email, ISADMIN = @isadmin, ISHR = @ishr
-      where CPY_ID = ${CPY_ID}`, (err, result) => {
+      where CPY_ID = '${CPY_ID}'`, (err, result) => {
         if(err){
           console.log(err)
           return
