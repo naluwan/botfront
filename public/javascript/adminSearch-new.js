@@ -9,7 +9,6 @@ const industryBlock = document.querySelector('#industry-block')
 const industrySelect = document.querySelector('#industry_select')
 const adminSearchBlock = document.querySelector('#adminSearch-block')
 const adminSelect = document.querySelector('#admin_select')
-const functionSelect = document.querySelector('#function')
 
 if(adminSearchWrapper){
 	adminSearchWrapper.addEventListener('click', e => {
@@ -70,12 +69,6 @@ if(adminSearchWrapper){
 				}
 			}
 		}
-
-		if(target.matches('#category')){
-			if(target.value){
-				functionSelect.removeAttribute('disabled')
-			}
-		}
 	})
 }
 
@@ -104,7 +97,7 @@ function callAPI(tableName, cpy_no){
 				adminSelect.setAttribute('disabled', '')
 				html += `<option value="" selected>無項目可新增</option>`
 			}else{
-				console.log(data)
+				// console.log(data)
 				data.forEach(item => {
 					html +=`
 					<option value="${item.Id}">${item.Name}</option>
