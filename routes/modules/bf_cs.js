@@ -8,6 +8,28 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 
+router.get('/:category_id/:function_id/:question_id/edit', (req, res) => {
+  const {category_id, function_id, question_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where QUESTION_ID = ${question_id}
+  and FUNCTION_ID = ${function_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionInfo = result.recordset[0]
+    if(!questionInfo){
+      req.flash('warning_msg', '查無此問答資料，請重新嘗試!!')
+      return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+    }else{
+      return res.render('edit_cs_question', {questionInfo, category_id, function_id})
+    }
+  })
+})
+
 // 顯示功能資料頁面
 router.get('/function/filter', (req, res) => {
   const {category, search} = req.query

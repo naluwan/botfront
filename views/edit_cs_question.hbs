@@ -3,7 +3,7 @@
     <div class="card card-body">
       <h1 class="text-center mt-3">編輯問答資訊</h1>
       {{> message}}
-      <form action="/bf_cs/{{categorySelect}}/{{functionSelect}}/{{ questionInfo.QUESTION_ID}}?_method=PUT" method="POST">
+      <form action="/bf_cs/{{category_id}}/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT" method="POST">
         <div class="modal-body">
 
           <div class="input-group mb-3">
@@ -11,7 +11,7 @@
               <span class="input-group-text new-title">問題描述</span>
             </div>
             <textarea type="text" class="form-control new-des" name="description" placeholder="請輸入問題描述..." aria-label="inputDes"
-              aria-describedby="des" rows="4" required>{{ questionInfo.DESCRIPTION }}</textarea>
+              aria-describedby="des" rows="2" required>{{ questionInfo.DESCRIPTION }}</textarea>
           </div>
 
           <div class="input-group mb-3">
@@ -24,7 +24,7 @@
 
         </div>
         <div class="modal-footer">
-          <a href="/question/filter?categorySelect={{categorySelect}}&functionSelect={{functionSelect}}&search=" class="btn btn-outline-info">取消</a>
+          <a href="/bf_cs/question/filter?categorySelect={{category_id}}&functionSelect={{function_id}}&search=" class="btn btn-outline-info">取消</a>
           <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
         </div>
       </form>
