@@ -9,66 +9,76 @@ const industryBlock = document.querySelector('#industry-block')
 const industrySelect = document.querySelector('#industry_select')
 const adminSearchBlock = document.querySelector('#adminSearch-block')
 const adminSelect = document.querySelector('#admin_select')
+const functionSelect = document.querySelector('#function')
 
-adminSearchWrapper.addEventListener('click', e => {
-	const target = e.target
-	const cpy_no = companyFilter.value
-	// 選完公司直接帶入BOTFRONT_USERS_INFO中的INDUSTRY_NO(產業類別)
-	if(target.matches('#companyFilter')){
-		if(target.value){
-			callAPI('INDUSTRY', cpy_no)
+if(adminSearchWrapper){
+	adminSearchWrapper.addEventListener('click', e => {
+		const target = e.target
+		const cpy_no = companyFilter.value
+		// 選完公司直接帶入BOTFRONT_USERS_INFO中的INDUSTRY_NO(產業類別)
+		if(target.matches('#companyFilter')){
+			if(target.value){
+				callAPI('INDUSTRY', cpy_no)
+			}
+			tableFilter.value = ''
+			adminSelect.value = ''
+			adminSelect.setAttribute('disabled', '')
 		}
-		tableFilter.value = ''
-		adminSelect.value = ''
-		adminSelect.setAttribute('disabled', '')
-	}
+		
 	
-
-	if(target.matches('#tableFilter')){
-		// 類別選擇完後透過DOM操作顯示資料
-		if(target.value){
-			adminSelect.removeAttribute('disabled')
-			// 類別選擇職缺時，透過axios去API抓取相對應資料
-			if(target.value == 'POSITION'){
-				axios.get(INDEX_URL + `${target.value}/${companyFilter.value}/${industrySelect.value}`)
-				.then(res => {
-					const positionInfo = res.data.recordset
-					let html = `<option value="" selected hidden>請選擇</option>`
-					if(positionInfo.length == 0){
-						adminSelect.setAttribute('disable', '')
-						html += `<option value="" selected>無項目可新增</option>`
-					}else{
-						positionInfo.forEach(item => {
-							html += `
-							<option value="${item.POSITION_ID}">${item.POSITION_NAME}</option>
-							`
-						})
-					}
-					return adminSelect.innerHTML = html
-				}).catch(err => console.log(err))
-			}else if(target.value == 'COMPANY'){	// 類別選擇公司資訊時，透過axios去API抓取相對應資料
-				axios.get(INDEX_URL + `COMPANY_INFO/${companyFilter.value}`)
-				.then(res => {
-					const companyInfo = res.data.recordset
-					let html = `<option value="" selected hidden>請選擇</option>`
-					if(companyInfo.length == 0){
-						adminSelect.setAttribute('disabled', '')
-						html += `<option value="" selected>無項目可新增</option>`
-					}else{
-						companyInfo.forEach(item => {
-							html += `
-							<option value="${item.INFO_ID}">${item.INFO_NAME}</option>
-							`
-						})
-					}
-					return adminSelect.innerHTML = html
-				}).catch(err =>console.log(err))
-			}else{
-				callAPI(target.value, cpy_no)
+		if(target.matches('#tableFilter')){
+			// 類別選擇完後透過DOM操作顯示資料
+			if(target.value){
+				adminSelect.removeAttribute('disabled')
+				// 類別選擇職缺時，透過axios去API抓取相對應資料
+				if(target.value == 'POSITION'){
+					axios.get(INDEX_URL + `${target.value}/${companyFilter.value}/${industrySelect.value}`)
+					.then(res => {
+						const positionInfo = res.data.recordset
+						let html = `<option value="" selected hidden>請選擇</option>`
+						if(positionInfo.length == 0){
+							adminSelect.setAttribute('disable', '')
+							html += `<option value="" selected>無項目可新增</option>`
+						}else{
+							positionInfo.forEach(item => {
+								html += `
+								<option value="${item.POSITION_ID}">${item.POSITION_NAME}</option>
+								`
+							})
+						}
+						return adminSelect.innerHTML = html
+					}).catch(err => console.log(err))
+				}else if(target.value == 'COMPANY'){	// 類別選擇公司資訊時，透過axios去API抓取相對應資料
+					axios.get(INDEX_URL + `COMPANY_INFO/${companyFilter.value}`)
+					.then(res => {
+						const companyInfo = res.data.recordset
+						let html = `<option value="" selected hidden>請選擇</option>`
+						if(companyInfo.length == 0){
+							adminSelect.setAttribute('disabled', '')
+							html += `<option value="" selected>無項目可新增</option>`
+						}else{
+							companyInfo.forEach(item => {
+								html += `
+								<option value="${item.INFO_ID}">${item.INFO_NAME}</option>
+								`
+							})
+						}
+						return adminSelect.innerHTML = html
+					}).catch(err =>console.log(err))
+				}else{
+					callAPI(target.value, cpy_no)
+				}
 			}
 		}
-	}
-})
+
+		if(target.matches('#category')){
+			if(target.value){
+				functionSelect.removeAttribute('disabled')
+			}
+		}
+	})
+}
+
 
 function callAPI(tableName, cpy_no){
 
