@@ -8,6 +8,41 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 
+router.put('/:category_id/:function_id/:question_id', (req, res) => {
+  const {category_id, function_id, question_id} = req.params
+  const {answer} = req.body
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where QUESTION_ID = ${question_id}
+  and FUNCTION_ID = ${function_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionInfo = result.recordset[0]
+    if(!questionInfo){
+      req.flash('warning_msg', '查無此問答資料，請重新嘗試!!')
+      return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+    }else{
+      request.input('answer', sql.NVarChar(2000), answer)
+      .query(`update BF_CS_QUESTION
+      set ANSWER = @answer
+      where QUESTION_ID = ${question_id}
+      and FUNCTION_ID = ${function_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '更新問答資料成功!!')
+        return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+      })
+    }
+  })
+
+})
+
 router.get('/:category_id/:function_id/:question_id/edit', (req, res) => {
   const {category_id, function_id, question_id} = req.params
   const request = new sql.Request(pool)
