@@ -10,9 +10,84 @@ const { query } = require('express')
 
 // ↓ question 問答相關router ↓
 
+// 新增問答資料
+router.post('/question/new', (req, res) => {
+  const {categorySelect, functionSelect, description, entity_name, answer} = req.body
+
+  const request = new sql.Request(pool)
+  const warning = []
+
+  // 驗證需要的值是否存在
+  if(!categorySelect || !functionSelect || !description || !entity_name || !answer){
+    // 抓取類別資料
+    request.query(`select * 
+    from BF_CS_CATEGORY`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const categoryInfo = result.recordset
+      // 抓取指定類別的功能
+      request.query(`select * 
+      from BF_CS_FUNCTION
+      where CATEGORY_ID = ${categorySelect}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const functionInfo = result.recordset
+        warning.push({message: '所有欄位都是必填的!!'})
+        return res.render('new_cs_question', {
+          categorySelect, 
+          functionSelect, 
+          categoryInfo, 
+          functionInfo,
+          description,
+          entity_name,
+          answer,
+          warning
+        })
+      })
+    })
+  }
+
+  // 驗證要新增問題的功能是否存在
+  request.query(`select * 
+  from BF_CS_FUNCTION
+  where FUNCTION_ID = ${functionSelect}
+  and CATEGORY_ID = ${categorySelect}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const functionCheck = result.recordset[0]
+    if(!functionCheck){
+      req.flash('error', '因查無此功能而無法新增問答，請重新嘗試!!')
+      return res.redirect('/bf_cs/question/new')
+    }else{
+      // 新增問答
+      request.input('function_id', sql.Int, functionSelect)
+      .input('description', sql.NVarChar(2000), description)
+      .input('entity_name', sql.NVarChar(100), entity_name)
+      .input('answer', sql.NVarChar(2000), answer)
+      .query(`insert into BF_CS_QUESTION (FUNCTION_ID, DESCRIPTION, ENTITY_NAME, ANSWER)
+      values (@function_id, @description, @entity_name, @answer)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '新增問答資料成功!!')
+        return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
+      })
+    }
+  })
+})
+
+// 顯示新增問答頁面
 router.get('/question/new', (req, res) => {
   const request = new sql.Request(pool)
 
+  // 抓取類別資料
   request.query(`select * 
   from BF_CS_CATEGORY`, (err, result) => {
     if(err){
