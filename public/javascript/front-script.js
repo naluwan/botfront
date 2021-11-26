@@ -18,6 +18,16 @@ if(dataPanel){
 			deletePosition.innerText = '「' + target.dataset.cpyname + '的' + target.dataset.name + '」'
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.cpyno}/${target.dataset.table}/${target.dataset.id}?_method=DELETE`
 		}
+
+		if(target.matches('#delete-function-btn')){
+			const deletePosition = document.querySelectorAll('#delete-position')
+			const deleteForm = document.querySelector('#delete-form')
+			console.log(target.dataset)
+			deletePosition.forEach(item => {
+				item.innerText = '「' + target.dataset.name + '」'
+			})
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.categoryid}?_method=DELETE`
+		}
 	})
 }
 
