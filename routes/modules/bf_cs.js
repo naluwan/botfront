@@ -8,11 +8,14 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 
+// ↓ question 問答相關router ↓
+// 問答編輯功能
 router.put('/:category_id/:function_id/:question_id', (req, res) => {
   const {category_id, function_id, question_id} = req.params
   const {answer} = req.body
   const request = new sql.Request(pool)
 
+  // 驗證問題是否存在
   request.query(`select *
   from BF_CS_QUESTION
   where QUESTION_ID = ${question_id}
@@ -43,10 +46,12 @@ router.put('/:category_id/:function_id/:question_id', (req, res) => {
 
 })
 
+// 顯示問答編輯頁面
 router.get('/:category_id/:function_id/:question_id/edit', (req, res) => {
   const {category_id, function_id, question_id} = req.params
   const request = new sql.Request(pool)
 
+  // 驗證問題是否存在
   request.query(`select *
   from BF_CS_QUESTION
   where QUESTION_ID = ${question_id}
@@ -61,57 +66,6 @@ router.get('/:category_id/:function_id/:question_id/edit', (req, res) => {
       return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
     }else{
       return res.render('edit_cs_question', {questionInfo, category_id, function_id})
-    }
-  })
-})
-
-// 顯示功能資料頁面
-router.get('/function/filter', (req, res) => {
-  const {category, search} = req.query
-  const request = new sql.Request(pool)
-  const warning = []
-
-  // 沒有選擇類別就使用關鍵字的錯誤處理
-  if(search & !category){
-    req.flash('warning_msg', '請先選擇類別再進行查詢!!')
-    return res.redirect('/bf_cs/function')
-  }
-  // 抓取類別資料
-  request.query(`select *
-  from BF_CS_CATEGORY`, (err, result) => {
-    if(err){
-      console.log(err)
-      return
-    }
-    const categoryInfo = result.recordset
-    // 沒有搜尋關鍵字
-    if(!search){
-      // 抓取指定類別的功能資料
-      request.query(`select * 
-      from BF_CS_FUNCTION
-      where CATEGORY_ID = ${category}`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        const functionInfo = result.recordset
-        if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請先拉至下方新增功能!!'})
-        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
-      })
-    }else{  //有搜尋關鍵字
-      // 抓取指定類別並包含搜尋關鍵字的功能資料
-      request.query(`select * 
-      from BF_CS_FUNCTION
-      where CATEGORY_ID = ${category}
-      and FUNCTION_NAME like '%${search}%'`, (err, result) => {
-        if(err){
-          console.log(err)
-          return
-        }
-        const functionInfo = result.recordset
-        if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請重新嘗試!!'})
-        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
-      })
     }
   })
 })
@@ -214,6 +168,146 @@ router.get('/question', (req, res) => {
       warning.push({message: '請先選擇類別和功能!!'})
       return res.render('cs_question', {categoryInfo, warning})
     } 
+  })
+})
+
+// ↓ function 功能相關router ↓
+
+// 新增功能
+router.post('/function/new', (req, res) => {
+  const {category, function_name, entity_name} = req.body
+  const request = new sql.Request(pool)
+  const warning = []
+
+  // 驗證需要的值是否存在
+  if(!category || !function_name || !entity_name){
+    request.query(`select * 
+    from BF_CS_CATEGORY`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const categoryInfo = result.recordset
+      warning.push({message: '所有欄位都是必填的!!'})
+    return res.render('new_cs_function', {categoryInfo, category, function_name, entity_name, warning})
+    })
+  }
+
+  // 驗證值是否重複
+  request.query(`select * 
+  from BF_CS_FUNCTION 
+  where FUNCTION_NAME = '${function_name}' or ENTITY_NAME = '${entity_name}'`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+
+    const functionCheck = result.recordset[0]
+    if(functionCheck){
+      request.query(`select * 
+      from BF_CS_CATEGORY`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const categoryInfo = result.recordset
+        if(functionCheck.FUNCTION_NAME == function_name){
+          warning.push({message: '功能名稱重複，請重新嘗試!!'})
+          return res.render('new_cs_function', {category, categoryInfo, entity_name, warning})
+        }
+
+        if(functionCheck.ENTITY_NAME == entity_name){
+          warning.push({message: '功能英文名稱重複，請重新嘗試!!'})
+          return res.render('new_cs_function', {category, categoryInfo, function_name, warning})
+        }
+      })
+    }else{
+      // 新增進資料庫
+      request.input('category_id', sql.Int, category)
+      .input('function_name', sql.NVarChar(30), function_name)
+      .input('entity_name', sql.NVarChar(100), entity_name)
+      .query(`insert into BF_CS_FUNCTION (CATEGORY_ID, FUNCTION_NAME, ENTITY_NAME)
+      values (@category_id, @function_name, @entity_name)`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '新增功能成功!!')
+        return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
+      })
+    }
+  })
+})
+
+// 顯示新增功能頁面
+router.get('/function/new', (req, res) => {
+  const request = new sql.Request(pool)
+  const warning = []
+
+  // 抓取類別資料
+  request.query(`select * 
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    if(categoryInfo.length == 0) {
+      req.flash('warning_msg', '查無類別，請先新增類別!!')
+      return res.redirect('/bf_cs/function')
+    }
+    return res.render('new_cs_function', {categoryInfo})
+  })
+})
+
+// 顯示功能資料頁面
+router.get('/function/filter', (req, res) => {
+  const {category, search} = req.query
+  const request = new sql.Request(pool)
+  const warning = []
+
+  // 沒有選擇類別就使用關鍵字的錯誤處理
+  if(search & !category){
+    req.flash('warning_msg', '請先選擇類別再進行查詢!!')
+    return res.redirect('/bf_cs/function')
+  }
+  // 抓取類別資料
+  request.query(`select *
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    // 沒有搜尋關鍵字
+    if(!search){
+      // 抓取指定類別的功能資料
+      request.query(`select * 
+      from BF_CS_FUNCTION
+      where CATEGORY_ID = ${category}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const functionInfo = result.recordset
+        if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請先拉至下方新增功能!!'})
+        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+      })
+    }else{  //有搜尋關鍵字
+      // 抓取指定類別並包含搜尋關鍵字的功能資料
+      request.query(`select * 
+      from BF_CS_FUNCTION
+      where CATEGORY_ID = ${category}
+      and FUNCTION_NAME like '%${search}%'`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        const functionInfo = result.recordset
+        if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請重新嘗試!!'})
+        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+      })
+    }
   })
 })
 

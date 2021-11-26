@@ -7,6 +7,18 @@
           {{> message}}
           <div class="input-group pt-3">
             <div class="input-group-prepend">
+              <span class="input-group-text new-title" for="category">類別</span>
+            </div>
+            <select class="custom-select new-title" id="category" name="category" required>
+              <option value="" selected hidden>請選擇</option>
+              {{#each categoryInfo}}
+              <option value="{{this.CATEGORY_ID}}" {{#is this.CATEGORY_ID ../category}} selected {{/is}}>{{this.CATEGORY_NAME}}</option>
+              {{/each}}
+            </select>
+          </div>
+
+          <div class="input-group pt-3">
+            <div class="input-group-prepend">
               <span class="input-group-text new-title">功能名稱</span>
             </div>
             <input type="text" class="form-control new-des" name="function_name" placeholder="請輸入功能名稱" value="{{function_name}}" required>
