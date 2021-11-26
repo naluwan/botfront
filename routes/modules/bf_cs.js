@@ -9,6 +9,7 @@ const pool = require('../../config/connectPool')
 const { query } = require('express')
 
 // ↓ question 問答相關router ↓
+
 // 問答編輯功能
 router.put('/:category_id/:function_id/:question_id', (req, res) => {
   const {category_id, function_id, question_id} = req.params
@@ -172,6 +173,40 @@ router.get('/question', (req, res) => {
 })
 
 // ↓ function 功能相關router ↓
+
+// 刪除功能
+router.delete('/function/:function_id/:category_id', (req, res) => {
+  const {function_id, category_id} = req.params
+  const request = new sql.Request(pool)
+
+  // 驗證功能是否存在
+  request.query(`select *
+  from BF_CS_FUNCTION
+  where FUNCTION_ID = ${function_id}
+  and CATEGORY_ID = ${category_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const functionCheck = result.recordset[0]
+    if(!functionCheck){
+      req.flash('error', '查無此功能，請重新嘗試!!')
+      return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+    }else{
+      // 刪除
+      request.query(`delete from BF_CS_FUNCTION
+      where CATEGORY_ID = ${category_id}
+      and FUNCTION_ID = ${function_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '刪除功能成功!!')
+        return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+      })
+    }
+  })
+})
 
 // 新增功能
 router.post('/function/new', (req, res) => {

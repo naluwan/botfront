@@ -45,8 +45,8 @@
                         編輯
                     </a> --}}
                     <button class=" btn btn-danger mx-2" style="font-size:medium; height:fit-content"
-                        id="delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.FUNCTION_ID }}"
-                        data-name="{{ this.FUNCTION_NAME }}" data-category="bf_cs">
+                        id="delete-function-btn" data-toggle="modal" data-target="#deleteModal" data-id="{{ this.FUNCTION_ID }}"
+                        data-name="{{ this.FUNCTION_NAME }}" data-categoryid="{{this.CATEGORY_ID}}" data-category="bf_cs/function">
                         刪除
                     </button>
                   </div>
@@ -81,13 +81,14 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除職缺</h5>
+        <h5 class="modal-title" id="exampleModalScrollableTitle">刪除資訊</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-       <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+        <p>刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>將會把相關的問答資料一併刪除!</p>
+        <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
