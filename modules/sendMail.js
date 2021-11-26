@@ -15,9 +15,9 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = {
-  positionSendMail: (res, template, position_name, position_entity_name, subject) => {
+  TrainSendMail: (res, template, name, entity_name, subject) => {
     // 產生mail template並傳送mail，layout: null才不會有其他html，只會有template的東西
-    res.render(template, {layout: null, position_name, position_entity_name}, 
+    res.render(template, {layout: null, name, entity_name}, 
       function(err, html){
         if (err) {
           console.log('error in email template');

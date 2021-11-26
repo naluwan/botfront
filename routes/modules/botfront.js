@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
-const {positionSendMail, userSendMAil} = require('../../modules/sendMail')
+const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 
 // 使用者帳號
 router.post('/api/v1/user', (req, res) => {
@@ -313,7 +313,7 @@ router.post('/api/v1/position', (req, res) => {
                               console.log(err)
                               return
                             }
-                            positionSendMail(res, 'mail_newPosition', position_name, positionENCheck.POSITION_ENTITY_NAME, '新職缺類別')
+                            TrainSendMail(res, 'mail_newPosition', position_name, positionENCheck.POSITION_ENTITY_NAME, '新職缺類別')
                             return res.status(200).send({message: `新增職缺類別「${position_name}」及職缺資訊成功!!`})
                           })
                         }
@@ -390,7 +390,7 @@ router.post('/api/v1/position', (req, res) => {
                               console.log(err)
                               return
                             }
-                            positionSendMail(res, 'mail_newPosition', position_name, position_entity_name, '新職缺類別')
+                            TrainSendMail(res, 'mail_newPosition', position_name, position_entity_name, '新職缺類別')
                             return res.status(200).send({message: `新增職缺類別「${position_name}」成功!!`})
                           })
                         }
