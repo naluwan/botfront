@@ -10,6 +10,51 @@ const { query } = require('express')
 
 // ↓ question 問答相關router ↓
 
+router.delete('/question/:question_id/:function_id/:category_id', (req, res) => {
+  const {question_id, function_id, category_id} = req.params
+
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_CATEGORY
+  where CATEGORY_ID = ${category_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryCheck = result.recordset[0]
+    if(!categoryCheck){
+      req.flash('error', '查無此類別，請重新嘗試!!')
+      return res.redirect(`/bf_cs/question`)
+    }
+    request.query(`select *
+    from BF_CS_QUESTION
+    where QUESTION_ID = ${question_id}
+    and FUNCTION_ID = ${function_id}`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const questionCheck = result.recordset[0]
+      if(!questionCheck){
+        req.flash('error', '查無此功能的問答資料，請重新嘗試!!')
+        return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+      }else{
+        request.query(`delete from BF_CS_QUESTION
+        where QUESTION_ID = ${question_id}
+        and FUNCTION_ID = ${function_id}`, (err, result) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          req.flash('success_msg', '刪除問答資料成功!!')
+          return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+        })
+      }
+    })
+  })
+})
+
 // 新增問答資料
 router.post('/question/new', (req, res) => {
   const {categorySelect, functionSelect, description, entity_name, answer} = req.body
