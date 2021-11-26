@@ -22,11 +22,21 @@ if(dataPanel){
 		if(target.matches('#delete-function-btn')){
 			const deletePosition = document.querySelectorAll('#delete-position')
 			const deleteForm = document.querySelector('#delete-form')
-			console.log(target.dataset)
+
 			deletePosition.forEach(item => {
 				item.innerText = '「' + target.dataset.name + '」'
 			})
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.categoryid}?_method=DELETE`
+		}
+
+		if(target.matches('#delete-question-btn')){
+			const deletePosition = document.querySelectorAll('#delete-position')
+			const deleteForm = document.querySelector('#delete-form')
+
+			deletePosition.forEach(item => {
+				item.innerText = '「' + target.dataset.name + '」'
+			})
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}/${target.dataset.categoryid}?_method=DELETE`
 		}
 	})
 }
