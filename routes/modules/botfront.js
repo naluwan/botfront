@@ -345,8 +345,7 @@ router.post('/api/v1/position', (req, res) => {
                     }
                     const position_no = result.recordset[0].POSITION_ID
                     if(!position_no){
-                      request.query(`delete *
-                      from BOTFRONT_ALL_POSITION
+                      request.query(`delete from BOTFRONT_ALL_POSITION
                       where INDUSTRY_NO = '${industry_no}'
                       and POSITION_NAME = '${position_name}'
                       and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
@@ -367,8 +366,7 @@ router.post('/api/v1/position', (req, res) => {
                         }
                         const cpyCheck = result.recordset[0]
                         if(!cpyCheck){
-                          request.query(`delete *
-                          from BOTFRONT_ALL_POSITION
+                          request.query(`delete from BOTFRONT_ALL_POSITION
                           where INDUSTRY_NO = '${industry_no}'
                           and POSITION_NAME = '${position_name}'
                           and POSITION_ENTITY_NAME = '${position_entity_name}'`, (err, result) => {
