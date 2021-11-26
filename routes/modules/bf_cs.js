@@ -10,6 +10,20 @@ const { query } = require('express')
 
 // ↓ question 問答相關router ↓
 
+router.get('/question/new', (req, res) => {
+  const request = new sql.Request(pool)
+
+  request.query(`select * 
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    res.render('new_cs_question', {categoryInfo})
+  })
+})
+
 // 問答編輯功能
 router.put('/:category_id/:function_id/:question_id', (req, res) => {
   const {category_id, function_id, question_id} = req.params
