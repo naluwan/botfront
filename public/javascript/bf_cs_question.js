@@ -25,6 +25,7 @@ function callFunctionAPI(category_id){
       functionSelect.setAttribute('disabled', '')
       html += `<option value="" selected>查無功能</option>`
     }else{
+      functionSelect.removeAttribute('disabled')
       data.forEach(item => {
         html +=`
         <option value="${item.FUNCTION_ID}">${item.FUNCTION_NAME}</option>
