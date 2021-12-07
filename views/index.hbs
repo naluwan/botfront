@@ -5,7 +5,11 @@
   </div>
   <div class="col-12 mx-auto home">
     <div class="row col-6 d-flex mx-auto justify-content-center">
-      <a href="/train" class="btn btn-dark active mx-3" role="button" hidden>Train</a>
+      <a href="/train" class="btn btn-dark active mx-3" role="button">Train</a>
+      {{!-- <button class=" btn btn-dark mx-2" style="font-size:medium; height:fit-content"
+        id="train-btn" data-toggle="modal" data-target="#trainModal">
+        訓練
+      </button> --}}
       <div class="col-12 d-flex align-items-center justify-content-center">
         <label class="m-5 label-title">公司帳號資料:</label>
         <a href="/adminCompany" class="btn btn-success active col-3" role="button">設定</a>
@@ -133,3 +137,27 @@
   </div>
 </div>
 {{/if}}
+
+<!-- Modal -->
+<div class="modal fade" id="trainModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalScrollableTitle">資料訓練</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <strong>確定要開始訓練?</strong>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+        <form action="/train" method="post" style="display:inline-block;" id="delete-form">
+          <button type="submit" class="btn btn-danger">訓練</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
