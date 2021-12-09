@@ -7,6 +7,7 @@ const {isAdmin} = require('../../middleware/auth')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
+const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 
 // ↓ question 問答相關router ↓
 
@@ -110,19 +111,188 @@ router.post('/question/new', (req, res) => {
       req.flash('error', '因查無此功能而無法新增問答，請重新嘗試!!')
       return res.redirect('/bf_cs/question/new')
     }else{
-      // 新增問答
-      request.input('function_id', sql.Int, functionSelect)
-      .input('description', sql.NVarChar(2000), description)
-      .input('entity_name', sql.NVarChar(100), entity_name)
-      .input('answer', sql.NVarChar(2000), answer)
-      .query(`insert into BF_CS_QUESTION (FUNCTION_ID, DESCRIPTION, ENTITY_NAME, ANSWER)
-      values (@function_id, @description, @entity_name, @answer)`, (err, result) => {
+      // 驗證問答描述和問答英文代號是否重複
+      request.query(`select *
+      from BF_CS_QUESTION
+      where DESCRIPTION = '${description}'
+      or ENTITY_NAME = '${entity_name}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-        req.flash('success_msg', '新增問答資料成功!!')
-        return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
+        const questionCheck = result.recordset[0]
+        if(questionCheck){
+          request.query(`select * 
+          from BF_CS_CATEGORY`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            const categoryInfo = result.recordset
+            // 抓取指定類別的功能
+            request.query(`select * 
+            from BF_CS_FUNCTION
+            where CATEGORY_ID = ${categorySelect}`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+              const functionInfo = result.recordset
+              if(questionCheck.DESCRIPTION == description){
+                warning.push({message: '問答描述重複，請重新嘗試!!'})
+                return res.render('new_cs_question', {
+                  categorySelect, 
+                  functionSelect, 
+                  categoryInfo, 
+                  functionInfo,
+                  entity_name,
+                  answer,
+                  warning
+                })
+              }
+              if(questionCheck.ENTITY_NAME == entity_name){
+                warning.push({message: '問答英文代號重複，請重新嘗試!!'})
+                return res.render('new_cs_question', {
+                  categorySelect, 
+                  functionSelect, 
+                  categoryInfo, 
+                  functionInfo,
+                  description,
+                  answer,
+                  warning
+                })
+              }
+            })
+          })
+        }else{
+          // 驗證問答描述和英文代號是否和功能名稱和英文代號重複
+          request.query(`select *
+          from BF_CS_FUNCTION
+          where ENTITY_NAME = '${entity_name}'
+          or FUNCTION_NAME = '${description}'`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            const functionEntityCheck = result.recordset[0]
+            if(functionEntityCheck){
+              request.query(`select * 
+              from BF_CS_CATEGORY`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                const categoryInfo = result.recordset
+                // 抓取指定類別的功能
+                request.query(`select * 
+                from BF_CS_FUNCTION
+                where CATEGORY_ID = ${categorySelect}`, (err, result) => {
+                  if(err){
+                    console.log(err)
+                    return
+                  }
+                  const functionInfo = result.recordset
+                  if(functionEntityCheck.ENTITY_NAME == entity_name){
+                    warning.push({message: '問答英文代號不能和功能英文名稱相同，請重新嘗試!!'})
+                    return res.render('new_cs_question', {
+                      categorySelect, 
+                      functionSelect, 
+                      categoryInfo, 
+                      functionInfo,
+                      description,
+                      answer,
+                      warning
+                    })
+                  }
+                  if(functionEntityCheck.FUNCTION_NAME == description){
+                    warning.push({message: '問答描述不能和功能名稱一樣，請重新嘗試!!'})
+                    return res.render('new_cs_question', {
+                      categorySelect, 
+                      functionSelect, 
+                      categoryInfo, 
+                      functionInfo,
+                      entity_name,
+                      answer,
+                      warning
+                    })
+                  }
+                })
+              })
+            }else{
+              // 驗證問答描述和英文代號是否和分類名稱和英文代號重複
+              request.query(`select *
+              from BF_CS_CATEGORY
+              where ENTITY_NAME = '${entity_name}'
+              or CATEGORY_NAME = '${description}'`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                const categoryEntityCheck = result.recordset[0]
+                if(categoryEntityCheck){
+                  request.query(`select * 
+                  from BF_CS_CATEGORY`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    const categoryInfo = result.recordset
+                    // 抓取指定類別的功能
+                    request.query(`select * 
+                    from BF_CS_FUNCTION
+                    where CATEGORY_ID = ${categorySelect}`, (err, result) => {
+                      if(err){
+                        console.log(err)
+                        return
+                      }
+                      const functionInfo = result.recordset
+                      if(categoryEntityCheck.ENTITY_NAME == entity_name){
+                        warning.push({message: '問答英文代號不能和分類英文名稱相同，請重新嘗試!!'})
+                        return res.render('new_cs_question', {
+                          categorySelect, 
+                          functionSelect, 
+                          categoryInfo, 
+                          functionInfo,
+                          description,
+                          answer,
+                          warning
+                        })
+                      }
+                      if(categoryEntityCheck.CATEGORY_NAME == description){
+                        warning.push({message: '問答描述不能和分類名稱一樣，請重新嘗試!!'})
+                        return res.render('new_cs_question', {
+                          categorySelect, 
+                          functionSelect, 
+                          categoryInfo, 
+                          functionInfo,
+                          entity_name,
+                          answer,
+                          warning
+                        })
+                      }
+                    })
+                  })
+                }else{
+                  // 新增問答
+                  request.input('function_id', sql.Int, functionSelect)
+                  .input('description', sql.NVarChar(2000), description)
+                  .input('entity_name', sql.NVarChar(100), entity_name)
+                  .input('answer', sql.NVarChar(2000), answer)
+                  .query(`insert into BF_CS_QUESTION (FUNCTION_ID, DESCRIPTION, ENTITY_NAME, ANSWER)
+                  values (@function_id, @description, @entity_name, @answer)`, (err, result) => {
+                    if(err){
+                      console.log(err)
+                      return
+                    }
+                    TrainSendMail(res, 'mail_bf_cs_question', description, entity_name, '棉花糖客服機器人新增問答資訊')
+                    req.flash('success_msg', '新增問答資料成功!!')
+                    return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
+                  })
+                }
+              })
+            }
+          })
+        }
       })
     }
   })
@@ -391,18 +561,49 @@ router.post('/function/new', (req, res) => {
         }
       })
     }else{
-      // 新增進資料庫
-      request.input('category_id', sql.Int, category)
-      .input('function_name', sql.NVarChar(30), function_name)
-      .input('entity_name', sql.NVarChar(100), entity_name)
-      .query(`insert into BF_CS_FUNCTION (CATEGORY_ID, FUNCTION_NAME, ENTITY_NAME)
-      values (@category_id, @function_name, @entity_name)`, (err, result) => {
+      request.query(`select *
+      from BF_CS_CATEGORY
+      where CATEGORY_NAME = '${function_name}'
+      or ENTITY_NAME = '${entity_name}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-        req.flash('success_msg', '新增功能成功!!')
-        return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
+        const categoryEntityCheck = result.recordset[0]
+        if(categoryEntityCheck){
+          request.query(`select * 
+          from BF_CS_CATEGORY`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            const categoryInfo = result.recordset
+            if(categoryEntityCheck.CATEGORY_NAME == function_name){
+              warning.push({message: '功能名稱不能與分類名稱相同，請重新嘗試!!'})
+              return res.render('new_cs_function', {category, categoryInfo, entity_name, warning})
+            }
+
+            if(categoryEntityCheck.ENTITY_NAME == entity_name){
+              warning.push({message: '功能英文名稱不能與分類英文名稱相同，請重新嘗試!!'})
+              return res.render('new_cs_function', {category, categoryInfo, function_name, warning})
+            }
+          })
+        }else{
+          // 新增進資料庫
+          request.input('category_id', sql.Int, category)
+          .input('function_name', sql.NVarChar(30), function_name)
+          .input('entity_name', sql.NVarChar(100), entity_name)
+          .query(`insert into BF_CS_FUNCTION (CATEGORY_ID, FUNCTION_NAME, ENTITY_NAME)
+          values (@category_id, @function_name, @entity_name)`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            TrainSendMail(res, 'mail_bf_cs_function', function_name, entity_name, '棉花糖客服機器人新增功能')
+            req.flash('success_msg', '新增功能成功!!')
+            return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
+          })
+        }
       })
     }
   })

@@ -1,9 +1,10 @@
 const nodemailer = require('nodemailer')
 
 const transporter = nodemailer.createTransport({
-  host: "mail.interinfo.com.tw", // hostname
-  secureConnection: true, // TLS requires secureConnection to be false
+  host: "ms1.interinfo.com.tw", // hostname
+  secureConnection: false, // TLS requires secureConnection to be false
   port: 587, // port for secure SMTP
+  // secure: false,
   tls: {
     ciphers:'SSLv3',
     rejectUnauthorized: false
