@@ -6,6 +6,21 @@ const app = express()
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 
+router.put('/roleFilter', (req, res) => {
+	const {roleFilter} = req.body
+	const request = new sql.Request(pool)
+
+	request.query(`update BOTFRONT_USERS_INFO
+	set WHICH_ROLE = '${roleFilter}'
+	where CPY_ID = '0'`, (err, result) => {
+		if(err){
+			console.log(err)
+			return
+		}
+		return res.redirect('/')
+	})
+})
+
 router.get('/', (req, res) => {
 	const isAdmin = res.locals.isAdmin
 	if(isAdmin){
