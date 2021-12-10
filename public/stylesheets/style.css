@@ -291,6 +291,13 @@ color:#fff;
   right: -5%;
 }
 
+.function-detail-block,
+.question-detail-block{
+  font-size: 1.2rem;
+  position: absolute;
+  bottom: 0;
+}
+
 /* .rw-conversation-container .rw-message {
   flex-wrap: nowrap !important;
 } */
