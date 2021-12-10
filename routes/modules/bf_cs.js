@@ -9,6 +9,122 @@ const pool = require('../../config/connectPool')
 const { query } = require('express')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 
+// cs_admin router
+
+// admin show not train question info
+router.get('/notTrainQuestion', (req, res) => {
+  const request = new sql.Request(pool)
+
+  request.query(`select * 
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    request.query(`select *
+    from BF_CS_QUESTION
+    where TRAINED = 0`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const questionInfo = result.recordset
+      res.render('cs_admin_question', {questionInfo, categoryInfo})
+    })
+  })
+})
+
+// admin trained question
+router.put('/questionTrained/:category_id/:function_id/:question_id', (req, res) => {
+  const {category_id, function_id, question_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where FUNCTION_ID = ${function_id}
+  and QUESTION_ID = ${question_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionCheck = result.recordset[0]
+    if(!questionCheck){
+      req.flash('error', '查無此功能的問答資訊，請重新嘗試!!')
+      return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+    }else{
+      request.query(`update BF_CS_QUESTION
+      set TRAINED = 1, SHOW = 1
+      where FUNCTION_ID = ${function_id}
+      and QUESTION_ID = ${question_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '問答資訊訓練完成!!')
+        return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+      })
+    }
+  })
+})
+
+// admin show not train function info
+router.get('/notTrainFunction', (req, res) => {
+  const request = new sql.Request(pool)
+
+  request.query(`select * 
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    request.query(`select *
+    from BF_CS_FUNCTION
+    where TRAINED = 0`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const functionInfo = result.recordset
+      res.render('cs_admin_function', {functionInfo, categoryInfo})
+    })
+  })
+})
+
+// admin trained function
+router.put('/functionTrained/:category_id/:function_id', (req, res) => {
+  const {category_id, function_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_FUNCTION
+  where CATEGORY_ID = ${category_id}
+  and FUNCTION_ID = ${function_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const functionCheck = result.recordset[0]
+    if(!functionCheck){
+      req.flash('error', '查無此分類的功能，請重新嘗試!!')
+      return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+    }else{
+      request.query(`update BF_CS_FUNCTION
+      set TRAINED = 1, SHOW = 1
+      where CATEGORY_ID = ${category_id}
+      and FUNCTION_ID = ${function_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '功能訓練完成!!')
+        return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+      })
+    }
+  })
+})
+
 // ↓ question 問答相關router ↓
 
 router.delete('/question/:question_id/:function_id/:category_id', (req, res) => {
@@ -395,6 +511,7 @@ router.get('/api/v1/function/:category_id', (req, res) => {
 // 查詢問答頁面前的篩選
 router.get('/question/filter', (req, res) => {
   const {categorySelect, functionSelect, search} = req.query
+  const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
   const warning = []
   
@@ -432,7 +549,11 @@ router.get('/question/filter', (req, res) => {
           }
           const questionInfo = result.recordset
           if(questionInfo.length == 0) warning.push({message: '查無此功能的問答，請先新增問答!!'})
-          return res.render('cs_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning})
+          if(isAdmin){
+            return res.render('cs_admin_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning})
+          }else{
+            return res.render('cs_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning})
+          }
         })
       }else{  // 有搜尋關鍵字
         // 抓取指定功能包含搜尋關鍵字的問答資料
@@ -446,7 +567,11 @@ router.get('/question/filter', (req, res) => {
           }
           const questionInfo = result.recordset
           if(questionInfo.length == 0) warning.push({message: '查無此問答，請重新嘗試!!'})
-          return res.render('cs_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning, search})
+          if(isAdmin){
+            return res.render('cs_admin_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning, search})
+          }else{
+            return res.render('cs_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning, search})
+          }
         })
       }
     })
@@ -456,6 +581,7 @@ router.get('/question/filter', (req, res) => {
 // 顯示問答頁面
 router.get('/question', (req, res) => {
   const request = new sql.Request(pool)
+  const isAdmin = res.locals.isAdmin
   const warning = []
 
   // 抓取類別資料
@@ -468,10 +594,18 @@ router.get('/question', (req, res) => {
     const categoryInfo = result.recordset
     if(categoryInfo.length == 0){
       warning.push({message: '查無類別資料，請先新增類別!!'})
-      return res.render('cs_function', {warning})
+      if(isAdmin){
+        return res.render('cs_admin_question', {warning})
+      }else{
+        return res.render('cs_function', {warning})
+      }
     }else{
       warning.push({message: '請先選擇類別和功能!!'})
-      return res.render('cs_question', {categoryInfo, warning})
+      if(isAdmin){
+        return res.render('cs_admin_question', {categoryInfo, warning})
+      }else{
+        return res.render('cs_question', {categoryInfo, warning})
+      }
     } 
   })
 })
@@ -633,6 +767,7 @@ router.get('/function/new', (req, res) => {
 // 顯示功能資料頁面
 router.get('/function/filter', (req, res) => {
   const {category, search} = req.query
+  const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
   const warning = []
 
@@ -661,7 +796,11 @@ router.get('/function/filter', (req, res) => {
         }
         const functionInfo = result.recordset
         if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請先拉至下方新增功能!!'})
-        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+        if(isAdmin){
+          return res.render('cs_admin_function', {categoryInfo, functionInfo, category, warning})
+        }else{
+          return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+        }
       })
     }else{  //有搜尋關鍵字
       // 抓取指定類別並包含搜尋關鍵字的功能資料
@@ -675,7 +814,11 @@ router.get('/function/filter', (req, res) => {
         }
         const functionInfo = result.recordset
         if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請重新嘗試!!'})
-        return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+        if(isAdmin){
+          return res.render('cs_admin_function', {categoryInfo, functionInfo, category, warning})
+        }else{
+          return res.render('cs_function', {categoryInfo, functionInfo, category, warning})
+        }
       })
     }
   })
@@ -684,8 +827,9 @@ router.get('/function/filter', (req, res) => {
 // 顯示功能頁面
 router.get('/function', (req, res) => {
   const request = new sql.Request(pool)
+  const isAdmin = res.locals.isAdmin
   const warning = []
-  
+
   // 抓取類別資料
   request.query(`select *
   from BF_CS_CATEGORY`, (err, result) => {
@@ -696,10 +840,18 @@ router.get('/function', (req, res) => {
     const categoryInfo = result.recordset
     if(categoryInfo.length == 0){
       warning.push({message: '查無類別資料，請先新增類別!!'})
-      return res.render('cs_function', {warning})
+      if(isAdmin){
+        return res.render('cs_admin_function', {warning})
+      }else{
+        return res.render('cs_function', {warning})
+      }
     }else{
       warning.push({message: '請先選擇類別!!'})
-      return res.render('cs_function', {categoryInfo, warning})
+      if(isAdmin){
+        return res.render('cs_admin_function', {categoryInfo, warning})
+      }else{
+        return res.render('cs_function', {categoryInfo, warning})
+      }
     } 
   })
 })
