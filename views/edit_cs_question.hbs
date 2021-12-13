@@ -3,7 +3,11 @@
     <div class="card card-body">
       <h1 class="text-center mt-3">編輯問答資訊</h1>
       {{> message}}
-      <form action="/bf_cs/{{category_id}}/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT" method="POST">
+      <form 
+      {{#if category_id}}action="/bf_cs/{{category_id}}/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT"
+      {{else}}
+      action="/bf_cs/{{function_id}}/{{ questionInfo.QUESTION_ID}}?_method=PUT"
+      {{/if}} method="POST">
         <div class="modal-body">
 
           <div class="input-group mb-3">
@@ -24,7 +28,11 @@
 
         </div>
         <div class="modal-footer">
-          <a href="/bf_cs/question/filter?categorySelect={{category_id}}&functionSelect={{function_id}}&search=" class="btn btn-outline-info">取消</a>
+          <a {{#if category_id}}href="/bf_cs/question/filter?categorySelect={{category_id}}&functionSelect={{function_id}}&search=" 
+          {{else}}
+          href="/bf_cs/notTrainQuestion"
+          {{/if}}
+          class="btn btn-outline-info">取消</a>
           <button type="submit" class="btn btn-primary confirm-btn" id="confirm-create">儲存</button>
         </div>
       </form>
