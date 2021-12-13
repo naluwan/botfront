@@ -15,6 +15,7 @@ const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 router.put('/:function_id/:question_id', (req, res) => {
   const {function_id, question_id} = req.params
   const {answer} = req.body
+  const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
 
   request.query(`select *
@@ -40,7 +41,12 @@ router.put('/:function_id/:question_id', (req, res) => {
           return
         }
         req.flash('success_msg', '問答資訊更新成功!!')
-        return res.redirect('/bf_cs/notTrainQuestion')
+        if(isAdmin){  
+          return res.redirect('/bf_cs/notTrainQuestion')
+        }else{
+          return res.redirect('/bf_cs/trainedQuestion')
+        }
+        
       })
     }
   })
@@ -72,6 +78,7 @@ router.get('/:function_id/:question_id/edit', (req, res) => {
 // admin delete question in notTrainQuestion page
 router.delete('/question/:question_id/:function_id', (req, res) => {
   const {question_id, function_id} = req.params
+  const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
 
   request.query(`select *
@@ -95,7 +102,12 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
           return
         }
         req.flash('success_msg', '問答資訊已成功刪除!!')
-        return res.redirect('/bf_cs/notTrainQuestion')
+        if(isAdmin){
+          return res.redirect('/bf_cs/notTrainQuestion')
+        }else{
+          return res.redirect('/bf_cs/trainedQuestion')
+        }
+        
       })
     }
   })
@@ -251,11 +263,57 @@ router.put('/functionTrained/:category_id/:function_id', (req, res) => {
 
 // ↓ question 問答相關router ↓
 
+// 顯示已完成訓練的問答資訊
+router.get('/trainedQuestion', (req, res) => {
+  const request = new sql.Request(pool)
+
+  // 抓取類別資訊
+  request.query(`select *
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    // 抓取已訓練完成的問答資訊
+    request.query(`select *
+    from BF_CS_QUESTION
+    where TRAINED = 1
+    and SHOW = 1`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const questionInfo = result.recordset
+      if(questionInfo.length == 0){
+        req.flash('warning_msg', '查無已完成訓練問答資訊!!')
+        return res.redirect('/bf_cs/question')
+      }else{
+        // 將已訓練完成的問答資訊改為已讀(不再顯示在已完成訓練中)
+        questionInfo.filter(question => {
+          request.query(`update BF_CS_QUESTION
+          set SHOW = 0
+          where QUESTION_ID = ${question.QUESTION_ID}
+          and FUNCTION_ID = ${question.FUNCTION_ID}`, (err, result => {
+            if(err){
+              console.log(err)
+              return
+            }
+          }))
+        })
+        return res.render('cs_question', {questionInfo, categoryInfo})
+      }
+    })
+  })
+})
+
+// 刪除問答資訊
 router.delete('/question/:question_id/:function_id/:category_id', (req, res) => {
   const {question_id, function_id, category_id} = req.params
 
   const request = new sql.Request(pool)
 
+  // 驗證分類是否存在
   request.query(`select *
   from BF_CS_CATEGORY
   where CATEGORY_ID = ${category_id}`, (err, result) => {
@@ -268,6 +326,7 @@ router.delete('/question/:question_id/:function_id/:category_id', (req, res) => 
       req.flash('error', '查無此類別，請重新嘗試!!')
       return res.redirect(`/bf_cs/question`)
     }
+    // 驗證問答資訊是否存在
     request.query(`select *
     from BF_CS_QUESTION
     where QUESTION_ID = ${question_id}
@@ -281,6 +340,7 @@ router.delete('/question/:question_id/:function_id/:category_id', (req, res) => 
         req.flash('error', '查無此功能的問答資料，請重新嘗試!!')
         return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
       }else{
+        // 刪除問答資訊
         request.query(`delete from BF_CS_QUESTION
         where QUESTION_ID = ${question_id}
         and FUNCTION_ID = ${function_id}`, (err, result) => {
