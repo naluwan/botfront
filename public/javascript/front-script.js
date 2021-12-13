@@ -36,7 +36,12 @@ if(dataPanel){
 			deleteQuestion.forEach(item => {
 				item.innerText = '「' + target.dataset.name + '」'
 			})
-			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}/${target.dataset.categoryid}?_method=DELETE`
+			if(target.dataset.categoryid){
+				deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}/${target.dataset.categoryid}?_method=DELETE`
+			}else{
+				deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}/?_method=DELETE`
+			}
+			
 		}
 
 		if(target.matches('#delete-question-admin-btn')){
