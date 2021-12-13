@@ -24,8 +24,9 @@ router.put('/roleFilter', (req, res) => {
 router.get('/', (req, res) => {
 	const isAdmin = res.locals.isAdmin
 	const whichRole = res.locals.whichRole
+	const request = new sql.Request(pool)
+
 	if(isAdmin){
-		const request = new sql.Request(pool)
 		if(whichRole == 'hire'){
 			request.query(`select *
 			from BOTFRONT_ALL_POSITION
@@ -66,9 +67,31 @@ router.get('/', (req, res) => {
 			})
 		}
 	}else{
-		res.render('index')
+		request.query(`select * 
+		from BF_CS_FUNCTION
+		where TRAINED = 1
+		and SHOW = 1`, (err, result) => {
+			if(err){
+				console.log(err)
+				return
+			}
+			const functionInfo = result.recordset
+			const trainFunction = functionInfo.length
+
+			request.query(`select *
+			from BF_CS_QUESTION
+			where TRAINED = 1
+			and SHOW = 1`, (err, result) => {
+				if(err){
+					console.log(err)
+					return
+				}
+				const questionInfo = result.recordset
+				const trainQuestion = questionInfo.length
+				return res.render('index', {trainQuestion, trainFunction})
+			})
+		})
 	}
-	
 })
 
 module.exports = router
