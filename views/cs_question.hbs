@@ -40,7 +40,7 @@
                 <div class=" item-wrapper">
                   <div class=" my-2 item-title">
                     <div class="label-title">
-                      {{this.DESCRIPTION}}
+                      {{this.DESCRIPTION}}{{#unless this.TRAINED}}(<strong style="color: #ff0000;">未訓練</strong>){{/unless}}
                     </div>
                   </div>
                   <div class="item-des">
@@ -93,7 +93,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <p>確定要刪除<strong id="delete-position">{{ this.POSITION_NAME }}</strong>?</p> 
+        <p>確定要刪除<strong id="delete-question">{{ this.POSITION_NAME }}</strong>?</p> 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
