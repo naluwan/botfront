@@ -276,7 +276,8 @@ color:#fff;
   position: relative;
 }
 
-.not-read-block{
+.not-read-block,
+.trained-block{
   font-weight: 400;
   color: #1b5cb6;
 }
