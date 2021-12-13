@@ -11,8 +11,99 @@ const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
 
 // cs_admin router
 
+// edit func for admin in not train page of question
+router.put('/:function_id/:question_id', (req, res) => {
+  const {function_id, question_id} = req.params
+  const {answer} = req.body
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where FUNCTION_ID = ${function_id}
+  and QUESTION_ID = ${question_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionCheck = result.recordset[0]
+    if(!questionCheck){
+      req.flash('error', '找不到此問答資訊，請重新嘗試!!')
+      return res.redirect('/bf_cs/notTrainQuestion')
+    }else{
+      request.input('answer', sql.NVarChar(2000), answer)
+      .query(`update BF_CS_QUESTION
+      set ANSWER = @answer
+      where FUNCTION_ID = ${function_id}
+      and QUESTION_ID = ${question_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '問答資訊更新成功!!')
+        return res.redirect('/bf_cs/notTrainQuestion')
+      })
+    }
+  })
+})
+
+// show edit question page for admin
+router.get('/:function_id/:question_id/edit', (req, res) => {
+  const {function_id, question_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where QUESTION_ID = ${question_id}
+  and FUNCTION_ID = ${function_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionInfo = result.recordset[0]
+    if(!questionInfo){
+      req.flash('error', '查無此問答資訊，請重新嘗試!!')
+      return res.redirect('/bf_cs/notTrainQuestion')
+    }else{
+      res.render('edit_cs_question', {function_id, questionInfo})
+    }
+  })
+})
+
+// admin delete question in notTrainQuestion page
+router.delete('/question/:question_id/:function_id', (req, res) => {
+  const {question_id, function_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where QUESTION_ID = ${question_id}
+  and FUNCTION_ID = ${function_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionCheck = result.recordset[0]
+    if(!questionCheck){
+      req.flash('error', '找不到此問答資訊，請重新嘗試!!')
+      return res.redirect('/bf_cs/notTrainQuestion')
+    }else{
+      request.query(`delete from BF_CS_QUESTION
+      where QUESTION_ID = ${question_id}
+      and FUNCTION_ID = ${function_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '問答資訊已成功刪除!!')
+        return res.redirect('/bf_cs/notTrainQuestion')
+      })
+    }
+  })
+})
+
 // admin show not train question info
 router.get('/notTrainQuestion', (req, res) => {
+  // const {notTrainQuestion} = req.params
   const request = new sql.Request(pool)
 
   request.query(`select * 
@@ -63,6 +154,39 @@ router.put('/questionTrained/:category_id/:function_id/:question_id', (req, res)
         }
         req.flash('success_msg', '問答資訊訓練完成!!')
         return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
+      })
+    }
+  })
+})
+
+// admin trained question for notTrainQuestion page
+router.put('/questionTrained/:function_id/:question_id', (req, res) => {
+  const {function_id, question_id} = req.params
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_QUESTION
+  where FUNCTION_ID = ${function_id}
+  and QUESTION_ID = ${question_id}`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const questionCheck = result.recordset[0]
+    if(!questionCheck){
+      req.flash('error', '查無此功能的問答資訊，請重新嘗試!!')
+      return res.redirect(`/bf_cs/notTrainQuestion`)
+    }else{
+      request.query(`update BF_CS_QUESTION
+      set TRAINED = 1, SHOW = 1
+      where FUNCTION_ID = ${function_id}
+      and QUESTION_ID = ${question_id}`, (err, result) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        req.flash('success_msg', '問答資訊訓練完成!!')
+        return res.redirect(`/bf_cs/notTrainQuestion`)
       })
     }
   })
