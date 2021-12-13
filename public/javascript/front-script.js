@@ -20,23 +20,33 @@ if(dataPanel){
 		}
 
 		if(target.matches('#delete-function-btn')){
-			const deletePosition = document.querySelectorAll('#delete-position')
+			const deleteFunction = document.querySelectorAll('#delete-function')
 			const deleteForm = document.querySelector('#delete-form')
 
-			deletePosition.forEach(item => {
+			deleteFunction.forEach(item => {
 				item.innerText = '「' + target.dataset.name + '」'
 			})
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.categoryid}?_method=DELETE`
 		}
 
 		if(target.matches('#delete-question-btn')){
-			const deletePosition = document.querySelectorAll('#delete-position')
+			const deleteQuestion = document.querySelectorAll('#delete-question')
 			const deleteForm = document.querySelector('#delete-form')
 
-			deletePosition.forEach(item => {
+			deleteQuestion.forEach(item => {
 				item.innerText = '「' + target.dataset.name + '」'
 			})
 			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}/${target.dataset.categoryid}?_method=DELETE`
+		}
+
+		if(target.matches('#delete-question-admin-btn')){
+			const deleteQuestion = document.querySelectorAll('#delete-question')
+			const deleteForm = document.querySelector('#delete-form')
+
+			deleteQuestion.forEach(item => {
+				item.innerText = '「' + target.dataset.name + '」'
+			})
+			deleteForm.action = `/${target.dataset.category}/${target.dataset.id}/${target.dataset.functionid}?_method=DELETE`
 		}
 	})
 }
