@@ -1034,6 +1034,19 @@ router.get('/function/filter', (req, res) => {
         }
         const functionInfo = result.recordset
         if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請先拉至下方新增功能!!'})
+        functionInfo.filter(item => {
+          if(item.SHOW){
+            request.query(`update BF_CS_FUNCTION
+            set SHOW = 0
+            where FUNCTION_ID = ${item.FUNCTION_ID}
+            and CATEGORY_ID = ${item.CATEGORY_ID}`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+            })
+          }
+        })
         if(isAdmin){
           return res.render('cs_admin_function', {categoryInfo, functionInfo, category, warning})
         }else{
