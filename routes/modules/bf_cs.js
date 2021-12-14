@@ -733,6 +733,20 @@ router.get('/question/filter', (req, res) => {
           }
           const questionInfo = result.recordset
           if(questionInfo.length == 0) warning.push({message: '查無此功能的問答，請先新增問答!!'})
+          // 將訓練完成的資訊更改為已讀(不再顯示訓練完成)
+          questionInfo.filter(question => {
+            if(question.SHOW){
+              request.query(`update BF_CS_QUESTION
+              set SHOW = 0
+              where QUESTION_ID = ${question.QUESTION_ID}
+              and FUNCTION_ID = ${question.FUNCTION_ID}`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+              })
+            }
+          })
           if(isAdmin){
             return res.render('cs_admin_question', {categoryInfo, functionInfo, questionInfo, categorySelect, functionSelect, warning})
           }else{
