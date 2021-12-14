@@ -255,7 +255,7 @@ router.put('/functionTrained/:category_id/:function_id', (req, res) => {
           return
         }
         req.flash('success_msg', '功能訓練完成!!')
-        return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+        return res.redirect(`/bf_cs/notTrainFunction`)
       })
     }
   })
