@@ -18,6 +18,7 @@ router.put('/:function_id/:question_id', (req, res) => {
   const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
 
+  // 抓取問答資訊
   request.query(`select *
   from BF_CS_QUESTION
   where FUNCTION_ID = ${function_id}
@@ -31,6 +32,7 @@ router.put('/:function_id/:question_id', (req, res) => {
       req.flash('error', '找不到此問答資訊，請重新嘗試!!')
       return res.redirect('/bf_cs/notTrainQuestion')
     }else{
+      // 更新
       request.input('answer', sql.NVarChar(2000), answer)
       .query(`update BF_CS_QUESTION
       set ANSWER = @answer
@@ -57,6 +59,7 @@ router.get('/:function_id/:question_id/edit', (req, res) => {
   const {function_id, question_id} = req.params
   const request = new sql.Request(pool)
 
+  // 抓取問答資訊
   request.query(`select *
   from BF_CS_QUESTION
   where QUESTION_ID = ${question_id}
@@ -81,6 +84,7 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
   const isAdmin = res.locals.isAdmin
   const request = new sql.Request(pool)
 
+  // 驗證問答資訊是否存在
   request.query(`select *
   from BF_CS_QUESTION
   where QUESTION_ID = ${question_id}
@@ -94,6 +98,7 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
       req.flash('error', '找不到此問答資訊，請重新嘗試!!')
       return res.redirect('/bf_cs/notTrainQuestion')
     }else{
+      // 刪除
       request.query(`delete from BF_CS_QUESTION
       where QUESTION_ID = ${question_id}
       and FUNCTION_ID = ${function_id}`, (err, result) => {
@@ -115,9 +120,9 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
 
 // admin show not train question info
 router.get('/notTrainQuestion', (req, res) => {
-  // const {notTrainQuestion} = req.params
   const request = new sql.Request(pool)
 
+  // 抓取類別資料
   request.query(`select * 
   from BF_CS_CATEGORY`, (err, result) => {
     if(err){
@@ -125,6 +130,7 @@ router.get('/notTrainQuestion', (req, res) => {
       return
     }
     const categoryInfo = result.recordset
+    // 抓取未訓練的問答資訊
     request.query(`select *
     from BF_CS_QUESTION
     where TRAINED = 0`, (err, result) => {
@@ -143,6 +149,7 @@ router.put('/questionTrained/:category_id/:function_id/:question_id', (req, res)
   const {category_id, function_id, question_id} = req.params
   const request = new sql.Request(pool)
 
+  // 驗證問答資訊是否存在
   request.query(`select *
   from BF_CS_QUESTION
   where FUNCTION_ID = ${function_id}
@@ -156,6 +163,7 @@ router.put('/questionTrained/:category_id/:function_id/:question_id', (req, res)
       req.flash('error', '查無此功能的問答資訊，請重新嘗試!!')
       return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
     }else{
+      // 更新
       request.query(`update BF_CS_QUESTION
       set TRAINED = 1, SHOW = 1
       where FUNCTION_ID = ${function_id}
@@ -176,6 +184,7 @@ router.put('/questionTrained/:function_id/:question_id', (req, res) => {
   const {function_id, question_id} = req.params
   const request = new sql.Request(pool)
 
+  // 驗證問答資訊是否存在
   request.query(`select *
   from BF_CS_QUESTION
   where FUNCTION_ID = ${function_id}
@@ -189,6 +198,7 @@ router.put('/questionTrained/:function_id/:question_id', (req, res) => {
       req.flash('error', '查無此功能的問答資訊，請重新嘗試!!')
       return res.redirect(`/bf_cs/notTrainQuestion`)
     }else{
+      // 更新
       request.query(`update BF_CS_QUESTION
       set TRAINED = 1, SHOW = 1
       where FUNCTION_ID = ${function_id}
@@ -208,6 +218,7 @@ router.put('/questionTrained/:function_id/:question_id', (req, res) => {
 router.get('/notTrainFunction', (req, res) => {
   const request = new sql.Request(pool)
 
+  // 抓取類別資料
   request.query(`select * 
   from BF_CS_CATEGORY`, (err, result) => {
     if(err){
@@ -215,6 +226,7 @@ router.get('/notTrainFunction', (req, res) => {
       return
     }
     const categoryInfo = result.recordset
+    // 抓取未訓練的功能
     request.query(`select *
     from BF_CS_FUNCTION
     where TRAINED = 0`, (err, result) => {
@@ -233,6 +245,7 @@ router.put('/functionTrained/:category_id/:function_id', (req, res) => {
   const {category_id, function_id} = req.params
   const request = new sql.Request(pool)
 
+  // 驗證功能是否存在
   request.query(`select *
   from BF_CS_FUNCTION
   where CATEGORY_ID = ${category_id}
@@ -246,6 +259,7 @@ router.put('/functionTrained/:category_id/:function_id', (req, res) => {
       req.flash('error', '查無此分類的功能，請重新嘗試!!')
       return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
     }else{
+      // 更新
       request.query(`update BF_CS_FUNCTION
       set TRAINED = 1, SHOW = 1
       where CATEGORY_ID = ${category_id}
@@ -810,9 +824,11 @@ router.get('/question', (req, res) => {
 
 // ↓ function 功能相關router ↓
 
+// 使用者頁面顯示已完成訓練清單
 router.get('/trainedFunction', (req, res) => {
   const request = new sql.Request(pool)
 
+  // 抓取類別資料
   request.query(`select *
   from BF_CS_CATEGORY`, (err, result) => {
     if(err){
@@ -820,6 +836,8 @@ router.get('/trainedFunction', (req, res) => {
       return
     }
     const categoryInfo = result.recordset
+    
+    // 抓取訓練完成功能
     request.query(`select *
     from BF_CS_FUNCTION
     where TRAINED = 1
@@ -833,6 +851,7 @@ router.get('/trainedFunction', (req, res) => {
         req.flash('warning_msg', '查無已完成訓練的資料!!')
         return res.redirect('/bf_cs/function')
       }else{
+        // 將訓練完成的功能狀態改為已讀(不再顯示訓練完成或在訓練完成清單中)
         functionInfo.filter(item => {
           request.query(`update BF_CS_FUNCTION
           set SHOW = 0
@@ -1034,6 +1053,7 @@ router.get('/function/filter', (req, res) => {
         }
         const functionInfo = result.recordset
         if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請先拉至下方新增功能!!'})
+        // 抓出剛訓練完成的功能並將狀態改為已讀(不再顯示訓練完成或在訓練完成清單中)
         functionInfo.filter(item => {
           if(item.SHOW){
             request.query(`update BF_CS_FUNCTION
@@ -1065,6 +1085,20 @@ router.get('/function/filter', (req, res) => {
         }
         const functionInfo = result.recordset
         if(functionInfo.length == 0) warning.push({message: '查無此類別資料，請重新嘗試!!'})
+        // 抓出剛訓練完成的功能並將狀態改為已讀(不再顯示訓練完成或在訓練完成清單中)
+        functionInfo.filter(item => {
+          if(item.SHOW){
+            request.query(`update BF_CS_FUNCTION
+            set SHOW = 0
+            where FUNCTION_ID = ${item.FUNCTION_ID}
+            and CATEGORY_ID = ${item.CATEGORY_ID}`, (err, result) => {
+              if(err){
+                console.log(err)
+                return
+              }
+            })
+          }
+        })
         if(isAdmin){
           return res.render('cs_admin_function', {categoryInfo, functionInfo, category, warning})
         }else{
