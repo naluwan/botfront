@@ -40,7 +40,9 @@
                 <div class=" item-wrapper">
                   <div class=" my-2 item-title">
                     <div class="label-title">
-                      {{this.DESCRIPTION}}{{#unless this.TRAINED}}(<strong style="color: #ff0000;">未訓練</strong>){{/unless}}
+                      {{this.DESCRIPTION}}{{#unless this.TRAINED}}(<strong style="color: #ff0000;">未訓練</strong>)
+                      {{else}}{{#if this.SHOW}}(<strong style="color: #1b5cb6;">訓練完成</strong>){{/if}}
+                      {{/unless}}
                     </div>
                   </div>
                   <div class="item-des">
