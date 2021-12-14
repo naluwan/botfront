@@ -33,7 +33,9 @@
                   <div class=" my-2 item-title">
                     <div class="d-flex">
                       <div class="label-title">功能名稱：</div>
-                      <div class="label-des">{{this.FUNCTION_NAME}}{{#unless this.TRAINED}}(<strong style="color: #ff0000;">未訓練</strong>){{/unless}}</div>
+                      <div class="label-des">{{this.FUNCTION_NAME}}{{#unless this.TRAINED}}(<strong style="color: #ff0000;">未訓練</strong>)
+                      {{else}}{{#if this.SHOW}}(<strong style="color: #1b5cb6;">訓練完成</strong>){{/if}}
+                      {{/unless}}</div>
                     </div>
                     <div class="d-flex">
                       <div class="label-title">功能英文名稱：</div>
