@@ -810,6 +810,46 @@ router.get('/question', (req, res) => {
 
 // ↓ function 功能相關router ↓
 
+router.get('/trainedFunction', (req, res) => {
+  const request = new sql.Request(pool)
+
+  request.query(`select *
+  from BF_CS_CATEGORY`, (err, result) => {
+    if(err){
+      console.log(err)
+      return
+    }
+    const categoryInfo = result.recordset
+    request.query(`select *
+    from BF_CS_FUNCTION
+    where TRAINED = 1
+    and SHOW = 1`, (err, result) => {
+      if(err){
+        console.log(err)
+        return
+      }
+      const functionInfo = result.recordset
+      if(functionInfo.length == 0){
+        req.flash('warning_msg', '查無已完成訓練的資料!!')
+        return res.redirect('/bf_cs/function')
+      }else{
+        functionInfo.filter(item => {
+          request.query(`update BF_CS_FUNCTION
+          set SHOW = 0
+          where FUNCTION_ID = ${item.FUNCTION_ID}
+          and CATEGORY_ID = ${item.CATEGORY_ID}`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+          })
+        })
+        return res.render('cs_function', {categoryInfo, functionInfo})
+      }
+    })
+  })
+})
+
 // 刪除功能
 router.delete('/function/:function_id/:category_id', (req, res) => {
   const {function_id, category_id} = req.params
