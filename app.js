@@ -28,9 +28,6 @@ app.use(session({
 app.use(express.static('public'))
 app.use(express.urlencoded({extended: false}))
 app.use(methodOverride('_method'))
-// app.post('http://192.168.10.108:5005/model/train', (req,res) => {
-//   console.log(req)
-// } )
 
 usePassport(app)
 app.use(flash())
