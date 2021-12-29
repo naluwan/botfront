@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-// const train = require('./modules/train')
+const train = require('./modules/train')
 const greet = require('./modules/greet')
 const home = require('./modules/home')
 const position = require('./modules/position')
@@ -34,10 +34,10 @@ router.use('/leave', authenticator, leave)
 router.use('/subsidy', authenticator, subsidy)
 router.use('/greet', authenticator, greet)
 router.use('/defaultRes', authenticator, defaultRes)
-// router.use('/train', train)
+router.use('/train', train)
 router.use('/company', authenticator, company)
 router.use('/position', authenticator, position)
 router.use('/users', users)
-router.use('/', authenticator, home)
+router.use('/', home)
 
 module.exports = router
