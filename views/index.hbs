@@ -1,7 +1,7 @@
 {{#if isAdmin}}
   {{#is whichRole 'hire'}}
   <div class="row">
-    <div class="col-10 mx-auto mt-3">
+    <div class="col-10 mx-auto mt-3" id="message-block">
     {{> message}}
     </div>
     <div class="col-10 mx-auto mt-3">
@@ -12,7 +12,8 @@
         </select>
       </form>
     </div>
-    <a href="/train" class="btn btn-dark active mx-3" role="button">Train</a>
+    {{!-- <a href="#" class="btn btn-dark active mx-3" role="button" id="train-btn">Train</a> --}}
+    <button class="btn btn-dark active mx-3" type="button" id="train-btn">Train</button>
     <div class="col-12 mx-auto home">
       <div class="row col-6 d-flex mx-auto justify-content-center">
         {{!-- <button class=" btn btn-dark mx-2" style="font-size:medium; height:fit-content"
