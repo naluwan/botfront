@@ -7,7 +7,7 @@ const axios = require('axios')
 // 點擊按鈕，呼叫訓練router，提示訓練中
 router.get('/', (req, res) => {
   // 載入training data
-  const nluData = yaml.load(fs.readFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-2.json', 'utf8'))
+  const nluData = yaml.load(fs.readFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-3.json', 'utf8'))
   const configData = yaml.load(fs.readFileSync('C:/Users/AN1100275/Desktop/training-data/config.yml', "utf8"))
   const domainData = yaml.load(fs.readFileSync('C:/Users/AN1100275/Desktop/training-data/domain.yml', 'utf8'))
   const fragmentsData = yaml.load(fs.readFileSync('C:/Users/AN1100275/Desktop/training-data/data/stories/fragments.yml', 'utf8'))

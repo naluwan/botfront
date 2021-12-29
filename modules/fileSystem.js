@@ -27,7 +27,7 @@ module.exports = {
         nluData.push(newContent)
         data.nlu.zh.rasa_nlu_data.common_examples = nluData
         try{
-          fs.writeFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-2.json', JSON.stringify(data.nlu.zh))
+          fs.writeFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-3.json', JSON.stringify(data.nlu.zh))
         } catch(err){
           console.log(err)
         }
@@ -52,7 +52,7 @@ module.exports = {
       data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
 
       try{
-        fs.writeFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-2.json', JSON.stringify(data.nlu.zh))
+        fs.writeFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-3.json', JSON.stringify(data.nlu.zh))
       } catch(err){
         console.log(err)
       }
@@ -132,6 +132,49 @@ module.exports = {
         } catch(err){
           console.log(err)
         }
+      }
+    })
+    .catch(err => console.log(err))
+  },
+  // 刪除功能寫檔
+  fsDeleteFunction: (functionCheck, category_id) => {
+    axios.get('http://localhost:3030/train')
+    .then(response => {
+      return response.data
+    })
+    .then(data => {
+      const arrayText = []
+      data.nlu.zh.rasa_nlu_data.common_examples.forEach(item => {
+        arrayText.push(item.text)
+      })
+      // console.log(questionCheck.DESCRIPTION)
+      const index = arrayText.indexOf(functionCheck.FUNCTION_NAME)
+      // console.log(index)
+      data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
+      return data
+    })
+    .then(data => {
+      const category_name = {
+        1: {name: '人事', entity: 'personnel'},
+        2: {name: '考勤', entity: 'attendance'},
+        3: {name: '保險', entity: 'insurance'},
+        4: {name: '薪資', entity: 'salary'},
+        5: {name: '額外', entity: 'otherCategory'},
+      }
+      const currentCategory = category_name[category_id]
+      const arrayText = []
+      data.nlu.zh.rasa_nlu_data.common_examples.forEach(item => {
+        arrayText.push(item.text)
+      })
+
+      const text = `${currentCategory.name}的${functionCheck.FUNCTION_NAME}`
+      const index = arrayText.indexOf(text)
+      // console.log(index)
+      data.nlu.zh.rasa_nlu_data.common_examples.splice(index, 1)
+      try{
+        fs.writeFileSync('C:/Users/AN1100275/Desktop/training-data/data/nlu-json-3.json', JSON.stringify(data.nlu.zh))
+      } catch(err){
+        console.log(err)
       }
     })
     .catch(err => console.log(err))
