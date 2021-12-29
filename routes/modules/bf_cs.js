@@ -8,7 +8,7 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
-const {fsWrite, fsDelete} = require('../../modules/fileSystem')
+const {fsWriteQuestion, fsDeleteQuestion, fsWriteFunction} = require('../../modules/fileSystem')
 
 // cs_admin router
 
@@ -108,7 +108,7 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
           return
         }
 
-        fsDelete(questionCheck)
+        fsDeleteQuestion(questionCheck)
         req.flash('success_msg', '問答資訊已成功刪除!!')
         if(isAdmin){
           return res.redirect('/bf_cs/notTrainQuestion')
@@ -366,7 +366,7 @@ router.delete('/question/:question_id/:function_id/:category_id', (req, res) => 
             return
           }
 
-          fsDelete(questionCheck)
+          fsDeleteQuestion(questionCheck)
           req.flash('success_msg', '刪除問答資料成功!!')
           return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
         })
@@ -604,7 +604,7 @@ router.post('/question/new', (req, res) => {
                       return
                     }
 
-                    fsWrite(description, entity_name)
+                    fsWriteQuestion(description, entity_name)
                     TrainSendMail(res, 'mail_bf_cs_question', description, entity_name, '棉花糖客服機器人新增問答資訊')
                     req.flash('success_msg', '新增問答資料成功!!')
                     return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
@@ -997,7 +997,8 @@ router.post('/function/new', (req, res) => {
               console.log(err)
               return
             }
-            TrainSendMail(res, 'mail_bf_cs_function', function_name, entity_name, '棉花糖客服機器人新增功能')
+            fsWriteFunction(category, function_name, entity_name)
+            TrainSendMail(res, 'mail_bf_cs_function', function_name, entity_name,  '棉花糖客服機器人新增功能')
             req.flash('success_msg', '新增功能成功!!')
             return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
           })
