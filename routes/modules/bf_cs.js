@@ -8,7 +8,7 @@ const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
-const {fsWriteQuestion, fsDeleteQuestion, fsWriteFunction} = require('../../modules/fileSystem')
+const {fsWriteQuestion, fsDeleteQuestion, fsWriteFunction, fsDeleteFunction} = require('../../modules/fileSystem')
 
 // cs_admin router
 
@@ -903,6 +903,7 @@ router.delete('/function/:function_id/:category_id', (req, res) => {
           console.log(err)
           return
         }
+        fsDeleteFunction(functionCheck, category_id)
         req.flash('success_msg', '刪除功能成功!!')
         return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
       })
