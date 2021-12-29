@@ -25,6 +25,11 @@ router.get('/', (req, res) => {
 	const isAdmin = res.locals.isAdmin
 	const whichRole = res.locals.whichRole
 	const request = new sql.Request(pool)
+	const user = res.locals.user
+
+	if(!user){
+		return res.redirect('/users/login')
+	}
 
 	if(isAdmin){
 		if(whichRole == 'hire'){
