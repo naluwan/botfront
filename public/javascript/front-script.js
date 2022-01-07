@@ -75,7 +75,7 @@ if(trainBtn){
 			</div>
 			`
 			
-			fetch('http://localhost:3030/train')
+			fetch('http://localhost:3030/train/trainingData')
 			.then(response => {
 				// console.log(response)
 				return response.json()
