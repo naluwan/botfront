@@ -4,11 +4,14 @@ const passport = require('passport')
 const bcrypt = require('bcryptjs')
 const {isAdmin} = require('../../middleware/auth')
 
+const fs = require('fs')
+const path = require('path')
+const yaml = require('js-yaml')
 const sql = require('mssql')
 const pool = require('../../config/connectPool')
 const { query } = require('express')
 const {TrainSendMail, userSendMAil} = require('../../modules/sendMail')
-const {fsWriteQuestion, fsDeleteQuestion, fsWriteFunction, fsDeleteFunction} = require('../../modules/fileSystem')
+const {fsWriteQuestion, fsDeleteQuestion, fsWriteFunction, fsDeleteFunction, fsDeleteFunctionRef} = require('../../modules/fileSystem')
 
 // cs_admin router
 
@@ -108,14 +111,13 @@ router.delete('/question/:question_id/:function_id', (req, res) => {
           return
         }
 
-        fsDeleteQuestion(questionCheck)
+        fsDeleteQuestion(questionCheck, request)
         req.flash('success_msg', '問答資訊已成功刪除!!')
-        if(isAdmin){
-          return res.redirect('/bf_cs/notTrainQuestion')
-        }else{
-          return res.redirect('/bf_cs/trainedQuestion')
-        }
-        
+          if(isAdmin){
+            return res.redirect('/bf_cs/notTrainQuestion')
+          }else{
+            return res.redirect('/bf_cs/trainedQuestion')
+          }
       })
     }
   })
@@ -366,7 +368,7 @@ router.delete('/question/:question_id/:function_id/:category_id', (req, res) => 
             return
           }
 
-          fsDeleteQuestion(questionCheck)
+          fsDeleteQuestion(questionCheck, request)
           req.flash('success_msg', '刪除問答資料成功!!')
           return res.redirect(`/bf_cs/question/filter?categorySelect=${category_id}&functionSelect=${function_id}&search=`)
         })
@@ -603,12 +605,11 @@ router.post('/question/new', (req, res) => {
                       console.log(err)
                       return
                     }
-
-                    fsWriteQuestion(description, entity_name)
-                    TrainSendMail(res, 'mail_bf_cs_question', description, entity_name, '棉花糖客服機器人新增問答資訊')
-                    req.flash('success_msg', '新增問答資料成功!!')
-                    return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
                   })
+                  fsWriteQuestion(description, entity_name, request)
+                  TrainSendMail(res, 'mail_bf_cs_question', description, entity_name, '棉花糖客服機器人新增問答資訊')
+                  req.flash('success_msg', '新增問答資料成功!!')
+                  return res.redirect(`/bf_cs/question/filter?categorySelect=${categorySelect}&functionSelect=${functionSelect}&search=`)
                 }
               })
             }
@@ -895,17 +896,31 @@ router.delete('/function/:function_id/:category_id', (req, res) => {
       req.flash('error', '查無此功能，請重新嘗試!!')
       return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
     }else{
-      // 刪除
-      request.query(`delete from BF_CS_FUNCTION
-      where CATEGORY_ID = ${category_id}
-      and FUNCTION_ID = ${function_id}`, (err, result) => {
+      request.query(`select *
+      from BF_CS_QUESTION
+      where FUNCTION_ID = ${function_id}`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-        fsDeleteFunction(functionCheck, category_id)
-        req.flash('success_msg', '刪除功能成功!!')
-        return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+        const questionCheck = result.recordset
+        if(questionCheck){
+            fsDeleteFunctionRef(questionCheck, functionCheck, category_id, function_id, request)
+            req.flash('success_msg', '刪除功能成功!!')
+            return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+        }else{
+          request.query(`delete from BF_CS_FUNCTION
+          where CATEGORY_ID = ${category_id}
+          and FUNCTION_ID = ${function_id}`, (err, result) => {
+            if(err){
+              console.log(err)
+              return
+            }
+            fsDeleteFunction(functionCheck, category_id, request)
+            req.flash('success_msg', '刪除功能成功!!')
+            return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+          })
+        }
       })
     }
   })
@@ -961,47 +976,78 @@ router.post('/function/new', (req, res) => {
       })
     }else{
       request.query(`select *
-      from BF_CS_CATEGORY
-      where CATEGORY_NAME = '${function_name}'
+      from BF_CS_QUESTION 
+      where DESCRIPTION = '${function_name}'
       or ENTITY_NAME = '${entity_name}'`, (err, result) => {
         if(err){
           console.log(err)
           return
         }
-        const categoryEntityCheck = result.recordset[0]
-        if(categoryEntityCheck){
-          request.query(`select * 
+        const questionCheck = result.recordset[0]
+        if(questionCheck){
+          request.query(`select *
           from BF_CS_CATEGORY`, (err, result) => {
             if(err){
               console.log(err)
               return
             }
             const categoryInfo = result.recordset
-            if(categoryEntityCheck.CATEGORY_NAME == function_name){
-              warning.push({message: '功能名稱不能與分類名稱相同，請重新嘗試!!'})
+
+            if(questionCheck.DESCRIPTION == function_name){
+              warning.push({message: '功能名稱不能與問答資訊描述相同，請重新嘗試!!'})
               return res.render('new_cs_function', {category, categoryInfo, entity_name, warning})
             }
 
-            if(categoryEntityCheck.ENTITY_NAME == entity_name){
-              warning.push({message: '功能英文名稱不能與分類英文名稱相同，請重新嘗試!!'})
+            if(questionCheck.ENTITY_NAME ==  entity_name){
+              warning.push({message: '功能英文名稱不能與問答資訊英文名稱相同，請重新嘗試!!'})
               return res.render('new_cs_function', {category, categoryInfo, function_name, warning})
             }
           })
         }else{
-          // 新增進資料庫
-          request.input('category_id', sql.Int, category)
-          .input('function_name', sql.NVarChar(30), function_name)
-          .input('entity_name', sql.NVarChar(100), entity_name)
-          .query(`insert into BF_CS_FUNCTION (CATEGORY_ID, FUNCTION_NAME, ENTITY_NAME)
-          values (@category_id, @function_name, @entity_name)`, (err, result) => {
+          request.query(`select *
+          from BF_CS_CATEGORY
+          where CATEGORY_NAME = '${function_name}'
+          or ENTITY_NAME = '${entity_name}'`, (err, result) => {
             if(err){
               console.log(err)
               return
             }
-            fsWriteFunction(category, function_name, entity_name)
-            TrainSendMail(res, 'mail_bf_cs_function', function_name, entity_name,  '棉花糖客服機器人新增功能')
-            req.flash('success_msg', '新增功能成功!!')
-            return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
+            const categoryEntityCheck = result.recordset[0]
+            if(categoryEntityCheck){
+              request.query(`select * 
+              from BF_CS_CATEGORY`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                const categoryInfo = result.recordset
+                if(categoryEntityCheck.CATEGORY_NAME == function_name){
+                  warning.push({message: '功能名稱不能與分類名稱相同，請重新嘗試!!'})
+                  return res.render('new_cs_function', {category, categoryInfo, entity_name, warning})
+                }
+
+                if(categoryEntityCheck.ENTITY_NAME == entity_name){
+                  warning.push({message: '功能英文名稱不能與分類英文名稱相同，請重新嘗試!!'})
+                  return res.render('new_cs_function', {category, categoryInfo, function_name, warning})
+                }
+              })
+            }else{
+              // 新增進資料庫
+              request.input('category_id', sql.Int, category)
+              .input('function_name', sql.NVarChar(30), function_name)
+              .input('entity_name', sql.NVarChar(100), entity_name)
+              .query(`insert into BF_CS_FUNCTION (CATEGORY_ID, FUNCTION_NAME, ENTITY_NAME)
+              values (@category_id, @function_name, @entity_name)`, (err, result) => {
+                if(err){
+                  console.log(err)
+                  return
+                }
+                fsWriteFunction(category, function_name, entity_name, request)
+                TrainSendMail(res, 'mail_bf_cs_function', function_name, entity_name,  '棉花糖客服機器人新增功能')
+                req.flash('success_msg', '新增功能成功!!')
+                return res.redirect(`/bf_cs/function/filter?category=${category}&search=`)
+              })
+            }
           })
         }
       })
