@@ -222,7 +222,7 @@ module.exports = {
     .catch(err => console.log(err))
   },
 
-  fsDeleteFunctionRef: (questionCheck, functionCheck, category_id, function_id, request) => {
+  fsDeleteFunctionRef: (questionCheck, functionCheck, category_id, function_id, request, req, res) => {
     axios.get('http://localhost:3030/train/trainingData')
     .then(response => {
       return response.data
@@ -291,7 +291,7 @@ module.exports = {
     })
     .then(data => {
       // 刪除資料庫內的功能
-      console.log(`刪除function data： ${data}`)
+      // console.log(`刪除function data： ${data}`)
       request.query(`delete from BF_CS_FUNCTION
       where FUNCTION_ID = ${function_id}
       and CATEGORY_ID = ${category_id}`, (err, result) => {
@@ -304,7 +304,7 @@ module.exports = {
     })
     .then(data => {
       // 更新資料庫內的訓練資料(nlu-json)
-      console.log(`更新data的data： ${data}`)
+      // console.log(`更新data的data： ${data}`)
       request.query(`update BF_CS_TRAINING_DATA
       set DATA_CONTENT = '${data}'
       where DATA_NAME = 'nlu-json'`, (err, result) => {
@@ -313,6 +313,10 @@ module.exports = {
           return
         }
       })
+    })
+    .then(data => {
+      req.flash('success_msg', '刪除功能成功!!')
+      return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
     })
     .catch(err => console.log(err))
   }
