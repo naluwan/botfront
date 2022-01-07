@@ -77,40 +77,40 @@
   {{/is}}
   {{#is whichRole 'hr'}}
   <div class="row">
-  <div class="col-10 mx-auto mt-3">
-  {{> message}}
-  </div>
-  <div class="col-10 mx-auto mt-3">
-    <form action="/roleFilter?_method=PUT" method="POST">
-      <select name="roleFilter" id="roleFilter" onchange="submit()">
-        <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
-        <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
-      </select>
-    </form>
-  </div>
-  <div class="col-12 mx-auto home">
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-12 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">Admin - 功能分類:</label>
-        <div class="function-detail-block">
-            {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
+    <div class="col-10 mx-auto mt-3" id="message-block">
+    {{> message}}
+    </div>
+    <div class="col-10 mx-auto mt-3">
+      <form action="/roleFilter?_method=PUT" method="POST">
+        <select name="roleFilter" id="roleFilter" onchange="submit()">
+          <option value="hire" {{#is whichRole 'hire'}} selected {{/is}}>徵厲Hire</option>
+          <option value="hr" {{#is whichRole 'hr'}} selected {{/is}}>棉花糖客服</option>
+        </select>
+      </form>
+    </div>
+    <button class="btn btn-dark active mx-3" type="button" id="train-btn">Train</button>
+    <div class="col-12 mx-auto home">
+      <div class="row col-6 d-flex mx-auto justify-content-center">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+          <label class="m-5 label-title">Admin - 功能分類:</label>
+          <div class="function-detail-block">
+              {{#if trainFunction}}<div><a href="/bf_cs/notTrainFunction" class="not-trained-block">功能未訓練：{{trainFunction}}</a></div>{{/if}}
+          </div>
+          <a href="/bf_cs/function" class="btn btn-success active col-3" role="button">設定</a>
         </div>
-        <a href="/bf_cs/function" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div> 
+      </div> 
 
-    <div class="row col-6 d-flex mx-auto justify-content-center">
-      <div class="col-12 d-flex align-items-center justify-content-center">
-        <label class="m-5 label-title">Admin - 問答分類:</label>
-        <div class="question-detail-block">
-            {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
+      <div class="row col-6 d-flex mx-auto justify-content-center">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+          <label class="m-5 label-title">Admin - 問答分類:</label>
+          <div class="question-detail-block">
+              {{#if trainQuestion}}<div><a href="/bf_cs/notTrainQuestion" class="not-trained-block">問答未訓練：{{trainQuestion}}</a></div>{{/if}}
+          </div>
+          <a href="/bf_cs/question" class="btn btn-success active col-3" role="button">設定</a>
         </div>
-        <a href="/bf_cs/question" class="btn btn-success active col-3" role="button">設定</a>
-      </div>
-    </div> 
-
+      </div> 
+    </div>
   </div>
-</div>
   {{/is}}
 {{else if isHr}}
 <div class="row">
