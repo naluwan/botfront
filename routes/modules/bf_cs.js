@@ -905,9 +905,7 @@ router.delete('/function/:function_id/:category_id', (req, res) => {
         }
         const questionCheck = result.recordset
         if(questionCheck){
-            fsDeleteFunctionRef(questionCheck, functionCheck, category_id, function_id, request)
-            req.flash('success_msg', '刪除功能成功!!')
-            return res.redirect(`/bf_cs/function/filter?category=${category_id}&search=`)
+            fsDeleteFunctionRef(questionCheck, functionCheck, category_id, function_id, request, req, res)
         }else{
           request.query(`delete from BF_CS_FUNCTION
           where CATEGORY_ID = ${category_id}
